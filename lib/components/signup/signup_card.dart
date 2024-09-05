@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
-class SignUpCard extends StatelessWidget {
+class SignUpCard extends StatefulWidget {
   const SignUpCard({
     super.key,
   });
+
+  @override
+  State<SignUpCard> createState() => _SignUpCardState();
+}
+
+class _SignUpCardState extends State<SignUpCard> {
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  late TextEditingController confirmPasswordController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameController = TextEditingController();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +52,12 @@ class SignUpCard extends StatelessWidget {
         children: [
           Text("Let's get to know you!", style: TextStyle(color: darkGrey, fontSize: 20, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
           Text("Fill up the registration form to get started.", style: TextStyle(color: grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+
+          SizedBox(height: 20,),
+          SignUpTextField(text: "Name", controller: nameController),
+          SignUpTextField(text: "Email", controller: emailController),
+          SignUpTextField(text: "Password", controller: passwordController),
+          SignUpTextField(text: "Confirm Password", controller: confirmPasswordController)
         ],
       ),
     
