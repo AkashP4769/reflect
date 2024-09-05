@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
@@ -68,20 +69,50 @@ class _SignUpCardState extends State<SignUpCard> {
               }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orangeAccent,
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)
                 )
               ),
-              child: Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+              child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           Align(
             alignment: Alignment.centerRight,
-            child: Text("Forgot Password?", style: TextStyle(color: grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
-          )
+            child: Text("Forgot Password?", style: TextStyle(color: grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+          ),
+          const SizedBox(height: 10,),
+
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: Divider(color: Colors.grey, thickness: 2, endIndent: 10,)),
+              Text("Or", style: TextStyle(color: Colors.grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+              Expanded(child: Divider(color: Colors.grey, thickness: 2, indent: 10,)),
+            ],
+          ),
+          SizedBox(height: 20,),
+
+          Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: (){},
+                          child: IntrinsicWidth(child: SignUpIconButton(imgSrc: 'google')),
+                        ),
+                        GestureDetector(
+                          onTap: (){},
+                          child: IntrinsicWidth(child: SignUpIconButton(imgSrc: 'apple')),
+                        )
+                      ],
+                    ),
+                  ),
+
+
 
         ],
       ),
