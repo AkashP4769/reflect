@@ -40,12 +40,12 @@ class _SignUpCardState extends State<SignUpCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400,
+      height: 600,
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.4),
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,11 +53,36 @@ class _SignUpCardState extends State<SignUpCard> {
           Text("Let's get to know you!", style: TextStyle(color: darkGrey, fontSize: 20, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
           Text("Fill up the registration form to get started.", style: TextStyle(color: grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
 
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           SignUpTextField(text: "Name", controller: nameController),
           SignUpTextField(text: "Email", controller: emailController),
           SignUpTextField(text: "Password", controller: passwordController),
-          SignUpTextField(text: "Confirm Password", controller: confirmPasswordController)
+          SignUpTextField(text: "Confirm Password", controller: confirmPasswordController),
+          const SizedBox(height: 20,),
+
+          Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: (){
+            
+              }, 
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                minimumSize: Size(double.infinity, 50),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)
+                )
+              ),
+              child: Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+            ),
+          ),
+          SizedBox(height: 10,),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text("Forgot Password?", style: TextStyle(color: grey, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+          )
+
         ],
       ),
     

@@ -21,7 +21,10 @@ class _LoginPageState extends State<LoginPage> {
           alignment: Alignment.center,
           children: [
             const Bg_Splash(),
-            const Reflect(),
+            Positioned(
+              top: 120,
+              child: const Reflect()
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: SignUpCard(),

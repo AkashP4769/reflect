@@ -23,6 +23,8 @@ class _Bg_SplashState extends State<Bg_Splash> {
     _chewieController = ChewieController(videoPlayerController: _controller,
       autoPlay: true,
       looping: true,
+      showControls: false,
+      showOptions: false
     );
   }
 
