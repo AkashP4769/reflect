@@ -15,7 +15,10 @@ class SignUpIconButton extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: px ?? 15, horizontal: 15),
       margin: EdgeInsets.symmetric(vertical: 10,  horizontal: mx ?? 30),
       decoration: BoxDecoration(
-        //gradient: homebtnGradient,
+        gradient: LinearGradient(colors: [
+          const Color.fromARGB(255, 255, 255, 255),
+          const Color.fromARGB(255, 222, 222, 222),
+        ]),
         borderRadius: BorderRadius.circular(15),
         boxShadow: const [
           BoxShadow(
