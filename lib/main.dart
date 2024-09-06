@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reflect/pages/bg_splash.dart';
+import 'package:reflect/components/signup/bg_splash.dart';
 import 'package:reflect/pages/login.dart';
 
 void main() {

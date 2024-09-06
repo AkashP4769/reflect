@@ -12,8 +12,9 @@ class SignUpTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
         controller: controller,
+        style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w500),
         decoration: InputDecoration(
-          labelStyle: TextStyle(color: grey),
+          labelStyle: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
           labelText: text,
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(

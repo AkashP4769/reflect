@@ -5,16 +5,16 @@ import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
-class SignUpCard extends StatefulWidget {
-  const SignUpCard({
+class LoginCard extends StatefulWidget {
+  const LoginCard({
     super.key,
   });
 
   @override
-  State<SignUpCard> createState() => _SignUpCardState();
+  State<LoginCard> createState() => _LoginCardState();
 }
 
-class _SignUpCardState extends State<SignUpCard> {
+class _LoginCardState extends State<LoginCard> {
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
@@ -59,14 +59,12 @@ class _SignUpCardState extends State<SignUpCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Let's get to know you!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
-                Text("Fill up the registration form to get started.", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                Text("Welcome back!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+                Text("Enter your credentials to continue", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
             
                 const SizedBox(height: 20,),
-                SignUpTextField(text: "Name", controller: nameController),
                 SignUpTextField(text: "Email", controller: emailController),
                 SignUpTextField(text: "Password", controller: passwordController),
-                SignUpTextField(text: "Confirm Password", controller: confirmPasswordController),
                 const SizedBox(height: 20,),
             
                 Align(
@@ -82,7 +80,7 @@ class _SignUpCardState extends State<SignUpCard> {
                         borderRadius: BorderRadius.circular(12)
                       )
                     ),
-                    child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+                    child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
                 ),
 
@@ -128,7 +126,7 @@ class _SignUpCardState extends State<SignUpCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Already have an account?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                    Text("Didn't register?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
                     TextButton(
                       onPressed: (){
                         
@@ -137,7 +135,7 @@ class _SignUpCardState extends State<SignUpCard> {
                         minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(vertical: 0)
                       ),
-                      child: Text("Log In", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
+                      child: Text("Sign up", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
                     )
                   ],
                 )
