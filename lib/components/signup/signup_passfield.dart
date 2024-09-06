@@ -1,21 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:reflect/constants/colors.dart';
 
-class SignUpTextField extends StatelessWidget {
+class SignUpPassField extends StatefulWidget {
   final String text;
   final TextEditingController controller;
-  const SignUpTextField({super.key, required this.text, required this.controller});
+  const SignUpPassField({super.key, required this.text, required this.controller});
+
+  @override
+  State<SignUpPassField> createState() => _SignUpPassFieldState();
+}
+
+class _SignUpPassFieldState extends State<SignUpPassField> {
+  bool obscure = true;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
-        controller: controller,
+        controller: widget.controller,
+        obscureText: obscure,
         style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelStyle: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
-          labelText: text,
+          labelText: widget.text,
+          
+          suffixIcon: IconButton(
+            icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: grey,),
+            onPressed: () {
+              setState(() {
+                obscure = !obscure;
+              });
+            },
+          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: grey
