@@ -20,6 +20,8 @@ class _SignUpCardState extends State<SignUpCard> {
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
 
+  
+
   @override
   void initState() {
     // TODO: implement initState

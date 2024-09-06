@@ -27,6 +27,16 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void togglePage(){
+    setState(() {
+      if(_pageController!.page == 0){
+        _pageController!.animateToPage(1, duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
+      }else {
+        _pageController!.animateToPage(0, duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,16 +50,22 @@ class _LoginPageState extends State<LoginPage> {
               alignment: Alignment.bottomCenter,
               child: SingleChildScrollView(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     const Reflect(),
                     const SizedBox(height: 60),
-                    PageView(
-                      controller: _pageController,
-                      children: const [
-                        SignUpCard(),
-                        LoginCard()
-                      ],
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 480,
+                      child: PageView(
+                        controller: _pageController,
+                        children: const [
+                          LoginCard(),
+                          SignUpCard(),
+                          
+                        ],
+                      ),
                     )
                   ],
                 ),
