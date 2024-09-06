@@ -6,9 +6,8 @@ import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
 class LoginCard extends StatefulWidget {
-  const LoginCard({
-    super.key,
-  });
+  final void Function() togglePage;
+  const LoginCard({super.key, required this.togglePage});
 
   @override
   State<LoginCard> createState() => _LoginCardState();
@@ -51,7 +50,7 @@ class _LoginCardState extends State<LoginCard> {
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
-        child: Stack(
+        child: Stack( //wrap with scrollable
           children: [
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -83,7 +82,7 @@ class _LoginCardState extends State<LoginCard> {
                     child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
                 ),
-
+        
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -105,7 +104,7 @@ class _LoginCardState extends State<LoginCard> {
                   ],
                 ),
                 SizedBox(height: 5,),
-
+        
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 0),
                   child: Row(
@@ -127,10 +126,9 @@ class _LoginCardState extends State<LoginCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Didn't register?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                    const SizedBox(width: 5,),
                     TextButton(
-                      onPressed: (){
-                        
-                      },
+                      onPressed: widget.togglePage,
                       style: TextButton.styleFrom(
                         minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(vertical: 0)

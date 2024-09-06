@@ -6,8 +6,9 @@ import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
 class SignUpCard extends StatefulWidget {
+  final void Function() togglePage;
   const SignUpCard({
-    super.key,
+    super.key, required this.togglePage
   });
 
   @override
@@ -20,7 +21,7 @@ class _SignUpCardState extends State<SignUpCard> {
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
 
-  
+
 
   @override
   void initState() {
@@ -53,7 +54,7 @@ class _SignUpCardState extends State<SignUpCard> {
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
-        child: Stack(
+        child: Stack( //wrap with scrollable
           children: [
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -87,7 +88,7 @@ class _SignUpCardState extends State<SignUpCard> {
                     child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
                 ),
-
+        
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -109,7 +110,7 @@ class _SignUpCardState extends State<SignUpCard> {
                   ],
                 ),
                 SizedBox(height: 5,),
-
+        
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 0),
                   child: Row(
@@ -131,10 +132,9 @@ class _SignUpCardState extends State<SignUpCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Already have an account?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                    const SizedBox(width: 5,),
                     TextButton(
-                      onPressed: (){
-                        
-                      },
+                      onPressed: widget.togglePage,
                       style: TextButton.styleFrom(
                         minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(vertical: 0)

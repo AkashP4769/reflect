@@ -14,12 +14,17 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late PageController? _pageController;
+  double progress = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController()..addListener((){
+      setState(() {
+        progress = _pageController!.page!;
+      });
+    });
   }
 
   void dispose(){
@@ -49,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.bottomCenter,
               child: SingleChildScrollView(
-                child: Column(
+                child: Column( //wrap with scroll
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -57,13 +62,13 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 60),
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: 480,
+                      height: 480 + progress * 120,
+                      //duration: Duration(milliseconds: 400),
                       child: PageView(
                         controller: _pageController,
-                        children: const [
-                          LoginCard(),
-                          SignUpCard(),
-                          
+                        children: [
+                          LoginCard(togglePage: togglePage,),
+                          SignUpCard(togglePage: togglePage,),
                         ],
                       ),
                     )
