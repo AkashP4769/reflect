@@ -17,17 +17,22 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
-        child: Stack(
+        child: const Stack(
           alignment: Alignment.center,
           children: [
-            const Bg_Splash(),
-            Positioned(
-              top: 120,
-              child: const Reflect()
-            ),
+            Bg_Splash(),
             Align(
               alignment: Alignment.bottomCenter,
-              child: SignUpCard(),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Reflect(),
+                    SizedBox(height: 60),
+                    SignUpCard()
+                  ],
+                ),
+              ),
             )
           ],
         ),
