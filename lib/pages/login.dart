@@ -15,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late PageController? _pageController;
   double progress = 0;
+  double swipeup = 1;
 
   @override
   void initState() {
@@ -44,9 +45,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
-        height: MediaQuery.of(context).size.height,
+        height: height,
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -59,10 +61,12 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     const Reflect(),
-                    const SizedBox(height: 60),
+                    SizedBox(height: height * ((-0.4) * 1 + 0.5)),
+                    //swipe = 0  -> height = height * 0.5
+                    //swipe = 1 -> height = height * 0.1
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      height: 480 + progress * 120,
+                      height: (480 + progress * 120) * 1,
                       //duration: Duration(milliseconds: 400),
                       child: PageView(
                         controller: _pageController,

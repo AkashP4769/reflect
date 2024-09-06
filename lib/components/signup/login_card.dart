@@ -47,7 +47,7 @@ class _LoginCardState extends State<LoginCard> {
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withOpacity(0.8),
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
