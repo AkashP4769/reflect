@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:reflect/components/signup/signup_icon_btn.dart';
+import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 
@@ -68,8 +69,8 @@ class _SignUpCardState extends State<SignUpCard> {
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Name", controller: nameController),
                 SignUpTextField(text: "Email", controller: emailController),
-                SignUpTextField(text: "Password", controller: passwordController),
-                SignUpTextField(text: "Confirm Password", controller: confirmPasswordController),
+                SignUpPassField(text: "Password", controller: passwordController),
+                SignUpPassField(text: "Confirm Password", controller: confirmPasswordController),
                 const SizedBox(height: 20,),
             
                 Align(
