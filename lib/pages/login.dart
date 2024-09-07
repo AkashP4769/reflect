@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:reflect/components/common/animated_reflect.dart';
 import 'package:reflect/components/common/reflect.dart';
 import 'package:reflect/components/signup/login_card.dart';
 import 'package:reflect/components/signup/signup_card.dart';
@@ -15,7 +18,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late PageController? _pageController;
   double progress = 0;
-  bool visible = false;
+  bool visible = true;
+  bool splashPlayed = false;
 
   @override
   void initState() {
@@ -27,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     });
   }
+
 
   void dispose(){
     _pageController!.dispose();
@@ -84,11 +89,11 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                               child: Container(
-                                height: height * ((-0.4) * value + 0.47), 
+                                height: height * ((-0.4) * value + 0.5), 
                                 child: (value != 1) ? Opacity(
                                   opacity: 1 - value,
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 100),
+                                    padding: const EdgeInsets.symmetric(vertical: 100),
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         begin: Alignment.bottomCenter,
@@ -101,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ],
                                       )
                                     ),
-                                    child: Center(
+                                    child: const Center(
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
@@ -111,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                   ),
-                                ) : Placeholder(color: Colors.transparent,)
+                                ) : const Placeholder(color: Colors.transparent,)
                               )
                             ),
                             //swipe = 0  -> height = height * 0.5
@@ -141,6 +146,36 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                       
+                ),
+              ),
+            ),
+            if(!splashPlayed) TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: 1),
+              duration: const Duration(milliseconds: 3000),
+              curve: Curves.easeIn,
+              builder: (BuildContext context, double value, Widget? child){
+                if(value == 1)WidgetsBinding.instance.addPostFrameCallback((_){
+                  setState((){
+                    splashPlayed = true;
+                  });
+                });
+                return Opacity(
+                  opacity: 1- value,
+                  child: child,
+                );
+              },
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const AnimatedReflect(),
+                      SizedBox(height: height/2,)
+                    ],
+                  ),
                 ),
               ),
             )
