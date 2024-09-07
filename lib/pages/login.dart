@@ -46,70 +46,68 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          height: height,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const Bg_Splash(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SingleChildScrollView(
-                  child: TweenAnimationBuilder(
-                    tween: Tween<double>(begin: visible ? 1 : 0, end: visible ? 0 : 1),
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.fastOutSlowIn,
-                        builder: (BuildContext context, double value, Widget? child){
-                          return Column( //wrap with scroll
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              
-                              GestureDetector(
-                                onTap: (){
+    return Scaffold(
+      body: Container(
+        height: height,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Bg_Splash(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SingleChildScrollView(
+                child: TweenAnimationBuilder(
+                  tween: Tween<double>(begin: visible ? 1 : 0, end: visible ? 0 : 1),
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInExpo,
+                      builder: (BuildContext context, double value, Widget? child){
+                        return Column( //wrap with scroll
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            
+                            GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  visible = !visible;
+                                });
+                              },
+                              child: const Reflect()
+                            ),
+                            SizedBox(height: height * ((-0.4) * value + 0.5)),
+                            //swipe = 0  -> height = height * 0.5
+                            //swipe = 1 -> height = height * 0.1
+                            GestureDetector(
+                              onVerticalDragEnd: (details){
+                                print(details.primaryVelocity);
+                                if(details.primaryVelocity! > 200){
                                   setState(() {
                                     visible = !visible;
                                   });
-                                },
-                                child: const Reflect()
-                              ),
-                              SizedBox(height: height * ((-0.4) * value + 0.5)),
-                              //swipe = 0  -> height = height * 0.5
-                              //swipe = 1 -> height = height * 0.1
-                              GestureDetector(
-                                onVerticalDragEnd: (details){
-                                  print(details.primaryVelocity);
-                                  if(details.primaryVelocity! > 200){
-                                    setState(() {
-                                      visible = !visible;
-                                    });
-                                  }
-                                },
-                                
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: (480 + progress * 120) * value,
-                                  //duration: Duration(milliseconds: 400),
-                                  child: PageView(
-                                    controller: _pageController,
-                                    children: [
-                                      LoginCard(togglePage: togglePage,),
-                                      SignUpCard(togglePage: togglePage,),
-                                    ],
-                                  ),
+                                }
+                              },
+    
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: (480 + progress * 120) * value,
+                                //duration: Duration(milliseconds: 400),
+                                child: PageView(
+                                  controller: _pageController,
+                                  children: [
+                                    LoginCard(togglePage: togglePage,),
+                                    SignUpCard(togglePage: togglePage,),
+                                  ],
                                 ),
-                              )
-                            ],
-                          );
-                        }
-                        
-                  ),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                      
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

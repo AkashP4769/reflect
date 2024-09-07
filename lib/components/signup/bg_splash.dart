@@ -12,32 +12,43 @@ class Bg_Splash extends StatefulWidget {
 }
 
 class _Bg_SplashState extends State<Bg_Splash> {
-  late VideoPlayerController _controller;
-  late ChewieController _chewieController;
+  late VideoPlayerController? _controller;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = VideoPlayerController.asset("assets/splash_bg.mp4");
-    _chewieController = ChewieController(videoPlayerController: _controller,
-      autoPlay: true,
-      looping: true,
-      showControls: false,
-      showOptions: false
-    );
+    initializeControllers();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    _controller.dispose();
-    _chewieController.dispose();
+    _controller?.dispose();
+    _chewieController?.dispose();
     super.dispose();
+  }
+
+  Future<void> initializeControllers() async {
+    _controller = VideoPlayerController.asset("assets/splash_bg.mp4");
+    await _controller?.initialize();
+    _chewieController = ChewieController(videoPlayerController: _controller!,
+      autoPlay: true,
+      looping: true,
+      showControls: false,
+      showOptions: false
+    );
+    setState(() {});
   }
   
   @override
   Widget build(BuildContext context) {
+    if (_chewieController == null) {
+      return Container(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -50,9 +61,9 @@ class _Bg_SplashState extends State<Bg_Splash> {
                 child: FittedBox(
                   fit: BoxFit.cover,
                   child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: Chewie(controller: _chewieController)
+                    width: _controller?.value.size.width,
+                    height: _controller?.value.size.height,
+                    child: Chewie(controller: _chewieController!)
                   ),
                 ),
               ),
