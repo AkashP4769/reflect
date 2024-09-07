@@ -43,6 +43,12 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void toggleVisible(){
+    setState(() {
+      visible = !visible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -65,25 +71,56 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            
                             GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  visible = !visible;
-                                });
-                              },
-                              child: const Reflect()
+                              onTap: toggleVisible,
+                              child: Reflect(value: value,)
                             ),
-                            SizedBox(height: height * ((-0.4) * value + 0.5)),
+
+                            GestureDetector(
+                              onVerticalDragEnd: (details){
+                                print(details.primaryVelocity);
+                                if(details.primaryVelocity!.abs() > 50){
+                                  toggleVisible();
+                                }
+                              },
+                              child: Container(
+                                height: height * ((-0.4) * value + 0.47), 
+                                child: (value != 1) ? Opacity(
+                                  opacity: 1 - value,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 100),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                        colors: [
+                                          Colors.black.withOpacity(0.8),
+                                          Colors.black.withOpacity(0.4),
+                                          Colors.black.withOpacity(0.2),
+                                          Colors.transparent
+                                        ],
+                                      )
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text("A journal for your thoughts", style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600),),
+                                          Text("A reflection for your soul.", style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600),),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ) : Placeholder(color: Colors.transparent,)
+                              )
+                            ),
                             //swipe = 0  -> height = height * 0.5
                             //swipe = 1 -> height = height * 0.1
                             GestureDetector(
                               onVerticalDragEnd: (details){
                                 print(details.primaryVelocity);
-                                if(details.primaryVelocity! > 200){
-                                  setState(() {
-                                    visible = !visible;
-                                  });
+                                if(details.primaryVelocity! > 50){
+                                  toggleVisible();
                                 }
                               },
     
