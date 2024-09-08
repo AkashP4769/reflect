@@ -5,6 +5,7 @@ import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
+import 'package:reflect/services/auth_service.dart';
 
 class SignUpCard extends StatefulWidget {
   final void Function() togglePage;
@@ -21,6 +22,7 @@ class _SignUpCardState extends State<SignUpCard> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
+  String errorMsg = '';
 
 
 
@@ -42,6 +44,25 @@ class _SignUpCardState extends State<SignUpCard> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void signUpWithEmailAndPass() async {
+    if(passwordController.text != confirmPasswordController.text){
+      setState(() => errorMsg = "Passwords do not match!");
+      return;
+    }
+    String msg = await AuthService.createUserWithEmailAndPassword(nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
+    if(msg != '') setState(() => errorMsg = msg);
+  }
+
+  void signInWithApple() async {
+    String msg = "Apple Sign In is not available yet!";
+    if(msg != '') setState(() => errorMsg = msg);
+  }
+
+  void signInWithGoogle() async {
+    String msg = await AuthService.signInWithGoogle();
+    if(msg != '') setState(() => errorMsg = msg);
   }
 
   @override
@@ -71,13 +92,20 @@ class _SignUpCardState extends State<SignUpCard> {
                 SignUpTextField(text: "Email", controller: emailController),
                 SignUpPassField(text: "Password", controller: passwordController),
                 SignUpPassField(text: "Confirm Password", controller: confirmPasswordController),
-                const SizedBox(height: 20,),
+                
+                if(errorMsg != '') Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.redAccent, size: 16,),
+                    SizedBox(width: 5,),
+                    Text(errorMsg, style: TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                  ],
+                ),
+                SizedBox(height: errorMsg != '' ? 5 : 20,),
             
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: (){
-                    }, 
+                    onPressed: signUpWithEmailAndPass, 
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
                       minimumSize: const Size(double.infinity, 50),
@@ -118,12 +146,11 @@ class _SignUpCardState extends State<SignUpCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: (){
-                        },
+                        onTap: signInWithGoogle,
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: (){},
+                        onTap: signInWithApple,
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

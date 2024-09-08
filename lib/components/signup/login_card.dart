@@ -47,10 +47,16 @@ class _LoginCardState extends State<LoginCard> {
     if(msg != '') setState(() => errorMsg = msg);
   }
 
+  void signInWithApple() async {
+    String msg = "Apple Sign In is not available yet!";
+    if(msg != '') setState(() => errorMsg = msg);
+  }
+
   void signInWithEmailAndPass() async {
     String msg = await AuthService.signInWithEmailPassword(emailController.text, passwordController.text);
     if(msg != '') setState(() => errorMsg = msg);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,8 +97,7 @@ class _LoginCardState extends State<LoginCard> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: (){
-                    }, 
+                    onPressed: signInWithEmailAndPass, 
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
                       minimumSize: const Size(double.infinity, 50),
@@ -137,7 +142,7 @@ class _LoginCardState extends State<LoginCard> {
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: (){},
+                        onTap: signInWithApple,
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

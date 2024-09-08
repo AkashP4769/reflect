@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            //const Bg_Splash(),
+            const Bg_Splash(),
             Align(
               alignment: Alignment.bottomCenter,
               child: SingleChildScrollView(

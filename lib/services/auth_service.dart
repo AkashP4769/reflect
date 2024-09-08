@@ -44,7 +44,7 @@ class AuthService{
     }
   }
 
-  static Future<String> createUserWithEmailAndPassword(String name, String email, String password, String phonenumber) async {
+  static Future<String> createUserWithEmailAndPassword(String name, String email, String password/* String phonenumber*/) async {
     try{
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       

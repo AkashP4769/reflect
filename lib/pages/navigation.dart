@@ -21,7 +21,7 @@ class _NavigationPageState extends State<NavigationPage> {
               onPressed: () {
                 AuthService.signOut();
               },
-              child: const Text('Login'),
+              child: const Text('Logout'),
             ),
           ],
         ),
