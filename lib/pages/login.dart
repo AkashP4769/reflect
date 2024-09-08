@@ -8,6 +8,7 @@ import 'package:reflect/components/signup/signup_card.dart';
 import 'package:reflect/constants/colors.dart';
 import 'package:reflect/components/signup/bg_splash.dart';
 import 'package:reflect/constants/curves.dart';
+import 'package:reflect/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -64,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            const Bg_Splash(),
+            //const Bg_Splash(),
             Align(
               alignment: Alignment.bottomCenter,
               child: SingleChildScrollView(

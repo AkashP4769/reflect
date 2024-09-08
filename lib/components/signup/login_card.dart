@@ -5,6 +5,7 @@ import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
+import 'package:reflect/services/auth_service.dart';
 
 class LoginCard extends StatefulWidget {
   final void Function() togglePage;
@@ -19,6 +20,7 @@ class _LoginCardState extends State<LoginCard> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
+  String errorMsg = '';
 
   @override
   void initState() {
@@ -38,6 +40,16 @@ class _LoginCardState extends State<LoginCard> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void signInWithGoogle() async {
+    String msg = await AuthService.signInWithGoogle();
+    if(msg != '') setState(() => errorMsg = msg);
+  }
+
+  void signInWithEmailAndPass() async {
+    String msg = await AuthService.signInWithEmailPassword(emailController.text, passwordController.text);
+    if(msg != '') setState(() => errorMsg = msg);
   }
 
   @override
@@ -65,7 +77,16 @@ class _LoginCardState extends State<LoginCard> {
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Email", controller: emailController),
                 SignUpPassField(text: "Password", controller: passwordController),
-                const SizedBox(height: 20,),
+                
+                if(errorMsg != '') Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.redAccent, size: 16,),
+                    SizedBox(width: 5,),
+                    Text(errorMsg, style: TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                  ],
+                ),
+                SizedBox(height: errorMsg != '' ? 5 : 20,),
+                
             
                 Align(
                   alignment: Alignment.center,
@@ -112,8 +133,7 @@ class _LoginCardState extends State<LoginCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: (){
-                        },
+                        onTap: signInWithGoogle,
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
