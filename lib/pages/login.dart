@@ -77,7 +77,13 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            GestureDetector(
+                            /*ElevatedButton(onPressed: (){
+                                  setState(() {
+                                    splashPlayed = false;
+                                  });
+                                }, child: Text("start")
+                            ),*/
+                            if(splashPlayed) GestureDetector(
                               onTap: toggleVisible,
                               child: Reflect(value: value,)
                             ),
@@ -153,27 +159,37 @@ class _LoginPageState extends State<LoginPage> {
             if(!splashPlayed) TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 3000),
-              curve: Curves.easeInCubic,
+              curve: Curves.easeInOutQuint,
               builder: (BuildContext context, double _value, Widget? child){
                 if(_value == 1){WidgetsBinding.instance.addPostFrameCallback((_){
                   setState((){
                     splashPlayed = true;
                   });
                 });}
-                return Opacity(
-                  opacity: 1 - _value,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const AnimatedReflect(/*value: _value,*/),
-                          SizedBox(height: height/2,)
-                        ],
-                      ),
+                final int color = (255 * _value).round();
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.transparent,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Opacity(
+                          opacity: 1 - _value,
+                          child: Container(
+                            height: height,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            AnimatedReflect(value: _value, color: color,),
+                            SizedBox(height: height/2,)
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );
