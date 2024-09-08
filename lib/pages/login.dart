@@ -7,6 +7,7 @@ import 'package:reflect/components/signup/login_card.dart';
 import 'package:reflect/components/signup/signup_card.dart';
 import 'package:reflect/constants/colors.dart';
 import 'package:reflect/components/signup/bg_splash.dart';
+import 'package:reflect/constants/curves.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -152,32 +153,31 @@ class _LoginPageState extends State<LoginPage> {
             if(!splashPlayed) TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 3000),
-              curve: Curves.easeIn,
-              builder: (BuildContext context, double value, Widget? child){
-                if(value == 1)WidgetsBinding.instance.addPostFrameCallback((_){
+              curve: Curves.easeInCubic,
+              builder: (BuildContext context, double _value, Widget? child){
+                if(_value == 1){WidgetsBinding.instance.addPostFrameCallback((_){
                   setState((){
                     splashPlayed = true;
                   });
-                });
+                });}
                 return Opacity(
-                  opacity: 1- value,
-                  child: child,
+                  opacity: 1 - _value,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const AnimatedReflect(/*value: _value,*/),
+                          SizedBox(height: height/2,)
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.white,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const AnimatedReflect(),
-                      SizedBox(height: height/2,)
-                    ],
-                  ),
-                ),
-              ),
             )
           ],
         ),
