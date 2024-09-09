@@ -5,20 +5,20 @@ import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
+import 'package:reflect/main.dart';
 import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/theme/theme_manager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginCard extends StatefulWidget {
+class LoginCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
   const LoginCard({super.key, required this.togglePage});
 
   @override
-  State<LoginCard> createState() => _LoginCardState();
+  ConsumerState<LoginCard> createState() => _LoginCardState();
 }
 
-class _LoginCardState extends State<LoginCard> {
-  ThemeManager themeManager = ThemeManager();
-  
+class _LoginCardState extends ConsumerState<LoginCard> {
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
@@ -63,6 +63,7 @@ class _LoginCardState extends State<LoginCard> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeManagerProvider); 
     return Container(
       height: 600,
       width: MediaQuery.of(context).size.width,
@@ -82,8 +83,8 @@ class _LoginCardState extends State<LoginCard> {
               children: [
                 Text("Welcome back!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                 Text("Enter your credentials to continue", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
-                Switch(value: themeManager.themeMode == ThemeMode.dark, onChanged: (value){
-                  themeManager.toggleTheme(value);
+                Switch(value: themeMode == ThemeMode.dark, onChanged: (value){
+                  ref.read(themeManagerProvider.notifier).toggleTheme(value);
                 }),            
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Email", controller: emailController),
