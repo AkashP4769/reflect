@@ -6,6 +6,7 @@ import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:reflect/theme/theme_manager.dart';
 
 class LoginCard extends StatefulWidget {
   final void Function() togglePage;
@@ -16,6 +17,8 @@ class LoginCard extends StatefulWidget {
 }
 
 class _LoginCardState extends State<LoginCard> {
+  ThemeManager themeManager = ThemeManager();
+  
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
@@ -79,7 +82,9 @@ class _LoginCardState extends State<LoginCard> {
               children: [
                 Text("Welcome back!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                 Text("Enter your credentials to continue", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
-            
+                Switch(value: themeManager.themeMode == ThemeMode.dark, onChanged: (value){
+                  themeManager.toggleTheme(value);
+                }),            
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Email", controller: emailController),
                 SignUpPassField(text: "Password", controller: passwordController),

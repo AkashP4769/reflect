@@ -9,6 +9,7 @@ import 'package:reflect/constants/colors.dart';
 import 'package:reflect/components/signup/bg_splash.dart';
 import 'package:reflect/constants/curves.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:reflect/theme/theme_manager.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
