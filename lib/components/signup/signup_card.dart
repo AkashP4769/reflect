@@ -88,10 +88,10 @@ class _SignUpCardState extends State<SignUpCard> {
                 Text("Fill up the registration form to get started.", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
             
                 const SizedBox(height: 20,),
-                SignUpTextField(text: "Name", controller: nameController),
-                SignUpTextField(text: "Email", controller: emailController),
-                SignUpPassField(text: "Password", controller: passwordController),
-                SignUpPassField(text: "Confirm Password", controller: confirmPasswordController),
+                //SignUpTextField(text: "Name", controller: nameController,),
+                //SignUpTextField(text: "Email", controller: emailController),
+                //SignUpPassField(text: "Password", controller: passwordController),
+                //SignUpPassField(text: "Confirm Password", controller: confirmPasswordController),
                 
                 if(errorMsg != '') Row(
                   children: [

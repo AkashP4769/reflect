@@ -69,7 +69,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: themeData.colorScheme.surface,
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
@@ -82,14 +82,14 @@ class _LoginCardState extends ConsumerState<LoginCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Welcome back!", style: themeData.textTheme.titleMedium,),
-                Text("Enter your credentials to continue", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                Text("Enter your credentials to continue", style: themeData.textTheme.bodyMedium,),
                 Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
                   ref.read(themeManagerProvider.notifier).toggleTheme(value);
                 }),  
                 Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
                 const SizedBox(height: 20,),
-                SignUpTextField(text: "Email", controller: emailController),
-                SignUpPassField(text: "Password", controller: passwordController),
+                SignUpTextField(text: "Email", controller: emailController, themeData: themeData,),
+                SignUpPassField(text: "Password", controller: passwordController, themeData: themeData,),
                 
                 if(errorMsg != '') Row(
                   children: [
@@ -105,14 +105,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                   alignment: Alignment.center,
                   child: ElevatedButton(
                     onPressed: signInWithEmailAndPass, 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orangeAccent,
-                      minimumSize: const Size(double.infinity, 50),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)
-                      )
-                    ),
+                    style: themeData.elevatedButtonTheme.style,
                     child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
                 ),

@@ -4,7 +4,8 @@ import 'package:reflect/constants/colors.dart';
 class SignUpPassField extends StatefulWidget {
   final String text;
   final TextEditingController controller;
-  const SignUpPassField({super.key, required this.text, required this.controller});
+  final ThemeData themeData;
+  const SignUpPassField({super.key, required this.text, required this.controller, required this.themeData});
 
   @override
   State<SignUpPassField> createState() => _SignUpPassFieldState();
@@ -20,13 +21,13 @@ class _SignUpPassFieldState extends State<SignUpPassField> {
       child: TextFormField(
         controller: widget.controller,
         obscureText: obscure,
-        style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w500),
+        style: widget.themeData.textTheme.bodyMedium,
         decoration: InputDecoration(
-          labelStyle: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+          labelStyle: widget.themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           labelText: widget.text,
           
           suffixIcon: IconButton(
-            icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: grey,),
+            icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: widget.themeData.colorScheme.onPrimary,),
             onPressed: () {
               setState(() {
                 obscure = !obscure;
@@ -35,13 +36,13 @@ class _SignUpPassFieldState extends State<SignUpPassField> {
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: grey
+              color: widget.themeData.colorScheme.onPrimary
             ),
             borderRadius: BorderRadius.circular(8)
           ),
-          focusedBorder: const OutlineInputBorder(
+          focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.white
+              color: widget.themeData.colorScheme.primary,
             )
           )
         ),

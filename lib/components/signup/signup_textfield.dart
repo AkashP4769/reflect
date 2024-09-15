@@ -4,7 +4,8 @@ import 'package:reflect/constants/colors.dart';
 class SignUpTextField extends StatelessWidget {
   final String text;
   final TextEditingController controller;
-  const SignUpTextField({super.key, required this.text, required this.controller});
+  final ThemeData themeData;
+  const SignUpTextField({super.key, required this.text, required this.controller, required this.themeData});
 
   @override
   Widget build(BuildContext context) {
@@ -12,19 +13,20 @@ class SignUpTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
         controller: controller,
-        style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w500),
+        style: themeData.textTheme.bodyMedium,
         decoration: InputDecoration(
-          labelStyle: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+          labelStyle: themeData.textTheme.bodyMedium,
           labelText: text,
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: grey
+              color: themeData.colorScheme.onPrimary
             ),
             borderRadius: BorderRadius.circular(8)
           ),
-          focusedBorder: const OutlineInputBorder(
+          focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.white
+              color: themeData.colorScheme.primary,
+              width: 2
             )
           )
         ),
