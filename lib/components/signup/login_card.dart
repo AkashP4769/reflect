@@ -83,10 +83,6 @@ class _LoginCardState extends ConsumerState<LoginCard> {
               children: [
                 Text("Welcome back!", style: themeData.textTheme.titleMedium,),
                 Text("Enter your credentials to continue", style: themeData.textTheme.bodyMedium,),
-                Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
-                  ref.read(themeManagerProvider.notifier).toggleTheme(value);
-                }),  
-                Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Email", controller: emailController, themeData: themeData,),
                 SignUpPassField(text: "Password", controller: passwordController, themeData: themeData,),
@@ -162,7 +158,12 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                       child: Text("Sign up", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
                     )
                   ],
-                )
+                ),
+
+                Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
+                  ref.read(themeManagerProvider.notifier).toggleTheme(value);
+                }),
+                Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
             
             
             
