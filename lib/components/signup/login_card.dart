@@ -160,12 +160,12 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                   ],
                 ),
 
-                Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
+                /*Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
                   ref.read(themeManagerProvider.notifier).toggleTheme(value);
                 }),
                 Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
             
-            
+                */
             
               ],
             ),
