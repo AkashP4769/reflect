@@ -1,23 +1,25 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
 import 'package:reflect/constants/colors.dart';
+import 'package:reflect/main.dart';
 import 'package:reflect/services/auth_service.dart';
 
-class SignUpCard extends StatefulWidget {
+class SignUpCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
   const SignUpCard({
     super.key, required this.togglePage
   });
 
   @override
-  State<SignUpCard> createState() => _SignUpCardState();
+  ConsumerState<SignUpCard> createState() => _SignUpCardState();
 }
 
-class _SignUpCardState extends State<SignUpCard> {
+class _SignUpCardState extends ConsumerState<SignUpCard> {
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
@@ -67,12 +69,13 @@ class _SignUpCardState extends State<SignUpCard> {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = ref.watch(themeManagerProvider); 
     return Container(
       height: 600,
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: themeData.brightness == Brightness.dark ? themeData.colorScheme.surface.withOpacity(0.8) : themeData.colorScheme.surface.withOpacity(0.6),
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
@@ -84,14 +87,14 @@ class _SignUpCardState extends State<SignUpCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Let's get to know you!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
-                Text("Fill up the registration form to get started.", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                Text("Let's get to know you!", style: themeData.textTheme.titleMedium),
+                Text("Fill up the registration form to get started.", style:themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w400)),
             
                 const SizedBox(height: 20,),
-                //SignUpTextField(text: "Name", controller: nameController,),
-                //SignUpTextField(text: "Email", controller: emailController),
-                //SignUpPassField(text: "Password", controller: passwordController),
-                //SignUpPassField(text: "Confirm Password", controller: confirmPasswordController),
+                SignUpTextField(text: "Name", controller: nameController, themeData: themeData,),
+                SignUpTextField(text: "Email", controller: emailController, themeData: themeData),
+                SignUpPassField(text: "Password", controller: passwordController, themeData: themeData),
+                SignUpPassField(text: "Confirm Password", controller: confirmPasswordController, themeData: themeData),
                 
                 if(errorMsg != '') Row(
                   children: [
@@ -106,14 +109,7 @@ class _SignUpCardState extends State<SignUpCard> {
                   alignment: Alignment.center,
                   child: ElevatedButton(
                     onPressed: signUpWithEmailAndPass, 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orangeAccent,
-                      minimumSize: const Size(double.infinity, 50),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)
-                      )
-                    ),
+                    style: themeData.elevatedButtonTheme.style,
                     child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
                 ),
@@ -126,7 +122,7 @@ class _SignUpCardState extends State<SignUpCard> {
                       minimumSize: Size.zero,
                       padding: const EdgeInsets.symmetric(vertical: 0)
                     ),
-                    child: Text("Forgot Password?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                    child: Text("Forgot Password?", style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: "Poppins"),)
                   ),
                 ),
             
@@ -159,7 +155,7 @@ class _SignUpCardState extends State<SignUpCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Already have an account?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                    Text("Already have an account?", style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400, fontFamily: "Poppins"),),
                     const SizedBox(width: 5,),
                     TextButton(
                       onPressed: widget.togglePage,

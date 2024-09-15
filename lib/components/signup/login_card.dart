@@ -69,7 +69,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: themeData.colorScheme.surface,
+        color: themeData.brightness == Brightness.dark ? themeData.colorScheme.surface.withOpacity(0.8) : themeData.colorScheme.surface.withOpacity(0.6),
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
@@ -106,7 +106,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                   child: ElevatedButton(
                     onPressed: signInWithEmailAndPass, 
                     style: themeData.elevatedButtonTheme.style,
-                    child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+                    child: Text("Login", style: themeData.textTheme.titleMedium),
                   ),
                 ),
         
@@ -118,7 +118,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                       minimumSize: Size.zero,
                       padding: const EdgeInsets.symmetric(vertical: 0)
                     ),
-                    child: Text("Forgot Password?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                    child: Text("Forgot Password?", style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: "Poppins"),)
                   ),
                 ),
             
@@ -151,7 +151,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Didn't register?", style: TextStyle(color: grey, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
+                    Text("Didn't register?", style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400),),
                     const SizedBox(width: 5,),
                     TextButton(
                       onPressed: widget.togglePage,

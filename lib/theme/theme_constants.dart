@@ -11,7 +11,7 @@ ThemeData lightTheme = ThemeData(
   textTheme: ThemeData.light().textTheme.copyWith(
     titleMedium: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
     titleSmall: const TextStyle(color: Colors.black, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),
-    bodyLarge: const TextStyle(color: Colors.black, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+    bodyMedium: const TextStyle(color: Colors.black, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
     bodySmall: const TextStyle(color: Colors.black, fontSize: 12, fontFamily: "Poppins", fontWeight: FontWeight.w400),
   ),
 
