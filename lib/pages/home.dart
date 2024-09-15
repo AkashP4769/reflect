@@ -16,6 +16,13 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+        )
+      ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

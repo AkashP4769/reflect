@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -27,14 +28,28 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     final themeData = ref.watch(themeManagerProvider);
     return Scaffold(
       appBar: AppBar(
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: CircleAvatar(maxRadius: 5,),
+        toolbarHeight: 70,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
+            maxRadius: 5,
+          ),
         ),
-        title: Text(titles[currentPageIndex]),
+        title: SearchBar(
+          backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
+          elevation: WidgetStateProperty.all(0),
+          trailing: [
+            IconButton(
+              onPressed: (){},
+              icon: const Icon(Icons.search),
+              color: themeData.colorScheme.onPrimary,
+            ),
+          ],
+        ),
         actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.call)),
-          IconButton(onPressed: (){}, icon: const Icon(Icons.notifications))
+          IconButton(onPressed: (){}, icon: const Icon(Icons.menu))
         ],
       ),
 
@@ -53,7 +68,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             GButton(
               icon: Icons.home,
               text: 'Home',
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,
@@ -63,7 +78,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             GButton(
               icon: Icons.book,
               text: 'Journal',
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,
@@ -73,7 +88,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             GButton(
               icon: Icons.favorite,
               text: 'Likes',
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,
@@ -83,7 +98,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             GButton(
               icon: Icons.settings,
               text: 'Settings',
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,

@@ -8,7 +8,9 @@ ThemeData lightTheme = ThemeData(
     onPrimary: Colors.black,
     surface: Colors.white,
     surfaceContainerHigh: Colors.white,
-    surfaceContainerHighest: Color(0xffFFAC5F)
+    surfaceContainerHighest: Color(0xffFFAC5F),
+    tertiary: Colors.white,
+    onTertiary: Color(0xffFFDEB7)
   ),
   textTheme: ThemeData.light().textTheme.copyWith(
     titleMedium: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
@@ -43,7 +45,9 @@ ThemeData darkTheme = ThemeData(
     onPrimary: Colors.white,
     surface: Color(0xff303030),
     surfaceContainer: Colors.white, 
-    surfaceContainerHighest: Colors.white
+    surfaceContainerHighest: Colors.white,
+    tertiary: Color(0xff303030),
+    onTertiary: Color(0xff141414)
   ),
   textTheme: ThemeData.dark().textTheme.copyWith(
     titleMedium: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
