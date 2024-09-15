@@ -16,6 +16,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
+      padding: EdgeInsetsDirectional.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -37,10 +38,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Text('Logout', style: themeData.textTheme.bodyMedium,),
             ),
 
-            Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
-                  ref.read(themeManagerProvider.notifier).toggleTheme(value);
-                }),
-                Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: Colors.grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
           ],
         ),
       ),

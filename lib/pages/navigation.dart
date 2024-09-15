@@ -27,29 +27,36 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        toolbarHeight: 70,
+        //toolbarHeight: 70,
+        //backgroundColor: Colors.grey,
         centerTitle: true,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.only(left: 15),
           child: CircleAvatar(
-            backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
-            maxRadius: 5,
+            backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!, scale: 2),
+            radius: 5,
           ),
         ),
-        title: SearchBar(
-          backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
-          elevation: WidgetStateProperty.all(0),
-          trailing: [
-            IconButton(
-              onPressed: (){},
-              icon: const Icon(Icons.search),
-              color: themeData.colorScheme.onPrimary,
-            ),
-          ],
+        title: Container(
+          height: 45,
+          child: SearchBar(
+            backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
+            elevation: WidgetStateProperty.all(0),
+            trailing: [
+              IconButton(
+                onPressed: (){},
+                icon: const Icon(Icons.search),
+                color: themeData.colorScheme.onPrimary,
+              ),
+            ],
+          ),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.menu))
+          IconButton(onPressed: (){
+            ref.read(themeManagerProvider.notifier).toggleTheme(!(themeData.brightness == Brightness.dark));
+          }, icon: themeData.brightness == Brightness.dark ? Icon(Icons.brightness_2) : Icon(Icons.brightness_5), color: themeData.colorScheme.surfaceContainerHighest,),
         ],
       ),
 
@@ -68,7 +75,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             GButton(
               icon: Icons.home,
               text: 'Home',
-              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,
@@ -106,7 +113,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
           ],
-          selectedIndex: 0,
+          selectedIndex: currentPageIndex,
           onTabChange: (index) {
             _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
           },

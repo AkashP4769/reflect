@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
@@ -45,19 +46,23 @@ class _LoginCardState extends ConsumerState<LoginCard> {
     super.dispose();
   }
 
-  void signInWithGoogle() async {
+  void signInWithGoogle(Color loadingColor) async {
+    showLoading(context, loadingColor);
     String msg = await AuthService.signInWithGoogle();
     if(msg != '') setState(() => errorMsg = msg);
+    /*if(mounted)*/ Navigator.pop(context);
   }
 
-  void signInWithApple() async {
+  void signInWithApple(Color loadingColor) async {
     String msg = "Apple Sign In is not available yet!";
     if(msg != '') setState(() => errorMsg = msg);
   }
 
-  void signInWithEmailAndPass() async {
+  void signInWithEmailAndPass(Color loadingColor) async {
+    showLoading(context, loadingColor);
     String msg = await AuthService.signInWithEmailPassword(emailController.text, passwordController.text);
     if(msg != '') setState(() => errorMsg = msg);
+    /*if(mounted)*/ Navigator.pop(context);
   }
 
 
@@ -100,7 +105,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: signInWithEmailAndPass, 
+                    onPressed: () => signInWithEmailAndPass(themeData.colorScheme.surfaceContainerHighest), 
                     style: themeData.elevatedButtonTheme.style,
                     child: Text("Login", style: themeData.textTheme.titleMedium),
                   ),
@@ -134,11 +139,11 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: signInWithGoogle,
+                        onTap: () => signInWithGoogle(themeData.colorScheme.surfaceContainerHighest),
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: signInWithApple,
+                        onTap: () => signInWithApple(themeData.colorScheme.surfaceContainerHighest),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

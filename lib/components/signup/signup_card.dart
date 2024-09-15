@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/signup/signup_icon_btn.dart';
 import 'package:reflect/components/signup/signup_passfield.dart';
 import 'package:reflect/components/signup/signup_textfield.dart';
@@ -48,23 +49,27 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
     super.dispose();
   }
 
-  void signUpWithEmailAndPass() async {
+  void signUpWithEmailAndPass(Color loadingColor) async {
     if(passwordController.text != confirmPasswordController.text){
       setState(() => errorMsg = "Passwords do not match!");
       return;
     }
+    showLoading(context, loadingColor);
     String msg = await AuthService.createUserWithEmailAndPassword(nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
     if(msg != '') setState(() => errorMsg = msg);
+    /*if(mounted)*/ Navigator.pop(context);
   }
 
-  void signInWithApple() async {
+  void signInWithApple(Color loadingColor) async {
     String msg = "Apple Sign In is not available yet!";
     if(msg != '') setState(() => errorMsg = msg);
   }
 
-  void signInWithGoogle() async {
+  void signInWithGoogle(Color loadingColor) async {
+    showLoading(context, loadingColor);
     String msg = await AuthService.signInWithGoogle();
     if(msg != '') setState(() => errorMsg = msg);
+    /*if(mounted)*/ Navigator.pop(context);
   }
 
   @override
@@ -108,7 +113,7 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: signUpWithEmailAndPass, 
+                    onPressed: () => signUpWithEmailAndPass(themeData.colorScheme.surfaceContainerHighest), 
                     style: themeData.elevatedButtonTheme.style,
                     child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
@@ -142,11 +147,11 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: signInWithGoogle,
+                        onTap: () => signInWithGoogle(themeData.colorScheme.surfaceContainerHighest), 
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: signInWithApple,
+                        onTap: () => signInWithApple(themeData.colorScheme.surfaceContainerHighest),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],
