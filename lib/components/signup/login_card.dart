@@ -63,13 +63,13 @@ class _LoginCardState extends ConsumerState<LoginCard> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeManagerProvider); 
+    final themeData = ref.watch(themeManagerProvider); 
     return Container(
       height: 600,
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.green,
         borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
       ),
       child: SingleChildScrollView(
@@ -81,11 +81,12 @@ class _LoginCardState extends ConsumerState<LoginCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Welcome back!", style: TextStyle(color: darkGrey, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
+                Text("Welcome back!", style: themeData.textTheme.titleMedium,),
                 Text("Enter your credentials to continue", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),
-                Switch(value: themeMode == ThemeMode.dark, onChanged: (value){
+                Switch(value: themeData.brightness == Brightness.dark, onChanged: (value){
                   ref.read(themeManagerProvider.notifier).toggleTheme(value);
-                }),            
+                }),  
+                Text(themeData.brightness == Brightness.dark ? "Dark Mode" : "Light Mode", style: TextStyle(color: grey, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),),          
                 const SizedBox(height: 20,),
                 SignUpTextField(text: "Email", controller: emailController),
                 SignUpPassField(text: "Password", controller: passwordController),

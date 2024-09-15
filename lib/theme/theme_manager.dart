@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reflect/theme/theme_constants.dart';
 
 /*class ThemeManager with ChangeNotifier{
   ThemeMode _themeMode = ThemeMode.system;
@@ -12,11 +13,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
   }
 }*/
 
-class ThemeManager extends StateNotifier<ThemeMode> {
-  ThemeManager() : super(ThemeMode.system); // Initial value
+class ThemeManager extends StateNotifier<ThemeData> {
+  ThemeManager() : super(ThemeMode.system == ThemeMode.dark ? darkTheme : lightTheme); // Initial value
 
   // Toggle between dark and light themes
   void toggleTheme(bool isDark) {
-    state = isDark ? ThemeMode.dark : ThemeMode.light;
+    state = isDark ? darkTheme : lightTheme;
   }
 }

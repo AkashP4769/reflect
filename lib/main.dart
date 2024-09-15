@@ -8,7 +8,7 @@ import 'package:reflect/theme/theme_constants.dart';
 import 'package:reflect/theme/theme_manager.dart';
 
 
-final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeMode>((ref) => ThemeManager());
+final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,13 +21,13 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeManagerProvider);
+    final themeData = ref.watch(themeManagerProvider);
     return MaterialApp(
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: themeMode,
+      themeMode: themeData.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
       routes: {
         '/': (context) => const AuthPage(),
         '/login': (context) => const LoginPage(),
