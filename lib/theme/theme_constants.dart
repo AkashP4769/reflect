@@ -13,6 +13,7 @@ ThemeData lightTheme = ThemeData(
     onTertiary: Color(0xffFFDEB7)
   ),
   textTheme: ThemeData.light().textTheme.copyWith(
+    titleLarge: const TextStyle(color: Colors.black, fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w700),
     titleMedium: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
     titleSmall: const TextStyle(color: Colors.black, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),
     bodyMedium: const TextStyle(color: Colors.black, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
@@ -50,6 +51,7 @@ ThemeData darkTheme = ThemeData(
     onTertiary: Color(0xff141414)
   ),
   textTheme: ThemeData.dark().textTheme.copyWith(
+    titleLarge: const TextStyle(color: Colors.white, fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w700),
     titleMedium: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
     titleSmall: const TextStyle(color: Colors.white, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),
     bodyMedium: const TextStyle(color: Colors.white, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),

@@ -28,10 +28,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Home Page'),
-
+            const Text('Home Page'),
             ElevatedButton(
-              
               onPressed: () {
                 AuthService.signOut();
               },
