@@ -96,23 +96,26 @@ class _NewChapterState extends State<NewChapter> {
       alignment: Alignment.center,
       child: Stack(
         children: [
-          Transform(
-            transform: Matrix4.identity()..rotateZ(-10 * 3.1415927 / 180),
-            alignment: FractionalOffset.center,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              height: 450,
-              width: 320,
-              decoration: BoxDecoration(
-                color: const Color(0xffEAEAEA),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3)
-                  )
-                ],
+          Transform.translate(
+            offset: Offset(3, 0),
+            child: Transform(
+              transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
+              alignment: FractionalOffset.center,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                height: 450,
+                width: 320,
+                decoration: BoxDecoration(
+                  color: const Color(0xffEAEAEA),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3)
+                    )
+                  ],
+                ),
               ),
             ),
           ),
