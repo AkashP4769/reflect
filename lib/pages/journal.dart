@@ -11,8 +11,11 @@ class JournalPage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<JournalPage> {
   List chapters = [];
+  bool isCreate = false;
 
   Future<void> fetchChapters() async {}
+
+  void toggleCreate() => setState(() => isCreate = !isCreate);
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +39,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
             return const Text("Error");
           }
           else if(chapters.isEmpty){
-            //return EmptyChapters(themeData: themeData); 
-            return NewChapter();
+            if(isCreate) return NewChapter(toggleCreate: toggleCreate,); 
+            return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate,);        
           }
           return ListView.builder(
             itemCount: chapters.length,
@@ -56,7 +59,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
 class EmptyChapters extends StatelessWidget {
   final ThemeData themeData;
-  const EmptyChapters({super.key, required this.themeData});
+  final void Function() toggleCreate;
+  
+  const EmptyChapters({super.key, required this.themeData, required this.toggleCreate});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +75,7 @@ class EmptyChapters extends StatelessWidget {
         Text("Create your first chapter", style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20),),
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: (){}, 
+          onPressed: toggleCreate, 
           child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white)),
         )
       ],
@@ -79,8 +84,8 @@ class EmptyChapters extends StatelessWidget {
 }
 
 class NewChapter extends ConsumerStatefulWidget {
-
-  NewChapter({super.key});
+  final void Function() toggleCreate;
+  NewChapter({super.key, required this.toggleCreate});
 
   @override
   ConsumerState<NewChapter> createState() => _NewChapterState();
@@ -220,8 +225,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               Expanded(
                 flex: 1,
                 child: ElevatedButton(
-              
-                  onPressed: (){},
+                  onPressed: widget.toggleCreate,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeData.colorScheme.surface,
                     elevation: 10
