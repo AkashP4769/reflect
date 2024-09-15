@@ -78,30 +78,75 @@ class EmptyChapters extends StatelessWidget {
   }
 }
 
-class NewChapter extends StatefulWidget {
+class NewChapter extends ConsumerStatefulWidget {
 
   NewChapter({super.key});
 
   @override
-  State<NewChapter> createState() => _NewChapterState();
+  ConsumerState<NewChapter> createState() => _NewChapterState();
 }
 
-class _NewChapterState extends State<NewChapter> {
+class _NewChapterState extends ConsumerState<NewChapter> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
 
   @override
   Widget build(BuildContext context) {
+    final themeData = ref.watch(themeManagerProvider);
     return Align(
       alignment: Alignment.center,
-      child: Stack(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Transform.translate(
-            offset: Offset(3, 0),
-            child: Transform(
-              transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
-              alignment: FractionalOffset.center,
-              child: Container(
+          Stack(
+            children: [
+              Transform.translate(
+                offset: Offset(3, 0),
+                child: Transform(
+                  transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
+                  alignment: FractionalOffset.center,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    height: 450,
+                    width: 320,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffEAEAEA),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3)
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Transform.translate(
+                offset: const Offset(0, 7),
+                child: Transform(
+                  transform: Matrix4.identity()..rotateZ(7 * 3.1415927 / 180),
+                  alignment: FractionalOffset.center,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    height: 450,
+                    width: 320,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffEAEAEA),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3)
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 height: 450,
                 width: 320,
@@ -116,98 +161,89 @@ class _NewChapterState extends State<NewChapter> {
                     )
                   ],
                 ),
-              ),
-            ),
-          ),
-          Transform.translate(
-            offset: const Offset(0, 7),
-            child: Transform(
-              transform: Matrix4.identity()..rotateZ(7 * 3.1415927 / 180),
-              alignment: FractionalOffset.center,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                height: 450,
-                width: 320,
-                decoration: BoxDecoration(
-                  color: const Color(0xffEAEAEA),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3)
-                    )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      height: 300,
+                      width: 300,
+                      color: Colors.white,
+                      child: Image.network("https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
+                    ),
+                    TextFormField(
+                      controller: titleController,
+                      textAlign: TextAlign.center,
+                      textAlignVertical: TextAlignVertical.center,
+                      style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1),   
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                        labelStyle: TextStyle(color: Colors.white),
+                        label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        border: InputBorder.none,
+                        alignLabelWithHint: true
+                      ),
+                    ),
+                    TextFormField(
+                      controller: descriptionController,
+                      textAlign: TextAlign.center,
+                      textAlignVertical: TextAlignVertical.center,
+                      maxLines: 2,
+                      style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 16, fontWeight: FontWeight.w400),   
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                        labelStyle: TextStyle(color: Colors.white),
+                        label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        alignLabelWithHint: true
+                      ),
+                    ),
+                    /*ElevatedButton(
+                      onPressed: (){}, 
+                      child: const Text("Create")
+                    )*/
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            height: 450,
-            width: 320,
-            decoration: BoxDecoration(
-              color: const Color(0xffEAEAEA),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3)
-                )
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  height: 300,
-                  width: 300,
-                  color: Colors.white,
-                  child: Image.network("https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
-                ),
-                TextFormField(
-                  controller: titleController,
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1),   
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                    labelStyle: TextStyle(color: Colors.white),
-                    label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    border: InputBorder.none,
-                    alignLabelWithHint: true
+          SizedBox(height: 60,),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: ElevatedButton(
+              
+                  onPressed: (){},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: themeData.colorScheme.surface,
+                    elevation: 10
                   ),
+                  child: GestureDetector(
+                    onTap: (){}, 
+                    child: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,))
                 ),
-                TextFormField(
-                  controller: descriptionController,
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  maxLines: 2,
-                  style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 16, fontWeight: FontWeight.w400),   
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                    labelStyle: TextStyle(color: Colors.white),
-                    label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    alignLabelWithHint: true
+              ),
+              SizedBox(width: 20,),
+              Expanded(
+                flex: 4,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 10,
                   ),
-                ),
-                /*ElevatedButton(
                   onPressed: (){}, 
-                  child: const Text("Create")
-                )*/
-              ],
-            ),
-          ),
+                  child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
+                ),
+              )
+            ],
+          )
         ],
       ),
     );
