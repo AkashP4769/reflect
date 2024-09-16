@@ -1,11 +1,11 @@
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class Entry{
-  final String title;
-  final List<Map<String,dynamic>> content;
+  final String? title;
+  final List<Map<String,dynamic>>? content;
   final DateTime date = DateTime.now();
 
-  Entry({required this.title, required this.content, DateTime? date});
+  Entry({this.title, this.content, DateTime? date});
 
   factory Entry.fromQuill(String title, quill.Document document) {
     return Entry(
@@ -16,7 +16,8 @@ class Entry{
 
   // Convert the content Map back into a Quill Document
   quill.Document getContentAsQuill() {
-    return quill.Document.fromJson(content);
+    if(content == null) return quill.Document();
+    return quill.Document.fromJson(content ?? []);
   }
 
   // Convert Entry object to a JSON object for storage
