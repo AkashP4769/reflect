@@ -10,7 +10,31 @@ class Chapter{
 }
 
 class ChapterAdvanced extends Chapter{
-  final List<Entry> entries;
+  final DateTime createdOn = DateTime.now();
+  List<Entry>? entries;
 
-  ChapterAdvanced({required this.entries, required super.title, required super.description, required super.entryCount});
+  ChapterAdvanced({required Chapter chapter, List<Entry>? entries}) : super(title: chapter.title, description: chapter.description, imageUrl: chapter.imageUrl, entryCount: chapter.entryCount);
+
+  void updateEntries(List<Entry> entries){
+    this.entries = entries;
+  }
+
+  void updateEntriesFromMap(List<Map<String, dynamic>> data){
+    entries = data.map((entry) => Entry.fromMap(entry)).toList();
+  }
+
+  factory ChapterAdvanced.fromChapter(Chapter chapter){
+    return ChapterAdvanced(chapter: chapter);
+  }
+
+  factory ChapterAdvanced.fromMap(Map<String, dynamic> data){
+    return ChapterAdvanced(
+      chapter: Chapter(
+        title: data['title'],
+        description: data['description'],
+        imageUrl: data['imageUrl'],
+        entryCount: data['entryCount']
+      )
+    );
+  }
 }

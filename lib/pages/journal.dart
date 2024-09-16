@@ -5,6 +5,7 @@ import 'package:reflect/components/journal/chapterCard.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
+import 'package:reflect/pages/entrylist.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   const JournalPage({super.key});
@@ -65,16 +66,25 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
                 if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
                 return Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: ListView.builder(
-                    shrinkWrap: true,
-                    //scrollDirection: Axis.vertical,
-                    //physics: const ScrollPhysics(),
-                    clipBehavior: Clip.none,
-                    itemCount: chapters.length,
-                    itemBuilder: (context, index){
-                      return ChapterCard(chapter: chapters[index], themeData: themeData);
-                    }
+                  backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                  body: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Text("Chapters", style: themeData.textTheme.titleLarge,),
+                      const SizedBox(height: 10),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        clipBehavior: Clip.none,
+                        itemCount: chapters.length,
+                        itemBuilder: (context, index){
+                          return GestureDetector(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                          );
+                        }
+                      ),
+                    ],
                   ),
                   floatingActionButton: FloatingActionButton(
                     onPressed: toggleCreate,
