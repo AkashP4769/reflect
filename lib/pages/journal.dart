@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/journal/chapterCard.dart';
+import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 
@@ -61,13 +62,21 @@ class _HomePageState extends ConsumerState<JournalPage> {
               builder: (context, value, child){
                 if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
                 if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
-                return ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: chapters.length,
-                  itemBuilder: (context, index){
-                    return ChapterCard(chapter: chapters[index], themeData: themeData);
-                  }
+                return Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: chapters.length,
+                    itemBuilder: (context, index){
+                      return ChapterCard(chapter: chapters[index], themeData: themeData);
+                    }
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: toggleCreate,
+                    child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
+                    backgroundColor: themeData.colorScheme.primary,
+                  ),
                 );
               }
             );
@@ -88,19 +97,19 @@ class EmptyChapters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Chapters", style: themeData.textTheme.titleLarge,),
-        const SizedBox(height: 10),
-        Text("Each chapter represents a unique phase of your journey, capturing the moments and milestones that shape your life. Reflect on your experiences and cherish the lessons learned along the way.", style: themeData.textTheme.bodyMedium, textAlign: TextAlign.center,),
-        const SizedBox(height: 40),
-        Text("Create your first chapter", style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20),),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: toggleCreate, 
-          child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white)),
-        )
-      ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Chapters", style: themeData.textTheme.titleLarge,),
+          const SizedBox(height: 10),
+          Text("Each chapter represents a unique phase of your journey, capturing the moments and milestones that shape your life. Reflect on your experiences and cherish the lessons learned along the way.", style: themeData.textTheme.bodyMedium, textAlign: TextAlign.center,),
+          const SizedBox(height: 40),
+          Text("Create your first chapter", style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20),),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: toggleCreate, 
+            child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white)),
+          ),
+        ],
     );
   }
 }
@@ -146,22 +155,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                     child: Transform(
                       transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
                       alignment: FractionalOffset.center,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        height: 450,
-                        width: 320,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffEAEAEA),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3)
-                            )
-                          ],
-                        ),
-                      ),
+                      child: const ImageStack(height: 450, width: 320,)
                     ),
                   ),
                   Transform.translate(
@@ -169,22 +163,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                     child: Transform(
                       transform: Matrix4.identity()..rotateZ(7 * 3.1415927 / 180),
                       alignment: FractionalOffset.center,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        height: 450,
-                        width: 320,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffEAEAEA),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3)
-                            )
-                          ],
-                        ),
-                      ),
+                      child: const ImageStack(height: 450, width: 320,)
                     ),
                   ),
                   Container(
