@@ -31,6 +31,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
       appBar: AppBar(
         //toolbarHeight: 70,
         //backgroundColor: Colors.grey,
+        titleSpacing: 0,
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 15),
@@ -40,7 +41,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           ),
         ),
         title: Container(
+          margin: const EdgeInsets.only(left: 10),
           height: 45,
+          width: double.infinity,
           child: SearchBar(
             backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
             elevation: WidgetStateProperty.all(0),
@@ -53,6 +56,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
             ],
           ),
         ),
+      
         actions: [
           IconButton(onPressed: (){
             ref.read(themeManagerProvider.notifier).toggleTheme(!(themeData.brightness == Brightness.dark));

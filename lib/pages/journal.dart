@@ -16,8 +16,9 @@ class JournalPage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<JournalPage> {
   bool isCreate = false;
   late List<Chapter> chapters = [
-    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16),
-    Chapter(title: "Embracing the Unknown", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 12)
+    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
+    Chapter(title: "Embracing the Unknown. And i hope this also might gonna expand like. I mean ig thats good then", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways. What if i write something long like really long af that sgonna be fun", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
+    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
   ];
 
   //List<Chapter> chapters = [];
@@ -150,37 +151,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               const SizedBox(height: 50),
               Stack(
                 children: [
-                  Transform.translate(
-                    offset: const Offset(3, 0),
-                    child: Transform(
-                      transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
-                      alignment: FractionalOffset.center,
-                      child: const ImageStack(height: 450, width: 320,)
-                    ),
-                  ),
-                  Transform.translate(
-                    offset: const Offset(0, 7),
-                    child: Transform(
-                      transform: Matrix4.identity()..rotateZ(7 * 3.1415927 / 180),
-                      alignment: FractionalOffset.center,
-                      child: const ImageStack(height: 450, width: 320,)
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 450,
-                    width: 320,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffEAEAEA),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3)
-                        )
-                      ],
-                    ),
+                  const ImageStack(height: 450, width: 320, offset: Offset(3, 0), rotation: -7,),
+                  const ImageStack(height: 450, width: 320, offset: Offset(0, 7), rotation: 7,),
+                  ImageStack(height: 450, width: 320, 
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -191,11 +164,11 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                           color: Colors.white,
                           child: CachedNetworkImage(imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
                         ),
-                        TextFormField(
+                        TextField(
                           controller: titleController,
                           textAlign: TextAlign.center,
                           textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1),   
+                          style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
@@ -208,12 +181,12 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                             alignLabelWithHint: true
                           ),
                         ),
-                        TextFormField(
+                        TextField(
                           controller: descriptionController,
                           textAlign: TextAlign.center,
                           textAlignVertical: TextAlignVertical.center,
-                          maxLines: 3,
-                          style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
+                          maxLines: 2,
+                          style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 24, fontWeight: FontWeight.w400),   
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
@@ -236,7 +209,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                   Expanded(
                     flex: 1,
                     child: ElevatedButton(
-                      onPressed: _addChapter,
+                      onPressed: widget.toggleCreate,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeData.colorScheme.surface,
                         elevation: 10
@@ -251,7 +224,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                       style: ElevatedButton.styleFrom(
                         elevation: 10,
                       ),
-                      onPressed: () => widget.addChapter(titleController.text, descriptionController.text),
+                      onPressed: _addChapter,
                       child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                     ),
                   )
