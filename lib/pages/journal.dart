@@ -17,7 +17,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   bool isCreate = false;
   late List<Chapter> chapters = [
     Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
-    Chapter(title: "Embracing the Unknown. And i hope this also might gonna expand like. I mean ig thats good then", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways. What if i write something long like really long af that sgonna be fun", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
+    Chapter(title: "Embracing the Unknown. And i hope this also might gonna expand like. I mean ig thats", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways. What if i write something long like really long af that sgonna be fun", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
     Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
   ];
 
@@ -40,6 +40,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -66,8 +67,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 return Scaffold(
                   backgroundColor: Colors.transparent,
                   body: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
+                    //shrinkWrap: true,
+                    //scrollDirection: Axis.vertical,
+                    physics: const BouncingScrollPhysics(),
                     itemCount: chapters.length,
                     itemBuilder: (context, index){
                       return ChapterCard(chapter: chapters[index], themeData: themeData);
