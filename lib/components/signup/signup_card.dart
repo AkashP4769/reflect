@@ -103,9 +103,9 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                 
                 if(errorMsg != '') Row(
                   children: [
-                    Icon(Icons.error, color: Colors.redAccent, size: 16,),
-                    SizedBox(width: 5,),
-                    Text(errorMsg, style: TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                    const Icon(Icons.error, color: Colors.redAccent, size: 16,),
+                    const SizedBox(width: 5,),
+                    Text(errorMsg, style: const TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
                   ],
                 ),
                 SizedBox(height: errorMsg != '' ? 5 : 20,),
@@ -139,7 +139,7 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                     Expanded(child: Divider(color: Colors.grey, thickness: 2, indent: 10,)),
                   ],
                 ),
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
         
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 0),
@@ -168,7 +168,7 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                         minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(vertical: 0)
                       ),
-                      child: Text("Log In", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
+                      child: const Text("Log In", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
                     )
                   ],
                 )

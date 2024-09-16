@@ -46,7 +46,7 @@ class _Bg_SplashState extends State<Bg_Splash> {
   Widget build(BuildContext context) {
     if (_chewieController == null) {
       return Container(
-        child: CircularProgressIndicator(),
+        child: const CircularProgressIndicator(),
       );
     }
     return Scaffold(

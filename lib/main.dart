@@ -13,7 +13,7 @@ final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const ProviderScope(child: const MainApp()));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends ConsumerWidget {

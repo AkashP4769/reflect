@@ -103,10 +103,12 @@ class _NewChapterState extends ConsumerState<NewChapter> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text("Chapters", style: themeData.textTheme.titleLarge,),
+          const SizedBox(height: 50),
           Stack(
             children: [
               Transform.translate(
-                offset: Offset(3, 0),
+                offset: const Offset(3, 0),
                 child: Transform(
                   transform: Matrix4.identity()..rotateZ(-7 * 3.1415927 / 180),
                   alignment: FractionalOffset.center,
@@ -219,7 +221,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               ),
             ],
           ),
-          SizedBox(height: 60,),
+          const SizedBox(height: 60,),
           Row(
             children: [
               Expanded(
@@ -230,12 +232,10 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                     backgroundColor: themeData.colorScheme.surface,
                     elevation: 10
                   ),
-                  child: GestureDetector(
-                    onTap: (){}, 
-                    child: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,))
+                  child: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,)
                 ),
               ),
-              SizedBox(width: 20,),
+              const SizedBox(width: 20,),
               Expanded(
                 flex: 4,
                 child: ElevatedButton(

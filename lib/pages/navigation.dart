@@ -63,7 +63,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
       bottomNavigationBar: Container(
         //padding: const EdgeInsets.symmetric(vertical: 10),
         child: GNav(
-          rippleColor: Colors.grey[300]!,
+          rippleColor: Colors.transparent,
           hoverColor: Colors.grey[100]!,
           gap: 8,
           color: themeData.colorScheme.onPrimary,

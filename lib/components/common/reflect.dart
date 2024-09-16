@@ -17,12 +17,12 @@ class Reflect extends StatelessWidget {
             flipY: true,
             child: ShaderMask(
               blendMode: BlendMode.srcIn,
-              shaderCallback: (bounds) => LinearGradient(
+              shaderCallback: (bounds) => const LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                const Color.fromARGB(94, 255, 255, 255),
-                const Color.fromARGB(0, 255, 255, 255),
+                Color.fromARGB(94, 255, 255, 255),
+                Color.fromARGB(0, 255, 255, 255),
               ]).createShader(
                 Rect.fromLTWH(0, 0, bounds.width, bounds.height),
               ),
