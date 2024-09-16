@@ -5,7 +5,7 @@ ThemeData lightTheme = ThemeData(
   fontFamily: "Poppins",
   colorScheme: const ColorScheme.light(
     primary: Color(0xffFFAC5F),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 34, 34, 34),
     secondary: Color(0xffFFE3C3),
     onSecondary: Colors.black,
     surface: Colors.white,
@@ -25,7 +25,7 @@ ThemeData lightTheme = ThemeData(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xffFFAC5F),
+      backgroundColor: const Color(0xffFFAC5F),
       minimumSize: const Size(double.infinity, 50),
       padding: const EdgeInsets.symmetric(vertical: 15),
       shape: RoundedRectangleBorder(
@@ -39,6 +39,9 @@ ThemeData lightTheme = ThemeData(
       )
     )
   ),
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.transparent
+  )
 );
 
 ThemeData darkTheme = ThemeData(
@@ -64,7 +67,7 @@ ThemeData darkTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xffFFAC5F),
+      backgroundColor: const Color(0xffFFAC5F),
       minimumSize: const Size(double.infinity, 50),
       padding: const EdgeInsets.symmetric(vertical: 15),
       shape: RoundedRectangleBorder(
@@ -78,6 +81,9 @@ ThemeData darkTheme = ThemeData(
       )
     )
   ),
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.transparent
+  )
   
   
 );
