@@ -67,9 +67,10 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 return Scaffold(
                   backgroundColor: Colors.transparent,
                   body: ListView.builder(
-                    //shrinkWrap: true,
+                    shrinkWrap: true,
                     //scrollDirection: Axis.vertical,
-                    physics: const BouncingScrollPhysics(),
+                    //physics: const ScrollPhysics(),
+                    clipBehavior: Clip.none,
                     itemCount: chapters.length,
                     itemBuilder: (context, index){
                       return ChapterCard(chapter: chapters[index], themeData: themeData);
