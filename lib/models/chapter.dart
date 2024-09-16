@@ -4,7 +4,7 @@ class Chapter{
   final String title;
   final String description;
   final String? imageUrl;
-  final int entryCount;
+  int entryCount;
 
   Chapter({required this.title, required this.description, this.imageUrl, required this.entryCount});
 }
@@ -17,6 +17,7 @@ class ChapterAdvanced extends Chapter{
 
   void updateEntries(List<Entry> entries){
     this.entries = entries;
+    this.entryCount = entries.length;
   }
 
   void updateEntriesFromMap(List<Map<String, dynamic>> data){
