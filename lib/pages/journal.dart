@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/main.dart';
+import 'package:reflect/models/chapter.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   const JournalPage({super.key});
@@ -10,9 +12,22 @@ class JournalPage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<JournalPage> {
-  List chapters = [];
   bool isCreate = false;
+  /*late List<Chapter> chapters = [
+    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16),
+    Chapter(title: "Embracing the Unknown", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 12)
+  ];*/
 
+  List<Chapter> chapters = [];
+
+  void addChapter(String title, String description) {
+    setState(() {
+      chapters.add(Chapter(title: title, description: description, entryCount: 0));
+      isCreate = false;
+    });
+  }
+
+  
   Future<void> fetchChapters() async {}
 
   void toggleCreate() => setState(() => isCreate = !isCreate);
@@ -38,19 +53,25 @@ class _HomePageState extends ConsumerState<JournalPage> {
           else if(snapshot.hasError){
             return const Text("Error");
           }
-          else if(chapters.isEmpty){
-            if(isCreate) return NewChapter(toggleCreate: toggleCreate,); 
-            return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate,);        
+          else {
+            return TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0.0, end: 1.0), 
+              duration: const Duration(milliseconds: 1000), 
+              builder: (context, value, child){
+                if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
+                if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
+                return ListView.builder(
+                  itemCount: chapters.length,
+                  itemBuilder: (context, index){
+                    return const ListTile(
+                      title: Text("Title"),
+                      subtitle: Text("Description"),
+                    );
+                  }
+                );
+              }
+            );
           }
-          return ListView.builder(
-            itemCount: chapters.length,
-            itemBuilder: (context, index){
-              return const ListTile(
-                title: Text("Title"),
-                subtitle: Text("Description"),
-              );
-            }
-          );
         }
       )
     );
@@ -60,8 +81,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
 class EmptyChapters extends StatelessWidget {
   final ThemeData themeData;
   final void Function() toggleCreate;
+  final double tween;
   
-  const EmptyChapters({super.key, required this.themeData, required this.toggleCreate});
+  const EmptyChapters({super.key, required this.themeData, required this.toggleCreate, required this.tween});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +107,9 @@ class EmptyChapters extends StatelessWidget {
 
 class NewChapter extends ConsumerStatefulWidget {
   final void Function() toggleCreate;
-  NewChapter({super.key, required this.toggleCreate});
+  final void Function(String title, String description) addChapter;
+  final double tween;
+  const NewChapter({super.key, required this.toggleCreate, required this.addChapter, required this.tween});
 
   @override
   ConsumerState<NewChapter> createState() => _NewChapterState();
@@ -94,6 +118,13 @@ class NewChapter extends ConsumerStatefulWidget {
 class _NewChapterState extends ConsumerState<NewChapter> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
+
+  void _addChapter() {
+    if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
+    widget.addChapter(titleController.text.trim(), descriptionController.text.trim());
+    titleController.clear();
+    descriptionController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +207,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                       height: 300,
                       width: 300,
                       color: Colors.white,
-                      child: Image.network("https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
+                      child: CachedNetworkImage(imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
                     ),
                     TextFormField(
                       controller: titleController,
@@ -212,10 +243,6 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                         alignLabelWithHint: true
                       ),
                     ),
-                    /*ElevatedButton(
-                      onPressed: (){}, 
-                      child: const Text("Create")
-                    )*/
                   ],
                 ),
               ),
@@ -227,7 +254,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               Expanded(
                 flex: 1,
                 child: ElevatedButton(
-                  onPressed: widget.toggleCreate,
+                  onPressed: _addChapter,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeData.colorScheme.surface,
                     elevation: 10
@@ -242,7 +269,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                   style: ElevatedButton.styleFrom(
                     elevation: 10,
                   ),
-                  onPressed: (){}, 
+                  onPressed: () => widget.addChapter(titleController.text, descriptionController.text),
                   child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                 ),
               )

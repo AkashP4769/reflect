@@ -50,7 +50,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
     showLoading(context, loadingColor);
     String msg = await AuthService.signInWithGoogle();
     if(msg != '') setState(() => errorMsg = msg);
-    /*if(mounted)*/ Navigator.pop(context);
+    if(mounted) Navigator.pop(context);
   }
 
   void signInWithApple(Color loadingColor) async {

@@ -27,7 +27,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         //toolbarHeight: 70,
         //backgroundColor: Colors.grey,
@@ -119,35 +119,6 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           },
         ),
       ),
-      /*bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index){
-          _pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
-        },
-        indicatorColor: Colors.grey.shade400,
-        selectedIndex: currentPageIndex,
-        backgroundColor: Colors.white,
-        indicatorShape: const CircleBorder(),
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.cottage_outlined),
-            label: "Home",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.privacy_tip_outlined),
-            label: "Info",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.psychology_alt_outlined),
-            label: "Service Request",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            label: "My Account",
-          ),
-        ],
-      ),*/
-      //body: ,
       body: PageView(
         children: pages,
         controller: _pageController,
