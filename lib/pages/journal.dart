@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:reflect/components/journal/chapterCard.dart';
+import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
@@ -67,24 +67,29 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
                 return Scaffold(
                   backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                  body: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      Text("Chapters", style: themeData.textTheme.titleLarge,),
-                      const SizedBox(height: 10),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        clipBehavior: Clip.none,
-                        itemCount: chapters.length,
-                        itemBuilder: (context, index){
-                          return GestureDetector(
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
-                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                          );
-                        }
-                      ),
-                    ],
+                  body: SingleChildScrollView(
+                    clipBehavior: Clip.none,
+                    child: Column(
+                      //mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 10),
+                        Text("Chapters", style: themeData.textTheme.titleLarge,),
+                        const SizedBox(height: 10),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          clipBehavior: Clip.none,
+                          itemCount: chapters.length,
+                          physics: const ScrollPhysics(),
+                          itemBuilder: (context, index){
+                            return GestureDetector(
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                              child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                            );
+                          }
+                        ),
+                      ],
+                    ),
                   ),
                   floatingActionButton: FloatingActionButton(
                     onPressed: toggleCreate,
@@ -198,8 +203,8 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                           controller: descriptionController,
                           textAlign: TextAlign.center,
                           textAlignVertical: TextAlignVertical.center,
-                          maxLines: 2,
-                          style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 24, fontWeight: FontWeight.w400),   
+                          maxLines: 3,
+                          style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),

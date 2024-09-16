@@ -33,7 +33,7 @@ class ChapterHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),),),
+          Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),), textAlign: TextAlign.center,),
           const SizedBox(height: 10),
           Text(chapter.description, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600,), textAlign: TextAlign.center,),
           const SizedBox(height: 20),
