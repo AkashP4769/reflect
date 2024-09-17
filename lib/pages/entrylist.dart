@@ -26,6 +26,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   ];
 
   late TextEditingController searchController;
+  bool isTyping = false;
 
   @override
   void initState() {
@@ -33,6 +34,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     super.initState();
     chapter.updateEntries(entries);
     searchController = TextEditingController();
+
+    searchController.addListener(() {
+      print(searchController.text);
+      if(searchController.text.isNotEmpty) isTyping = true;
+      else isTyping = false;
+      setState(() {});
+    });
+
   }
 
   @override
@@ -45,6 +54,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    List<Entry> validEntries = chapter.entries!;
+    if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase())).toList();
+    print(entries.length);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -64,22 +76,22 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40,),
-              EntryListAppbar(themeData: themeData),
+              EntryListAppbar(themeData: themeData, searchController: searchController,),
           
               const SizedBox(height: 20),
-              ChapterHeader(chapter: chapter, themeData: themeData,),
+              if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData,),
               if(chapter.entries!.isNotEmpty) 
               ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                itemCount: chapter.entryCount,
+                itemCount: validEntries.length,
                 clipBehavior: Clip.none,
                 physics: const ScrollPhysics(),
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: chapter.entries![index],))),
-                    child: EntryCard(entry: chapter.entries![index], themeData: themeData)
+                    child: EntryCard(entry: validEntries[index], themeData: themeData)
                   );
                 },
               )
@@ -115,9 +127,11 @@ class EntryListAppbar extends StatelessWidget {
   const EntryListAppbar({
     super.key,
     required this.themeData,
+    required this.searchController,
   });
 
   final ThemeData themeData;
+  final TextEditingController searchController;
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +153,8 @@ class EntryListAppbar extends StatelessWidget {
               height: 45,
               //width: double.infinity,
               child: SearchBar(
-                backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
+                controller: searchController,
+                backgroundColor: WidgetStateProperty.all(themeData.colorScheme.secondaryContainer),
                 elevation: WidgetStateProperty.all(0),
                 trailing: [
                   IconButton(

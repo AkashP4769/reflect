@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
@@ -17,13 +19,14 @@ class JournalPage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<JournalPage> {
   bool isCreate = false;
-  late List<Chapter> chapters = [
+  bool isFetching = false;
+
+
+  List<Chapter> chapters = [
     Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
     Chapter(title: "Embracing the Unknown.", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
     Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
   ];
-
-  //List<Chapter> chapters = [];
 
   void addChapter(String title, String description) {
     setState(() {
@@ -34,6 +37,13 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   
   Future<void> fetchChapters() async {}
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchChapters();
+  }
 
   void toggleCreate() => setState(() => isCreate = !isCreate);
 
@@ -50,66 +60,65 @@ class _HomePageState extends ConsumerState<JournalPage> {
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
         )
       ),
-      child: FutureBuilder(
-        future: fetchChapters(), 
-        builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const CircularProgressIndicator();
-          }
-          else if(snapshot.hasError){
-            return const Text("Error");
-          }
-          else {
-            return TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0.0, end: 1.0), 
-              duration: const Duration(milliseconds: 1000), 
-              builder: (context, value, child){
-                if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
-                if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
-                return Scaffold(
-                  backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                  body: SingleChildScrollView(
-                    clipBehavior: Clip.none,
-                    child: Column(
-                      //mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 10),
-                        Text("Chapters", style: themeData.textTheme.titleLarge,),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          clipBehavior: Clip.none,
-                          itemCount: chapters.length,
-                          physics: const ScrollPhysics(),
-                          itemBuilder: (context, index){
-                            if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
-                              return GestureDetector(
-                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
-                                child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                              );
-                            }
-                            else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
-                              return GestureDetector(
-                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
-                                child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                              );
-                            }
-                            else return Container();
-                          }
-                        ),
-                      ],
-                    ),
-                  ),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: toggleCreate,
-                    child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
-                    backgroundColor: themeData.colorScheme.primary,
-                  ),
-                );
-              }
+      child: TweenAnimationBuilder(
+        tween: Tween<double>(begin: 0.0, end: 1.0), 
+        duration: const Duration(milliseconds: 1000), 
+        builder: (context, value, child){
+          if(isFetching) {
+            return Center(
+              child: SpinKitCircle(
+                color: themeData.colorScheme.onPrimary,
+                size: 50.0,
+              ),
             );
           }
+          if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
+          if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
+          return Scaffold(
+            backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+            body: SingleChildScrollView(
+              clipBehavior: Clip.none,
+              child: Column(
+                //mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Text("Chapters", style: themeData.textTheme.titleLarge,),
+                  const SizedBox(height: 10),
+                  /*ElevatedButton(
+                    onPressed: () => setState((){}), 
+                    child: Text("Refresh")
+                  ),*/
+                  ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    clipBehavior: Clip.none,
+                    itemCount: chapters.length,
+                    physics: const ScrollPhysics(),
+                    itemBuilder: (context, index){
+                      if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
+                        return GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                          child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                        );
+                      }
+                      else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
+                        return GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                          child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                        );
+                      }
+                      else return Container();
+                    }
+                  ),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: toggleCreate,
+              child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
+              backgroundColor: themeData.colorScheme.primary,
+            ),
+          );
         }
       )
     );
