@@ -140,7 +140,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             ),
         
             
-            //SizedBox(height: 60,)
+            SizedBox(height: 80,)
             
             
           ],
