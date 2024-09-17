@@ -20,12 +20,16 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool extendedToolbar = false;
   late quill.QuillController quillController;
   late TextEditingController titleController;
+  late FocusNode titleFocusNode;
+  late FocusNode contentFocusNode;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     titleController = TextEditingController(text: widget.entry.title);
+    titleFocusNode = FocusNode();
+    contentFocusNode = FocusNode();
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
     else {
       quillController = quill.QuillController(
@@ -93,6 +97,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               clipBehavior: Clip.none,
               child: TextField(
                 controller: titleController,
+                focusNode: titleFocusNode,
                 style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
@@ -108,6 +113,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             Expanded(
               child: quill.QuillEditor.basic(
                 controller: quillController,
+                focusNode: contentFocusNode,
                 configurations: quill.QuillEditorConfigurations(
                   //checkBoxReadOnly: true
                   placeholder: "Start writing here...",
@@ -115,15 +121,15 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   customStyles: quill.DefaultStyles(
                     paragraph: quill.DefaultTextBlockStyle(
                       themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
-                      quill.HorizontalSpacing(0, 0),
-                      quill.VerticalSpacing(0, 0),
+                      const quill.HorizontalSpacing(0, 0),
+                      const quill.VerticalSpacing(0, 0),
                       quill.VerticalSpacing.zero,
                       null
                     ),
                     placeHolder: quill.DefaultTextBlockStyle(
                       themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                      quill.HorizontalSpacing(0, 0),
-                      quill.VerticalSpacing(0, 0),
+                      const quill.HorizontalSpacing(0, 0),
+                      const quill.VerticalSpacing(0, 0),
                       quill.VerticalSpacing.zero,
                       null
                     ),
@@ -194,7 +200,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     onPressed: isTitleEdited || isContentEdited ? (){} : null,
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
-                      backgroundColor: Color(0xffFF9432),
+                      backgroundColor: const Color(0xffFF9432),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       )
