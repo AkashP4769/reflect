@@ -118,12 +118,19 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   keyboardAppearance: themeData.brightness,
                   customStyles: quill.DefaultStyles(
                     paragraph: quill.DefaultTextBlockStyle(
-                      themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
+                      themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
                       quill.HorizontalSpacing(0, 0),
                       quill.VerticalSpacing(0, 0),
                       quill.VerticalSpacing.zero,
                       null
-                    )
+                    ),
+                    placeHolder: quill.DefaultTextBlockStyle(
+                      themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                      quill.HorizontalSpacing(0, 0),
+                      quill.VerticalSpacing(0, 0),
+                      quill.VerticalSpacing.zero,
+                      null
+                    ),
                   )
                     
                 ),
