@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class EntryCard extends StatelessWidget {
   final Entry entry;
@@ -9,6 +10,7 @@ class EntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final quill.QuillController quillController = quill.QuillController(document: entry.getContentAsQuill(), selection: const TextSelection.collapsed(offset: 0));
     return Container(
       width: double.infinity,
       margin: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 10),
@@ -31,7 +33,7 @@ class EntryCard extends StatelessWidget {
           Text(entry.title ?? "", style: themeData.textTheme.titleMedium?.copyWith(color: themeData.colorScheme.primary),),
           Text(DateFormat('dd MMM yyyy').format(entry.date), style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500),),
           SizedBox(height: 10,),
-          //Text(entry.content, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500), maxLines: 3,),
+          Text(quillController.document.toPlainText(), style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500), maxLines: 3,),
         ],
       ),
     );

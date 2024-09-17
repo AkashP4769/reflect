@@ -20,9 +20,9 @@ class EntryListPage extends ConsumerStatefulWidget {
 class _EntryListPageState extends ConsumerState<EntryListPage> {
   late ChapterAdvanced chapter = ChapterAdvanced(chapter: widget.chapter!);
   List<Entry> entries = [
-    //Entry(title: 'Quiet Revelations', content: 'As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...'),
-    //Entry(title: "Reflections of the Past", content: "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding..."),
-    //Entry(title: "Lost and Found", content: "As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...")
+    Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},]),
+    Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}]),
+    Entry(title: "Lost and Found", content: [{'insert': "I’ve been feeling lost lately, like I’m adrift in a sea of uncertainty. But in the midst of all the chaos, I’ve found moments of clarity and peace. It’s in these moments that I realize...\n"}]),
   ];
 
   @override
@@ -48,45 +48,48 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
           )
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 40,),
-            EntryListAppbar(themeData: themeData),
-        
-            const SizedBox(height: 20),
-            ChapterHeader(chapter: chapter, themeData: themeData,),
-            if(chapter.entries!.isNotEmpty) 
-            ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemCount: chapter.entryCount,
-              clipBehavior: Clip.none,
-              physics: const ScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 0),
-              itemBuilder: (context, index) {
-                return EntryCard(entry: chapter.entries![index], themeData: themeData);
-              },
-            )
-            else Expanded(
-              child: Container(
-                //color: Colors.green,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
-                    SizedBox(height: 80,),
-                  ],
-                ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 40,),
+              EntryListAppbar(themeData: themeData),
+          
+              const SizedBox(height: 20),
+              ChapterHeader(chapter: chapter, themeData: themeData,),
+              if(chapter.entries!.isNotEmpty) 
+              ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemCount: chapter.entryCount,
+                clipBehavior: Clip.none,
+                physics: const ScrollPhysics(),
+                padding: const EdgeInsets.symmetric(vertical: 0),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: chapter.entries![index],))),
+                    child: EntryCard(entry: chapter.entries![index], themeData: themeData)
+                  );
+                },
+              )
+              else Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 40,),
+                  Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
+                  
+                ],
               ),
-            )
-          ],
+              SizedBox(height: 70,)
+            ],
+          ),
         ),
       ),
       bottomSheet: Container(
         color: Colors.transparent,
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ElevatedButton(
           onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: []),)));
