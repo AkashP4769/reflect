@@ -16,6 +16,7 @@ class EntryPage extends ConsumerStatefulWidget {
 
 class _EntryPageState extends ConsumerState<EntryPage> {
   bool isEdited = false;
+  bool extendedToolbar = false;
   late quill.QuillController quillController;
   late TextEditingController titleController;
 
@@ -96,7 +97,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               clipBehavior: Clip.none,
               child: TextField(
                 controller: titleController,
-                style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432)),
+                style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   hintText: "Title...",
                   hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
@@ -127,57 +129,77 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 ),
               ),
             ),
-            /*quill.QuillToolbar.simple(
-              controller: quillController,
-              configurations: const quill.QuillSimpleToolbarConfigurations(
-                showBoldButton: true,
-                showItalicButton: true,
-                showUnderLineButton: true,
-                showStrikeThrough: true,
-                showColorButton: true,
-                showBackgroundColorButton: false,
-                showClearFormat: true,
-                showHeaderStyle: false,
-                showListNumbers: true,
-                showListBullets: true,
-                showCodeBlock: false,
-                showQuote: true,
-                showLink: false,
-                showSubscript: false,
-                showSuperscript: false,
-                showAlignmentButtons: false,
-                showClipboardCopy: false,
-                showClipboardCut: false,
-                showClipboardPaste: false,
-                showDividers: false,
-                showListCheck: false,
-                showIndent: false,
-                showFontFamily: false,
-                showFontSize: false,
-              )
-            ),*/
+
+            
+            //SizedBox(height: 60,)
+            
             
           ],
         ),
       ),
       bottomSheet: Container(
+        color: themeData.colorScheme.tertiary,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 120,
-              child: ElevatedButton(
-                onPressed: isEdited ? (){} : null,
-                style: ElevatedButton.styleFrom(
-                  disabledBackgroundColor: Colors.grey,
-                  backgroundColor: Color(0xffFF9432),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  )
+            Row(
+              //mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: quill.QuillToolbar.simple(
+                    controller: quillController,
+                    configurations: quill.QuillSimpleToolbarConfigurations(
+                      showBoldButton: extendedToolbar ? false : true,
+                      showItalicButton: extendedToolbar ? false : true,
+                      showUnderLineButton: extendedToolbar ? false : true,
+                      showStrikeThrough: false, //
+                      showColorButton: false, //
+                      showBackgroundColorButton: extendedToolbar ? true :  false,
+                      showClearFormat: false, //
+                      showHeaderStyle: false,
+                      showListNumbers: extendedToolbar ? true :  false, //
+                      showListBullets: extendedToolbar ? true :  false, //
+                      showCodeBlock: false,
+                      showQuote: false, //
+                      showLink: false,
+                      showSubscript: false,
+                      showSuperscript: false,
+                      showAlignmentButtons: false,
+                      showClipboardCopy: false,
+                      showClipboardCut: false,
+                      showClipboardPaste: false,
+                      showDividers: false,
+                      showListCheck: false,
+                      showIndent: false,
+                      showFontFamily: false,
+                      showFontSize: false,
+                      showSearchButton: false, //
+                      showInlineCode: false, //
+                      showRedo: extendedToolbar ? true :  false, //
+                      showUndo: extendedToolbar ? false : true,
+                    )
+                  ),
                 ),
-                child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-              ),
+                IconButton(
+                  onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: ElevatedButton(
+                    onPressed: isEdited ? (){} : null,
+                    style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: Colors.grey,
+                      backgroundColor: Color(0xffFF9432),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      )
+                    ),
+                    child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
