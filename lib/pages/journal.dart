@@ -8,7 +8,8 @@ import 'package:reflect/models/chapter.dart';
 import 'package:reflect/pages/entrylist.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
-  const JournalPage({super.key});
+  final String? searchQuery;
+  const JournalPage({super.key, this.searchQuery});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomePageState();
@@ -82,10 +83,19 @@ class _HomePageState extends ConsumerState<JournalPage> {
                           itemCount: chapters.length,
                           physics: const ScrollPhysics(),
                           itemBuilder: (context, index){
-                            return GestureDetector(
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
-                              child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                            );
+                            if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
+                              return GestureDetector(
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                                child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                              );
+                            }
+                            else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
+                              return GestureDetector(
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                                child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                              );
+                            }
+                            else return Container();
                           }
                         ),
                       ],

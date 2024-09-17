@@ -111,39 +111,42 @@ class EntryListAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        //const SizedBox(width: 10),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 10),
-            height: 45,
-            //width: double.infinity,
-            child: SearchBar(
-              backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
-              elevation: WidgetStateProperty.all(0),
-              trailing: [
-                IconButton(
-                  onPressed: (){},
-                  icon: const Icon(Icons.search),
-                  color: themeData.colorScheme.onPrimary,
-                ),
-              ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          //const SizedBox(width: 10),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(left: 10),
+              height: 45,
+              //width: double.infinity,
+              child: SearchBar(
+                backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
+                elevation: WidgetStateProperty.all(0),
+                trailing: [
+                  IconButton(
+                    onPressed: (){},
+                    icon: const Icon(Icons.search),
+                    color: themeData.colorScheme.onPrimary,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        IconButton(
-          onPressed: (){}, 
-          icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
-        )
-      ],
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
+          )
+        ],
+      ),
     );
   }
 }

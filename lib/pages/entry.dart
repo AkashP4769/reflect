@@ -132,7 +132,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 ),
               ),
             ),
-
+        
             
             //SizedBox(height: 60,)
             
@@ -158,8 +158,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       showItalicButton: extendedToolbar ? false : true,
                       showUnderLineButton: extendedToolbar ? false : true,
                       showStrikeThrough: false, //
-                      showColorButton: false, //
-                      showBackgroundColorButton: extendedToolbar ? true :  false,
+                      showColorButton: extendedToolbar ? true :  false, //
+                      showBackgroundColorButton: false,
                       showClearFormat: false, //
                       showHeaderStyle: false,
                       showListNumbers: extendedToolbar ? true :  false, //
@@ -221,22 +221,25 @@ class EntryAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        //const SizedBox(width: 10),
-        
-        IconButton(
-          onPressed: (){}, 
-          icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
-        )
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          //const SizedBox(width: 10),
+          
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
+          )
+        ],
+      ),
     );
   }
 }

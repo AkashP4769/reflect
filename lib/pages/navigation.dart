@@ -19,13 +19,40 @@ class NavigationPage extends ConsumerStatefulWidget {
 class _NavigationPageState extends ConsumerState<NavigationPage> {
   int currentPageIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
+  late TextEditingController searchController;
 
-  List<Widget> pages = <Widget>[const HomePage(), const JournalPage(), const FavPage(), const SettingsPage()];
   List<String> titles = ["Welcome, User", "Journal", "Your favourites", "Settings"];
   
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    searchController = TextEditingController();
+
+    searchController.addListener(() {
+      setState(() {});
+      print(searchController.text);
+    });
+
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    List<Widget> pages = <Widget>[
+      const HomePage(), 
+      JournalPage(searchQuery: searchController.text,), 
+      const FavPage(), 
+      const SettingsPage()
+    ];
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -47,6 +74,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           child: SearchBar(
             backgroundColor: WidgetStateProperty.all(themeData.colorScheme.onTertiary),
             elevation: WidgetStateProperty.all(0),
+            controller: searchController,
             trailing: [
               IconButton(
                 onPressed: (){},
