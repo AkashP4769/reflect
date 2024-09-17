@@ -15,7 +15,8 @@ class EntryPage extends ConsumerStatefulWidget {
 }
 
 class _EntryPageState extends ConsumerState<EntryPage> {
-  bool isEdited = false;
+  bool isTitleEdited = false;
+  bool isContentEdited = false;
   bool extendedToolbar = false;
   late quill.QuillController quillController;
   late TextEditingController titleController;
@@ -34,33 +35,28 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }
 
     titleController.addListener(() {
-      if(!isEdited && titleController.text != widget.entry.title) {
-        isEdited = true;
+      if(!isTitleEdited && titleController.text != widget.entry.title) {
+        isTitleEdited = true;
         setState(() {});
       }
-      else if(isEdited && titleController.text == widget.entry.title) {
-        isEdited = false;
+      else if(isTitleEdited && titleController.text == widget.entry.title) {
+        isTitleEdited = false;
         setState(() {});
       }
     });
 
-    /*quillController.addListener(() {
-      print(quillController.document.toDelta().toJson());
-      print(widget.entry.content);
-      print(quillController.document.toDelta().toJson() == widget.entry.content || (mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'})));
-      if(!isEdited && quillController.document.toDelta().toJson() != widget.entry.content) {
-        isEdited = true;
+    quillController.addListener((){
+      String quillContent = quillController.document.toPlainText();
+      String entryContent = widget.entry.getContentAsQuill().toPlainText();
+      if(!isContentEdited && quillContent != entryContent) {
+        isContentEdited = true;
         setState(() {});
       }
-      /*else if(isEdited && quillController.document.toDelta().toJson() == widget.entry.content || (mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'}))) {
-        isEdited = false;
-        setState(() {});
-      }*/
-      else if(isEdited && !mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'})) {
-        isEdited = false;
+      else if(isContentEdited && quillContent == entryContent) {
+        isContentEdited = false;
         setState(() {});
       }
-    });*/
+    });
   }
 
   @override
@@ -195,7 +191,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 SizedBox(
                   width: 120,
                   child: ElevatedButton(
-                    onPressed: isEdited ? (){} : null,
+                    onPressed: isTitleEdited || isContentEdited ? (){} : null,
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
                       backgroundColor: Color(0xffFF9432),

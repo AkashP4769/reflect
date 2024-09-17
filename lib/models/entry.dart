@@ -17,6 +17,7 @@ class Entry{
   // Convert the content Map back into a Quill Document
   quill.Document getContentAsQuill() {
     if(content == null) return quill.Document();
+    if(content!.isEmpty) return quill.Document();
     return quill.Document.fromJson(content ?? []);
   }
 
