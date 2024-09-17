@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     // TODO: implement initState
     super.initState();
     titleController = TextEditingController(text: widget.entry.title);
-    if(widget.entry.content == null) quillController = quill.QuillController.basic();
+    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
     else {
       quillController = quill.QuillController(
         document: quill.Document.fromJson(widget.entry.content ?? []),
@@ -42,12 +43,23 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       }
     });
 
-    quillController.addListener(() {
-      if(!isEdited && quillController.document.toDelta() != widget.entry.content) {
+    /*quillController.addListener(() {
+      print(quillController.document.toDelta().toJson());
+      print(widget.entry.content);
+      print(quillController.document.toDelta().toJson() == widget.entry.content || (mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'})));
+      if(!isEdited && quillController.document.toDelta().toJson() != widget.entry.content) {
         isEdited = true;
         setState(() {});
       }
-    });
+      /*else if(isEdited && quillController.document.toDelta().toJson() == widget.entry.content || (mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'}))) {
+        isEdited = false;
+        setState(() {});
+      }*/
+      else if(isEdited && !mapEquals(quillController.document.toDelta().toJson()[0], {'insert':'\n'})) {
+        isEdited = false;
+        setState(() {});
+      }
+    });*/
   }
 
   @override
@@ -153,7 +165,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Expanded(
+            SizedBox(
+              width: 120,
               child: ElevatedButton(
                 onPressed: isEdited ? (){} : null,
                 style: ElevatedButton.styleFrom(

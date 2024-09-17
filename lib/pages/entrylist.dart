@@ -89,7 +89,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: ElevatedButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: ""),)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: []),)));
           }, 
           child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
         ),
