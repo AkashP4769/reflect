@@ -25,11 +25,21 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     Entry(title: "Lost and Found", content: [{'insert': "I’ve been feeling lost lately, like I’m adrift in a sea of uncertainty. But in the midst of all the chaos, I’ve found moments of clarity and peace. It’s in these moments that I realize...\n"}]),
   ];
 
+  late TextEditingController searchController;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     chapter.updateEntries(entries);
+    searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    searchController.dispose();
+    super.dispose();
   }
 
   @override

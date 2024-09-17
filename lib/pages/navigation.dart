@@ -22,15 +22,16 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   late TextEditingController searchController;
 
   List<String> titles = ["Welcome, User", "Journal", "Your favourites", "Settings"];
+  String searchQuery = '';
   
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    searchController = TextEditingController();
+    searchController = TextEditingController(text: '');
 
     searchController.addListener(() {
-      setState(() {});
+      if(searchQuery != searchController.text) setState(() => searchQuery = searchController.text);
       print(searchController.text);
     });
 
@@ -48,7 +49,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     final themeData = ref.watch(themeManagerProvider);
     List<Widget> pages = <Widget>[
       const HomePage(), 
-      JournalPage(searchQuery: searchController.text,), 
+      JournalPage(searchQuery: searchQuery,), 
       const FavPage(), 
       const SettingsPage()
     ];
