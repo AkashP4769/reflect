@@ -53,7 +53,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(height: 40,),
-            EntryAppbar(themeData: themeData),
+            EntryListAppbar(themeData: themeData),
         
             const SizedBox(height: 20),
             ChapterHeader(chapter: chapter, themeData: themeData,),
@@ -89,7 +89,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: ElevatedButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(),)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: ""),)));
           }, 
           child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
         ),
@@ -98,8 +98,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 }
 
-class EntryAppbar extends StatelessWidget {
-  const EntryAppbar({
+class EntryListAppbar extends StatelessWidget {
+  const EntryListAppbar({
     super.key,
     required this.themeData,
   });
