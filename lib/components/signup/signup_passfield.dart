@@ -21,9 +21,9 @@ class _SignUpPassFieldState extends State<SignUpPassField> {
       child: TextFormField(
         controller: widget.controller,
         obscureText: obscure,
-        style: widget.themeData.textTheme.bodyMedium,
+        style: widget.themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400),
         decoration: InputDecoration(
-          labelStyle: widget.themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+          labelStyle: widget.themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: widget.themeData.colorScheme.onPrimary.withOpacity(0.7)),
           labelText: widget.text,
           
           suffixIcon: IconButton(

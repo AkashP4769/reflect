@@ -13,9 +13,9 @@ class SignUpTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
         controller: controller,
-        style: themeData.textTheme.bodyMedium,
+        style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400),
         decoration: InputDecoration(
-          labelStyle: themeData.textTheme.bodyMedium,
+          labelStyle: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, color: themeData.colorScheme.onPrimary.withOpacity(0.7)),
           labelText: text,
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
