@@ -55,13 +55,15 @@ class _HomePageState extends ConsumerState<JournalPage> {
   Future<void> loadChaptersFromCache() async {
     final String userId = FirebaseAuth.instance.currentUser!.uid;
     final cachedData = chapterBox.get(userId);
-    print(cachedData);
+    print("cachedData $cachedData");
+    if(cachedData == null) return;
     final cachedChapters = cachedData["chapters"] ?? [];
     print(cachedChapters);
     if(cachedChapters.isNotEmpty) {
+      chapters.clear();
       for (var chapter in cachedChapters) {
         final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
-        chapters.add(Chapter.fromMap(chapterMap));
+        chapters.add(ChapterAdvanced.fromMap(chapterMap));
       }
       //chapters = cachedChapters.map((e) => Chapter.fromMap(e)).toList();
       setState(() {});
@@ -75,8 +77,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
     print(data);  
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
+      chapterBox.delete(userId);
       chapterBox.put(userId, {"chapters": data});
-      chapters = data.map((e) => ChapterAdvanced.fromMap(e)).toList();
+      //chapters = data.map((e) => ChapterAdvanced.fromMap(e)).toList();
     }
     isFetching = false;
     loadChaptersFromCache();
@@ -87,8 +90,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    chapterBox.clear();
     loadChaptersFromCache();
-    //fetchChapters();
+    fetchChapters();
   }
 
   void toggleCreate() => setState(() => isCreate = !isCreate);

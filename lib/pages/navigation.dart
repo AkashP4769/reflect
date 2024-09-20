@@ -63,10 +63,10 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 15),
-          child: CircleAvatar(
+          child: FirebaseAuth.instance.currentUser!.photoURL != null ? CircleAvatar(
             backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!, scale: 2),
             radius: 5,
-          ),
+          ) : Container(),
         ),
         title: Container(
           margin: const EdgeInsets.only(left: 10),
