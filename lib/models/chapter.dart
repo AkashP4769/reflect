@@ -12,6 +12,18 @@ class Chapter{
   int entryCount;
 
   Chapter({required this.title, required this.description, this.imageUrl, required this.entryCount, required this.uid, required this.id, required this.createdAt}); 
+
+  factory Chapter.fromMap(Map<String, dynamic> data){
+    return Chapter(
+      id: data['_id'],
+      uid: data['uid'],
+      title: data['title'],
+      description: data['description'],
+      imageUrl: data['imageUrl'].isEmpty ? [] : data['imageUrl'].map((imageUrl) => imageUrl as String).toList() as List<String>,
+      entryCount: data['entryCount'],
+      createdAt: DateTime.parse(data['createdAt'])
+    );
+  }
 }
 
 class ChapterAdvanced extends Chapter{
@@ -41,10 +53,11 @@ class ChapterAdvanced extends Chapter{
         uid: data['uid'],
         title: data['title'],
         description: data['description'],
-        imageUrl: data['imageUrl'],
+        imageUrl: data['imageUrl'].map((imageUrl) => imageUrl as String).toList() as List<String>,
         entryCount: data['entryCount'],
-        createdAt: DateTime.parse(data['createdAt'])
-      )
+        createdAt: DateTime.parse(data['createdAt']),
+      ),
+      entries: data['entries'] != null ? data['entries'].map((entry) => Entry.fromMap(entry)).toList() : []
     );
   }
 }

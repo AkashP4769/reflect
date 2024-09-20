@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/image_stack.dart';
@@ -21,6 +23,8 @@ class JournalPage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<JournalPage> {
   bool isCreate = false;
   bool isFetching = false;
+
+  final chapterBox = Hive.box("chapters");
   final ChapterService chapterService = ChapterService();
 
 
@@ -48,14 +52,43 @@ class _HomePageState extends ConsumerState<JournalPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  
-  Future<void> fetchChapters() async {}
+  Future<void> loadChaptersFromCache() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final cachedData = chapterBox.get(userId);
+    print(cachedData);
+    final cachedChapters = cachedData["chapters"] ?? [];
+    print(cachedChapters);
+    if(cachedChapters.isNotEmpty) {
+      for (var chapter in cachedChapters) {
+        final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
+        chapters.add(Chapter.fromMap(chapterMap));
+      }
+      //chapters = cachedChapters.map((e) => Chapter.fromMap(e)).toList();
+      setState(() {});
+    }
+  }
+
+  Future<void> fetchChapters() async {
+    isFetching = true;
+    setState(() {});
+    final List<Map<String, dynamic>> data = await chapterService.getChapters();
+    print(data);  
+    if(data.isNotEmpty) {
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      chapterBox.put(userId, {"chapters": data});
+      chapters = data.map((e) => ChapterAdvanced.fromMap(e)).toList();
+    }
+    isFetching = false;
+    loadChaptersFromCache();
+    setState(() {});
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchChapters();
+    loadChaptersFromCache();
+    //fetchChapters();
   }
 
   void toggleCreate() => setState(() => isCreate = !isCreate);

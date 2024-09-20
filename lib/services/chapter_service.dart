@@ -9,7 +9,9 @@ class ChapterService extends BackendServices {
     try{
       final response = await http.get(Uri.parse('$baseUrl/chapters/${user!.uid}'));
       if(response.statusCode == 200){
-        return response.body as List<Map<String, dynamic>>;
+        print(response.body);
+        final decodedList = jsonDecode(response.body) as List;
+        return decodedList.map((chapter) => chapter as Map<String, dynamic>).toList();
       }
       return [];
     } catch(e){

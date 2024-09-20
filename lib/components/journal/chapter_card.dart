@@ -27,7 +27,7 @@ class ChapterCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if(chapter.imageUrl != null) Container(
+          if(chapter.imageUrl!.isNotEmpty) Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: Stack(
               children: [
