@@ -54,7 +54,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    List<Entry> validEntries = chapter.entries!;
+    List<Entry> validEntries = chapter.entries == null ? [] : chapter.entries!;
     if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList();
     print(entries.length);
     return Scaffold(
@@ -80,7 +80,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           
               const SizedBox(height: 20),
               if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData,),
-              if(chapter.entries!.isNotEmpty) 
+              if(validEntries.isNotEmpty) 
               ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,

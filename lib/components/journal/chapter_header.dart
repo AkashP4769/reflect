@@ -16,7 +16,7 @@ class ChapterHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if(chapter.imageUrl != null) Container(
+          if(chapter.imageUrl != null && chapter.imageUrl!.isNotEmpty) Container(
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
