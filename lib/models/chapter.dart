@@ -1,23 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:reflect/models/entry.dart';
 
+
 class Chapter{
+  final String id;
+  final String uid;
   final String title;
   final String description;
-  final String? imageUrl;
+  final List<String>? imageUrl;
+  final DateTime createdAt;
   int entryCount;
 
-  Chapter({required this.title, required this.description, this.imageUrl, required this.entryCount});
+  Chapter({required this.title, required this.description, this.imageUrl, required this.entryCount, required this.uid, required this.id, required this.createdAt}); 
 }
 
 class ChapterAdvanced extends Chapter{
-  final DateTime createdOn = DateTime.now();
   List<Entry>? entries;
 
-  ChapterAdvanced({required Chapter chapter, List<Entry>? entries}) : super(title: chapter.title, description: chapter.description, imageUrl: chapter.imageUrl, entryCount: chapter.entryCount);
+  ChapterAdvanced({required Chapter chapter, List<Entry>? entries}) : super(id: chapter.id, uid: chapter.uid, title: chapter.title, description: chapter.description, imageUrl: chapter.imageUrl, entryCount: chapter.entryCount, createdAt: chapter.createdAt){
+    entries = entries;
+  }
 
   void updateEntries(List<Entry> entries){
-    this.entries = entries;
-    this.entryCount = entries.length;
+    entries = entries;
+    entryCount = entries.length;
   }
 
   void updateEntriesFromMap(List<Map<String, dynamic>> data){
@@ -31,10 +37,13 @@ class ChapterAdvanced extends Chapter{
   factory ChapterAdvanced.fromMap(Map<String, dynamic> data){
     return ChapterAdvanced(
       chapter: Chapter(
+        id: data['_id'],
+        uid: data['uid'],
         title: data['title'],
         description: data['description'],
         imageUrl: data['imageUrl'],
-        entryCount: data['entryCount']
+        entryCount: data['entryCount'],
+        createdAt: DateTime.parse(data['createdAt'])
       )
     );
   }

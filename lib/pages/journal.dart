@@ -8,6 +8,7 @@ import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/pages/entrylist.dart';
+import 'package:reflect/services/chapter_service.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   final String? searchQuery;
@@ -20,19 +21,31 @@ class JournalPage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<JournalPage> {
   bool isCreate = false;
   bool isFetching = false;
+  final ChapterService chapterService = ChapterService();
 
 
   List<Chapter> chapters = [
-    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
-    Chapter(title: "Embracing the Unknown.", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
-    Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
+    //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
+    //Chapter(title: "Embracing the Unknown.", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
+    //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
   ];
 
-  void addChapter(String title, String description) {
-    setState(() {
-      chapters.add(Chapter(title: title, description: description, entryCount: 0));
-      isCreate = false;
-    });
+  void createChapter(String title, String description) async {
+    final chapter = {
+      "title": title,
+      "description": description,
+      "imageUrl": [],
+      "entryCount": 0,
+    };
+    final bool status = await chapterService.createChapter(chapter);
+    SnackBar snackBar;
+    if(status) {
+      fetchChapters();
+      toggleCreate();
+      snackBar = SnackBar(content: Text("Chapter created successfully"));
+    }
+    else snackBar = SnackBar(content: Text("Error creating chapter"));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   
@@ -72,7 +85,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
               ),
             );
           }
-          if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: addChapter);
+          if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
           if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
           return Scaffold(
             backgroundColor: const Color.fromRGBO(0, 0, 0, 0),

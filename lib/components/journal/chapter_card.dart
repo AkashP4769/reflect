@@ -34,7 +34,7 @@ class ChapterCard extends StatelessWidget {
                 if(chapter.entryCount > 1) const ImageStack(height: 120, width: 120, offset: Offset(0, 3), rotation: -7,),
                 if(chapter.entryCount > 2) const ImageStack(height: 120, width: 120, offset: Offset(0, -0), rotation: 7,),
                 ImageStack(height: 120, width: 120, padding: 5,
-                  child: CachedNetworkImage(imageUrl: chapter.imageUrl!, fit: BoxFit.cover, width: 100, height: 100),
+                  child: CachedNetworkImage(imageUrl: chapter.imageUrl![0], fit: BoxFit.cover, width: 100, height: 100),
                 )
               ],
             ),

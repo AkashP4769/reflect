@@ -55,7 +55,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     List<Entry> validEntries = chapter.entries!;
-    if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase())).toList();
+    if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList();
     print(entries.length);
     return Scaffold(
       backgroundColor: Colors.transparent,

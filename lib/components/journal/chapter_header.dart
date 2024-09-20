@@ -29,7 +29,7 @@ class ChapterHeader extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(imageUrl: chapter.imageUrl ?? "", width: double.infinity, height: 200, fit: BoxFit.cover),
+              child: CachedNetworkImage(imageUrl: chapter.imageUrl![0] ?? "", width: double.infinity, height: 200, fit: BoxFit.cover),
             ),
           ),
           const SizedBox(height: 20),
@@ -52,7 +52,7 @@ class ChapterHeader extends StatelessWidget {
                 children: [
                   Icon(Icons.lock_clock, color: themeData.colorScheme.onPrimary,),
                   const SizedBox(width: 5),
-                  Text('Created - ${DateFormat('dd/MM/yyyy').format(chapter.createdOn)}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
+                  Text('Created - ${DateFormat('dd/MM/yyyy').format(chapter.createdAt)}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
                 ],
               )
             ],
