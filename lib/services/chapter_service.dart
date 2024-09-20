@@ -36,4 +36,19 @@ class ChapterService extends BackendServices {
       return false;
     }
   }
+
+  Future<bool> deleteChapter(String chapterId) async {
+    try{
+      final response = await http.delete(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&id=$chapterId'));
+      if(response.statusCode == 200){
+        print("Chapter deleted successfully");
+        return true;
+      }
+      print("Error deleting chapter at server: ${response.body}");
+      return false;
+    } catch(e){
+      print("Error deleting chapter: $e");
+      return false;
+    }
+  }
 }

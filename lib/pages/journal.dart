@@ -28,6 +28,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final ChapterService chapterService = ChapterService();
 
 
+
   List<Chapter> chapters = [
     //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
     //Chapter(title: "Embracing the Unknown.", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
@@ -58,7 +59,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
     print("cachedData $cachedData");
     if(cachedData == null) return;
     final cachedChapters = cachedData["chapters"] ?? [];
-    print(cachedChapters);
     if(cachedChapters.isNotEmpty) {
       chapters.clear();
       for (var chapter in cachedChapters) {
@@ -74,7 +74,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
     isFetching = true;
     setState(() {});
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
-    print(data);  
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.delete(userId);
@@ -100,6 +99,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
       height: MediaQuery.of(context).size.height,
@@ -147,13 +147,21 @@ class _HomePageState extends ConsumerState<JournalPage> {
                     itemBuilder: (context, index){
                       if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
                         return GestureDetector(
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                          onTap: () async {
+                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                            print(result);
+                            if(result != null) fetchChapters();
+                          },
                           child: ChapterCard(chapter: chapters[index], themeData: themeData)
                         );
                       }
                       else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                         return GestureDetector(
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index]))),
+                          onTap: () async {
+                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                            print(result);
+                            if(result != null) fetchChapters();
+                          },
                           child: ChapterCard(chapter: chapters[index], themeData: themeData)
                         );
                       }

@@ -8,6 +8,7 @@ import 'package:reflect/models/chapter.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
+import 'package:reflect/services/chapter_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
   final Chapter? chapter;
@@ -28,6 +29,16 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   late TextEditingController searchController;
   bool isTyping = false;
 
+  void deleteChapter() async {
+    final status = await ChapterService().deleteChapter(chapter.id);
+    if(status) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
+      Navigator.pop(context, true);
+      Navigator.pop(context, true);
+    }
+    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -41,7 +52,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       else isTyping = false;
       setState(() {});
     });
-
   }
 
   @override
@@ -76,7 +86,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40,),
-              EntryListAppbar(themeData: themeData, searchController: searchController,),
+              EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter,),
           
               const SizedBox(height: 20),
               if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData,),
@@ -128,10 +138,12 @@ class EntryListAppbar extends StatelessWidget {
     super.key,
     required this.themeData,
     required this.searchController,
+    this.deleteChapter,
   });
 
   final ThemeData themeData;
   final TextEditingController searchController;
+  final void Function()? deleteChapter;
 
   @override
   Widget build(BuildContext context) {
@@ -162,13 +174,28 @@ class EntryListAppbar extends StatelessWidget {
                     icon: const Icon(Icons.search),
                     color: themeData.colorScheme.onPrimary,
                   ),
+                  
                 ],
               ),
             ),
           ),
-          IconButton(
-            onPressed: (){}, 
-            icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(Icons.edit, color: themeData.colorScheme.onPrimary,),
+                  title: Text('Edit Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                  onTap: (){},
+                ),
+              ),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
+                  title: Text('Delete Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                  onTap: deleteChapter,
+                ),
+              ),
+            ]
           )
         ],
       ),
