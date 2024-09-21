@@ -1,13 +1,15 @@
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class Entry{
+  final String? id;
   final String? title;
   final List<Map<String,dynamic>>? content;
   final DateTime date = DateTime.now();
+  final List<String>? tags;
 
-  Entry({this.title, this.content, DateTime? date});
+  Entry({this.title, this.content, DateTime? date, this.id, this.tags});
 
-  factory Entry.fromQuill(String title, quill.Document document) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<String> tags) {
     return Entry(
       title: title,
       content: document.toDelta().toJson(), // Store Delta as a Map
@@ -26,6 +28,8 @@ class Entry{
     return {
       'title': title,
       'content': content,  // Store the Delta as a Map
+      'date': date.toIso8601String(),
+      'tags': tags,
     };
   }
 
@@ -34,6 +38,8 @@ class Entry{
     return Entry(
       title: json['title'],
       content: json['content'],  // Rebuild the Delta from JSON
+      date: DateTime.parse(json['date']),
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
     );
   }
 
@@ -41,6 +47,8 @@ class Entry{
     return Entry(
       title: data['title'],
       content: data['content'],
+      date: DateTime.parse(data['date']),
+      tags: (data['tags'] == null || (data['tags'] as List).isEmpty)? [] : (data['tags'] as List).map((imageUrl) => imageUrl as String).toList(),
     );
   }
 
@@ -48,6 +56,8 @@ class Entry{
     return {
       'title': title,
       'content': content,
+      'date': date.toIso8601String(),
+      'tags': tags,
     };
   }
 }
