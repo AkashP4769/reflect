@@ -25,6 +25,7 @@ void main() async {
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
   Hive.openBox('chapters');
+  Hive.openBox('entries');
 
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -45,7 +46,7 @@ class MainApp extends ConsumerWidget {
         '/': (context) => const AuthPage(),
         '/login': (context) => const LoginPage(),
         '/navigation': (context) => const NavigationPage(),
-        '/entrylist': (context) => EntryListPage(),
+        '/entrylist': (context) => const EntryListPage(),
         '/entry': (context) => EntryPage(entry: Entry(),),
       },
     );

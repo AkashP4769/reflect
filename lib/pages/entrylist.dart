@@ -12,6 +12,7 @@ import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
 import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/chapter_service.dart';
+import 'package:reflect/services/entryService.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
   final Chapter? chapter;
@@ -23,11 +24,7 @@ class EntryListPage extends ConsumerStatefulWidget {
 
 class _EntryListPageState extends ConsumerState<EntryListPage> {
   late Chapter chapter = widget.chapter!;
-  List<Entry> entries = [
-    Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},]),
-    Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}]),
-    Entry(title: "Lost and Found", content: [{'insert': "I’ve been feeling lost lately, like I’m adrift in a sea of uncertainty. But in the midst of all the chaos, I’ve found moments of clarity and peace. It’s in these moments that I realize...\n"}]),
-  ];
+  List<Entry> entries = [];
 
   late TextEditingController searchController;
   late TextEditingController titleController;
@@ -38,6 +35,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   final chapterService = ChapterService();
   final chapterBox = Hive.box("chapters");
+
+  final entryService = EntryService();
+  final entryBox = Hive.box("entries");
 
   void deleteChapter() async {
     final status = await ChapterService().deleteChapter(chapter.id);
@@ -66,6 +66,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     searchController = TextEditingController();
     titleController = TextEditingController(text: widget.chapter!.title);
     descriptionController = TextEditingController(text: widget.chapter!.description);
+    
+    entries = [ //Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},], chapterId: chapter.id),
+                //Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}], chapterId: chapter.id),
+                //Entry(title: "Lost and Found", content: [{'insert': "I’ve been feeling lost lately, like I’m adrift in a sea of uncertainty. But in the midst of all the chaos, I’ve found moments of clarity and peace. It’s in these moments that I realize...\n"}], chapterId: chapter.id),
+    ];
+    
+    fetchEntries();
+
     searchController.addListener(() {
       print(searchController.text);
       if(searchController.text.isNotEmpty) isTyping = true;
@@ -78,38 +86,35 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
-      //setState(() => chapter = Chapter.fromMap(newChapter));
-      //print(newChapter);
-      //fetchChapter();
       Navigator.pop(context, 'updated');
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
 
-  Future<void> fetchChapter() async {
+  /*Future<void> fetchChapter() async {
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
     }
-    //loadChapterFromCache();
+    setState(() {});
+  }*/
+
+  Future<void> fetchEntries() async {
+    print("fetching entries");
+    final List<Map<String, dynamic>> data = await entryService.getEntries(chapter.id);
+    //print(data.toString());
+    if(data.isNotEmpty) {
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      //await chapterBox.put(userId, { chapter.id : data });
+      List<Map<String, dynamic>> entriesData = chapterBox.get(userId)[chapter.id] as List<Map<String, dynamic>>;
+      List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();
+      entries = entriesList;
+    }
+    
     setState(() {});
   }
 
-  /*Future<void> loadChapterFromCache() async {
-    final String userId = FirebaseAuth.instance.currentUser!.uid;
-    final cachedData = chapterBox.get(userId);
-    if(cachedData == null) return;
-
-    final cachedChapters = cachedData["chapters"] ?? [];
-    /*cachedChapters.forEach((chapter) {
-      final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
-      if(chapterMap['_id'] == widget.chapter!.id){
-        chapter = Chapter.fromMap(chapterMap);
-        setState(() {});
-      }
-    });*/
-  }*/
 
   @override
   void dispose() {
@@ -216,7 +221,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ElevatedButton(
           onPressed: (){
-             Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: []),)));
+             Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
           }, 
           child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
         ),
