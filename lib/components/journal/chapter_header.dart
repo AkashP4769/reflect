@@ -4,9 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:reflect/models/chapter.dart';
 
 class ChapterHeader extends StatelessWidget {
-  final ChapterAdvanced chapter;
+  final bool isEditing;
+  final Chapter chapter;
   final ThemeData themeData;
-  const ChapterHeader({super.key, required this.chapter, required this.themeData});
+  final void Function(String title, String description)? editChapter;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  const ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.editChapter, required this.titleController, required this.descriptionController}); 
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +37,43 @@ class ChapterHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),), textAlign: TextAlign.center,),
+          if(!isEditing) Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),), textAlign: TextAlign.center,),
+          if(isEditing) TextField(
+            controller: titleController,
+            maxLines:  null,
+            style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),), textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              hintText: 'Chapter Title',
+              hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.7),),
+              alignLabelWithHint: true,
+              contentPadding: EdgeInsets.zero,
+              isDense: true,
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+            ),
+          ),
           const SizedBox(height: 10),
-          Text(chapter.description, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600,), textAlign: TextAlign.center,),
+          if(!isEditing) Text(chapter.description, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600,), textAlign: TextAlign.center,),
+          if(isEditing) TextField(
+            controller: descriptionController,
+            style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600,), textAlign: TextAlign.center,
+            maxLines: null,
+            decoration: InputDecoration(
+              hintText: 'Description',
+              hintStyle: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.7), fontWeight: FontWeight.w600,),
+              alignLabelWithHint: true,
+              contentPadding: EdgeInsets.zero,
+              isDense: true,
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+            ),
+          ),
           const SizedBox(height: 20),
 
           Row(

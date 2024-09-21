@@ -59,7 +59,7 @@ class Chapter {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
+      '_id': id,
       'uid': uid,
       'title': title,
       'description': description,
@@ -75,7 +75,7 @@ class Chapter {
       uid: map['uid'] as String,
       title: map['title'] as String,
       description: map['description'] as String,
-      imageUrl: map['imageUrl'] != null ? List<String>.from((map['imageUrl'] as List<dynamic>)) : null,
+      imageUrl: (map['imageUrl'] == null || (map['imageUrl'] as List).isEmpty)? [] : (map['imageUrl'] as List).map((imageUrl) => imageUrl as String).toList(),
       createdAt: DateTime.parse(map['createdAt']),
       entryCount: map['entryCount'] as int,
     );
@@ -150,4 +150,5 @@ class ChapterAdvanced extends Chapter{
       entries: (data['entries'] as List<dynamic>?)?.map((entry) => Entry.fromMap(entry as Map<String, dynamic>)).toList() ?? []
     );
   }
+
 }

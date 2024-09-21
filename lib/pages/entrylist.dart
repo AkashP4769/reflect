@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/journal/chapter_header.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/main.dart';
@@ -8,6 +10,7 @@ import 'package:reflect/models/chapter.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
+import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/chapter_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
@@ -19,7 +22,7 @@ class EntryListPage extends ConsumerStatefulWidget {
 }
 
 class _EntryListPageState extends ConsumerState<EntryListPage> {
-  late ChapterAdvanced chapter = ChapterAdvanced(chapter: widget.chapter!);
+  late Chapter chapter = widget.chapter!;
   List<Entry> entries = [
     Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},]),
     Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}]),
@@ -27,10 +30,17 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   ];
 
   late TextEditingController searchController;
+  late TextEditingController titleController;
+  late TextEditingController descriptionController;
+
   bool isTyping = false;
+  bool isEditing = false;
+
+  final chapterService = ChapterService();
+  final chapterBox = Hive.box("chapters");
 
   void deleteChapter() async {
-    final status = await ChapterService().deleteChapter(chapter.id);
+    final status = await ChapterService().deleteChapter(widget.chapter!.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
       Navigator.pop(context, true);
@@ -39,13 +49,23 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
   }
 
+  void editChapter(String title, String description) async {
+    //Navigator.pop(context);
+    //await ChapterService().updateChapter();
+  }
+
+  void toggleEdit() => setState(() => isEditing = !isEditing);
+
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    chapter.updateEntries(entries);
+    //chapter.updateEntries(entries);
     searchController = TextEditingController();
-
+    titleController = TextEditingController(text: widget.chapter!.title);
+    descriptionController = TextEditingController(text: widget.chapter!.description);
     searchController.addListener(() {
       print(searchController.text);
       if(searchController.text.isNotEmpty) isTyping = true;
@@ -54,17 +74,55 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     });
   }
 
+  void updateChapter() async {
+    final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
+    if(newChapter["_id"] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
+      setState(() => chapter = Chapter.fromMap(newChapter));
+      print(newChapter);
+      //fetchChapter();
+    }
+    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
+  }
+
+  Future<void> fetchChapter() async {
+    final List<Map<String, dynamic>> data = await chapterService.getChapters();
+    if(data.isNotEmpty) {
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      chapterBox.put(userId, {"chapters": data});
+    }
+    //loadChapterFromCache();
+    setState(() {});
+  }
+
+  /*Future<void> loadChapterFromCache() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null) return;
+
+    final cachedChapters = cachedData["chapters"] ?? [];
+    /*cachedChapters.forEach((chapter) {
+      final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
+      if(chapterMap['_id'] == widget.chapter!.id){
+        chapter = Chapter.fromMap(chapterMap);
+        setState(() {});
+      }
+    });*/
+  }*/
+
   @override
   void dispose() {
     // TODO: implement dispose
     searchController.dispose();
+    titleController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    List<Entry> validEntries = chapter.entries == null ? [] : chapter.entries!;
+    List<Entry> validEntries = entries == null ? [] : entries!;
     if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList();
     print(entries.length);
     return Scaffold(
@@ -86,11 +144,44 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40,),
-              EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter,),
+              EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit,),
           
               const SizedBox(height: 20),
-              if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData,),
-              if(validEntries.isNotEmpty) 
+              if(!isTyping && widget.chapter != null) ChapterHeader(chapter: widget.chapter!, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
+              if(isEditing) Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ElevatedButton(
+                        onPressed: toggleEdit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: themeData.colorScheme.surface,
+                          elevation: 10
+                        ),
+                        child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
+                      ),
+                    ),
+                    const SizedBox(width: 20,),
+                    Expanded(
+                      flex: 4,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 10,
+                        ),
+                        onPressed: (){
+                          toggleEdit();
+                          updateChapter();
+                        },
+                        child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              
+              if(!isEditing && validEntries.isNotEmpty) 
               ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
@@ -100,12 +191,12 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: chapter.entries![index],))),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],))),
                     child: EntryCard(entry: validEntries[index], themeData: themeData)
                   );
                 },
               )
-              else Column(
+              else if(!isEditing && validEntries.isEmpty) Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -119,16 +210,16 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           ),
         ),
       ),
-      bottomSheet: Container(
+      bottomSheet: (!isEditing) ? Container(
         color: Colors.transparent,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ElevatedButton(
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: []),)));
+             Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: []),)));
           }, 
           child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
         ),
-      ),
+      ) : null
     );
   }
 }
@@ -139,11 +230,13 @@ class EntryListAppbar extends StatelessWidget {
     required this.themeData,
     required this.searchController,
     this.deleteChapter,
+    this.toggleEdit
   });
 
   final ThemeData themeData;
   final TextEditingController searchController;
   final void Function()? deleteChapter;
+  final void Function()? toggleEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +278,10 @@ class EntryListAppbar extends StatelessWidget {
                 child: ListTile(
                   leading: Icon(Icons.edit, color: themeData.colorScheme.onPrimary,),
                   title: Text('Edit Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                  onTap: (){},
+                  onTap: (){
+                    Navigator.pop(context);
+                    toggleEdit!();
+                  },
                 ),
               ),
               PopupMenuItem(

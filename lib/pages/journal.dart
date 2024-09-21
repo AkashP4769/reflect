@@ -63,9 +63,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
       chapters.clear();
       for (var chapter in cachedChapters) {
         final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
-        chapters.add(ChapterAdvanced.fromMap(chapterMap));
+        chapters.add(Chapter.fromMap(chapterMap));
       }
-      //chapters = cachedChapters.map((e) => Chapter.fromMap(e)).toList();
       setState(() {});
     }
   }
@@ -76,7 +75,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
-      chapterBox.delete(userId);
+      //chapterBox.delete(userId);
       chapterBox.put(userId, {"chapters": data});
       //chapters = data.map((e) => ChapterAdvanced.fromMap(e)).toList();
     }
