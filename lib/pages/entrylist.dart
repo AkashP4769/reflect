@@ -40,11 +40,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final chapterBox = Hive.box("chapters");
 
   void deleteChapter() async {
-    final status = await ChapterService().deleteChapter(widget.chapter!.id);
+    final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
-      Navigator.pop(context, true);
-      Navigator.pop(context, true);
+      Navigator.pop(context, 'deleted');
+      Navigator.pop(context, 'deleted');
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
   }
@@ -78,9 +78,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
-      setState(() => chapter = Chapter.fromMap(newChapter));
-      print(newChapter);
+      //setState(() => chapter = Chapter.fromMap(newChapter));
+      //print(newChapter);
       //fetchChapter();
+      Navigator.pop(context, 'updated');
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
@@ -147,7 +148,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit,),
           
               const SizedBox(height: 20),
-              if(!isTyping && widget.chapter != null) ChapterHeader(chapter: widget.chapter!, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
+              if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
               if(isEditing) Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(

@@ -21,6 +21,7 @@ class JournalPage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<JournalPage> {
+
   bool isCreate = false;
   bool isFetching = false;
 
@@ -147,19 +148,48 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
                         return GestureDetector(
                           onTap: () async {
+                            /*Future<void> recursivePush() async {
+                              print("pushing chapter ${chapters[index].title}");
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              print(result);
+                              if(result != null && result == 'deleted') fetchChapters();
+                              else if(result != null && result == 'updated') {
+                                await fetchChapters();
+                              }
+                            }
+                            recursivePush();*/
+                            print("pushing chapter ${chapters[index].title}");
                             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
                             print(result);
-                            if(result != null) fetchChapters();
+                            if(result != null && result == 'deleted') fetchChapters();
+                            else if(result != null && result == 'updated') fetchChapters();
+                              
                           },
+                          
                           child: ChapterCard(chapter: chapters[index], themeData: themeData)
                         );
                       }
                       else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                         return GestureDetector(
                           onTap: () async {
-                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                            print(result);
-                            if(result != null) fetchChapters();
+                            void recursivePush() async {
+                              print("pushing chapter ${chapters[index].title}");
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              print(result);
+                              if(result != null && result == 'deleted') fetchChapters();
+                              if(result != null && result == 'updated') {
+                                await fetchChapters();
+                                print('recursivePush');
+                                if (mounted) {
+                                // Delay pushing the updated chapter to avoid immediate re-push
+                                  Future.delayed(const Duration(milliseconds: 100), () {
+                                    recursivePush(); // Call the function recursively after fetching
+                                  });
+                                }
+                              }
+                            }
+
+                            recursivePush();
                           },
                           child: ChapterCard(chapter: chapters[index], themeData: themeData)
                         );
