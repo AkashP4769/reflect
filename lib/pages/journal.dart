@@ -76,9 +76,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
-      //chapterBox.delete(userId);
       chapterBox.put(userId, {"chapters": data});
-      //chapters = data.map((e) => ChapterAdvanced.fromMap(e)).toList();
     }
     isFetching = false;
     loadChaptersFromCache();
@@ -161,8 +159,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
                             print("pushing chapter ${chapters[index].title}");
                             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
                             print(result);
-                            if(result != null && result == 'deleted') fetchChapters();
-                            else if(result != null && result == 'updated') fetchChapters();
+                            if(result != null && result == true) fetchChapters();
+                            //else if(result != null && result == 'updated') fetchChapters();
                               
                           },
                           
@@ -172,24 +170,12 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                         return GestureDetector(
                           onTap: () async {
-                            void recursivePush() async {
-                              print("pushing chapter ${chapters[index].title}");
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                              print(result);
-                              if(result != null && result == 'deleted') fetchChapters();
-                              if(result != null && result == 'updated') {
-                                await fetchChapters();
-                                print('recursivePush');
-                                if (mounted) {
-                                // Delay pushing the updated chapter to avoid immediate re-push
-                                  Future.delayed(const Duration(milliseconds: 100), () {
-                                    recursivePush(); // Call the function recursively after fetching
-                                  });
-                                }
-                              }
-                            }
-
-                            recursivePush();
+                            print("pushing chapter ${chapters[index].title}");
+                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                            print(result);
+                            if(result != null && result == true) fetchChapters();
+                            //else if(result != null && result == 'updated') fetchChapters();
+                              
                           },
                           child: ChapterCard(chapter: chapters[index], themeData: themeData)
                         );

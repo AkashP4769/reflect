@@ -32,6 +32,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   bool isTyping = false;
   bool isEditing = false;
+  bool haveUpdated = false;
 
   final chapterService = ChapterService();
   final chapterBox = Hive.box("chapters");
@@ -43,8 +44,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
-      Navigator.pop(context, 'deleted');
-      Navigator.pop(context, 'deleted');
+      Navigator.pop(context, true);
+      Navigator.pop(context, true);
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
   }
@@ -86,8 +87,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
+      haveUpdated = true;
       fetchChaptersAndUpdate();
-      //Navigator.pop(context, 'updated');
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
@@ -104,7 +105,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   Future<void> fetchEntries() async {
     print("fetching entries");
     final List<Map<String, dynamic>> data = await entryService.getEntries(chapter.id);
-    //print(data.toString());
+    print(data.toString());
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       await entryBox.put(userId, { chapter.id : data });
@@ -117,6 +118,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       }
       fetchChaptersAndUpdate();
     }
+    else {
+      entries = [];
+      chapter = chapter.copyWith(entryCount: 0);
+    }
+
     
     setState(() {});
   }
@@ -152,107 +158,120 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final themeData = ref.watch(themeManagerProvider);
     List<Entry> validEntries = entries == null ? [] : entries!;
     if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList();
-    print(entries.length);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height,
-        //padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
-            end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-          )
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 40,),
-              EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit,),
-          
-              const SizedBox(height: 20),
-              if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
-              if(isEditing) Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
+    //print(entries.length);
+    return WillPopScope(
+      onWillPop: () async {
+        // Intercept back button press and pop with the result 'haveUpdated'
+        Navigator.pop(context, haveUpdated);
+        return false; // Prevent the default pop behavior
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          //padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
+              end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
+              colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+            )
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 40,),
+                EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit,),
+            
+                const SizedBox(height: 20),
+                if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
+                if(isEditing) Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          onPressed: toggleEdit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: themeData.colorScheme.surface,
+                            elevation: 10
+                          ),
+                          child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
+                        ),
+                      ),
+                      const SizedBox(width: 20,),
+                      Expanded(
+                        flex: 4,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 10,
+                          ),
+                          onPressed: (){
+                            toggleEdit();
+                            updateChapter();
+                          },
+                          child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                
+                if(!isEditing && validEntries.isNotEmpty) 
+                ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: validEntries.length,
+                  clipBehavior: Clip.none,
+                  physics: const ScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () async {
+                        final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                        if(result == 'entry_updated') fetchEntries();
+                        if(result == 'entry_deleted'){
+                          haveUpdated = true;
+                          fetchEntries();
+                        }
+                      },
+                      child: EntryCard(entry: validEntries[index], themeData: themeData)
+                    );
+                  },
+                )
+                else if(!isEditing && validEntries.isEmpty) Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: ElevatedButton(
-                        onPressed: toggleEdit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeData.colorScheme.surface,
-                          elevation: 10
-                        ),
-                        child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
-                      ),
-                    ),
-                    const SizedBox(width: 20,),
-                    Expanded(
-                      flex: 4,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 10,
-                        ),
-                        onPressed: (){
-                          toggleEdit();
-                          updateChapter();
-                        },
-                        child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
-                      ),
-                    )
+                    SizedBox(height: 40,),
+                    Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
+                    
                   ],
                 ),
-              ),
-              
-              if(!isEditing && validEntries.isNotEmpty) 
-              ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemCount: validEntries.length,
-                clipBehavior: Clip.none,
-                physics: const ScrollPhysics(),
-                padding: const EdgeInsets.symmetric(vertical: 0),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
-                      if(result == 'entry_updated') fetchEntries();
-                      if(result == 'entry_deleted') fetchEntries();
-                    },
-                    child: EntryCard(entry: validEntries[index], themeData: themeData)
-                  );
-                },
-              )
-              else if(!isEditing && validEntries.isEmpty) Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 40,),
-                  Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
-                  
-                ],
-              ),
-              SizedBox(height: 70,)
-            ],
+                SizedBox(height: 70,)
+              ],
+            ),
           ),
         ),
+        bottomSheet: (!isEditing) ? Container(
+          color: Colors.transparent,
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: ElevatedButton(
+            onPressed: () async {
+              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
+              if(result == 'entry_added'){
+                haveUpdated = true;
+                fetchEntries(); 
+              }
+            }, 
+            child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+          ),
+        ) : null
       ),
-      bottomSheet: (!isEditing) ? Container(
-        color: Colors.transparent,
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: ElevatedButton(
-          onPressed: () async {
-            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
-            if(result == 'entry_added') fetchEntries();
-          }, 
-          child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-        ),
-      ) : null
     );
   }
 }
