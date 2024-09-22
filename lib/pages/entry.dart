@@ -79,6 +79,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }
   }
 
+  void updateEntry() async {
+    final entry = Entry.fromQuill(titleController.text, quillController.document, widget.entry.date, [], widget.entry.chapterId!, widget.entry.id);
+    final result = await entryService.updateEntry(entry.toMap());
+    if(result) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
+      Navigator.pop(context, 'entry_updated');
+    }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update entry')));
+    }
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -213,14 +225,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 SizedBox(
                   width: 120,
                   child: ElevatedButton(
-                    /*onPressed: isTitleEdited || isContentEdited ? (){
-                      print('Saving entry');
-                      addEntry();
-                    } : null,*/
-                    onPressed: (){
-                      print('Saving entry');
-                      addEntry();
-                    },
+                    onPressed: isTitleEdited || isContentEdited ? (){
+                      if(widget.entry.id == null) addEntry();
+                      else updateEntry();
+                    } : null,
+                  
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
                       backgroundColor: const Color(0xffFF9432),

@@ -202,7 +202,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],))),
+                    onTap: () async {
+                      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                      if(result == 'entry_updated') fetchEntries();
+                    },
                     child: EntryCard(entry: validEntries[index], themeData: themeData)
                   );
                 },
