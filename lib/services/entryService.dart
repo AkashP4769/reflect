@@ -41,4 +41,15 @@ class EntryService extends BackendServices {
       return false;
     }
   }
+
+  Future<bool> deleteEntry(String chapterId, String entryId) async {
+    try{
+      final response = await http.delete(Uri.parse('$baseUrl/entries/?chapterId=$chapterId&entryId=$entryId'));
+      if(response.statusCode == 200) return true;
+      return false;
+    } catch(e){
+      print("Error deleting entry: $e");
+      return false;
+    }
+  }
 }

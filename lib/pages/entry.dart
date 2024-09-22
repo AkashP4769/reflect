@@ -91,6 +91,36 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }
   }
 
+  void deleteEntry() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Entry'),
+        content: const Text('Are you sure you want to delete this entry?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final result = await entryService.deleteEntry(widget.entry.chapterId!, widget.entry.id!);
+              if(result) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry deleted successfully')));
+                Navigator.pop(context);
+                Navigator.pop(context, 'entry_deleted');
+              }
+              else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete entry')));
+              }
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      )
+    );
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -119,7 +149,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             const SizedBox(height: 40),
             EntryAppbar(themeData: themeData),
             const SizedBox(height: 20),
-            Text(DateFormat("dd MMM yyyy | hh:mm a").format(widget.entry.date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(DateFormat("dd MMM yyyy | hh:mm a").format(widget.entry.date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+                IconButton(onPressed: deleteEntry, icon: Icon(Icons.delete_outline), color: Colors.redAccent,),
+              ],
+            ),
             const SizedBox(height: 10),
             SingleChildScrollView(
               clipBehavior: Clip.none,
