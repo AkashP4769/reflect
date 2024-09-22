@@ -106,10 +106,15 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     //print(data.toString());
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
-      //await chapterBox.put(userId, { chapter.id : data });
-      List<Map<String, dynamic>> entriesData = chapterBox.get(userId)[chapter.id] as List<Map<String, dynamic>>;
-      List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();
-      entries = entriesList;
+      await entryBox.put(userId, { chapter.id : data });
+      final cachedData = entryBox.get(userId)[chapter.id];
+      print("cached data: $cachedData");
+      if(cachedData != null){
+        List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
+        List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
+        entries = entriesList;
+      }
+      
     }
     
     setState(() {});

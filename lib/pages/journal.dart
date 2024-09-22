@@ -72,7 +72,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   Future<void> fetchChapters() async {
     isFetching = true;
-    setState(() {});
+    if(mounted) setState(() {});
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -82,7 +82,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     }
     isFetching = false;
     loadChaptersFromCache();
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
   @override

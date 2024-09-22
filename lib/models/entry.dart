@@ -57,7 +57,7 @@ class Entry{
       id: data['_id'],
       chapterId: data['chapterId'],
       title: data['title'],
-      content: data['content'],
+      content: data['content'] != null ? List<Map<String, dynamic>>.from(data['content']) : null,
       date: DateTime.parse(data['date']),
       tags: (data['tags'] == null || (data['tags'] as List).isEmpty)? [] : (data['tags'] as List).map((imageUrl) => imageUrl as String).toList(),
     );
