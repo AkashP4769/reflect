@@ -86,7 +86,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
-      Navigator.pop(context, 'updated');
+      fetchChaptersAndUpdate();
+      //Navigator.pop(context, 'updated');
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
@@ -114,10 +115,26 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
         entries = entriesList;
       }
-      
+      fetchChaptersAndUpdate();
     }
     
     setState(() {});
+  }
+
+
+  Future<void> fetchChaptersAndUpdate() async {
+    final List<Map<String, dynamic>> data = await chapterService.getChapters();
+    if(data.isNotEmpty) {
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      chapterBox.put(userId, {"chapters": data});
+    }
+    
+    data.forEach((chapter){
+      if(chapter["_id"] == widget.chapter!.id) {
+        this.chapter = Chapter.fromMap(chapter);
+      }
+    });
+    if(mounted) setState(() {});
   }
 
 
