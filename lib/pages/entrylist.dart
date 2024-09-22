@@ -225,8 +225,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         color: Colors.transparent,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ElevatedButton(
-          onPressed: (){
-             Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
+          onPressed: () async {
+            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
+            if(result == 'entry_added') fetchEntries();
           }, 
           child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
         ),

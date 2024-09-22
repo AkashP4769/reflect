@@ -19,4 +19,16 @@ class EntryService extends BackendServices {
     }
   }
 
+  Future<bool> createEntry(Map<String, dynamic> entry) async {
+    try{
+      print(entry.toString());
+      final response = await http.post(Uri.parse('$baseUrl/entries/'), body: jsonEncode({"entry":entry}), headers: {'Content-Type': 'application/json'});
+      if(response.statusCode == 201) return true;
+      return false;
+    } catch(e){
+      print("Error creating entry: $e");
+      return false;
+    }
+  }
+
 }

@@ -10,7 +10,7 @@ class Entry{
 
   Entry({this.title, this.content, DateTime? date, this.id, this.tags, this.chapterId});
 
-  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<String> tags, String chapterId, String id) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<String>? tags, String chapterId, String? id) {
     return Entry(
       id: id,
       chapterId: chapterId,
@@ -46,7 +46,7 @@ class Entry{
       id: json['_id'],
       chapterId: json['chapterId'],
       title: json['title'],
-      content: json['content'],  // Rebuild the Delta from JSON
+      content: json['content'] != null ? List<Map<String, dynamic>>.from(json['content']) : null,
       date: DateTime.parse(json['date']),
       tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
     );

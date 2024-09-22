@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/services/entryService.dart';
 
 class EntryPage extends ConsumerStatefulWidget {
   final Entry entry;
@@ -18,10 +19,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isTitleEdited = false;
   bool isContentEdited = false;
   bool extendedToolbar = false;
+
   late quill.QuillController quillController;
   late TextEditingController titleController;
   late FocusNode titleFocusNode;
   late FocusNode contentFocusNode;
+
+  EntryService entryService = EntryService();
 
   @override
   void initState() {
@@ -61,6 +65,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         setState(() {});
       }
     });
+  }
+
+  void addEntry() async {
+    final entry = Entry.fromQuill(titleController.text, quillController.document, widget.entry.date, [], widget.entry.chapterId!, null);
+    final result = await entryService.createEntry(entry.toMap());
+    if(result) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
+      Navigator.pop(context, 'entry_added');
+    }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to add entry')));
+    }
   }
 
   @override
@@ -140,7 +156,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             ),
         
             
-            SizedBox(height: 80,)
+            const SizedBox(height: 80,)
             
             
           ],
@@ -197,7 +213,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 SizedBox(
                   width: 120,
                   child: ElevatedButton(
-                    onPressed: isTitleEdited || isContentEdited ? (){} : null,
+                    /*onPressed: isTitleEdited || isContentEdited ? (){
+                      print('Saving entry');
+                      addEntry();
+                    } : null,*/
+                    onPressed: (){
+                      print('Saving entry');
+                      addEntry();
+                    },
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
                       backgroundColor: const Color(0xffFF9432),
