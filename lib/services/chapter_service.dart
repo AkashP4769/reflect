@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 class ChapterService extends BackendServices {
   Future<List<Map<String, dynamic>>> getChapters() async {
     try{
+      print("baseurl: $baseUrl");
       final response = await http.get(Uri.parse('$baseUrl/chapters/${user!.uid}'));
       if(response.statusCode == 200){
         print(response.body);

@@ -26,6 +26,7 @@ void main() async {
   Hive.init(dir.path);
   Hive.openBox('chapters');
   Hive.openBox('entries');
+  Hive.openBox('settings');
 
   runApp(const ProviderScope(child: MainApp()));
 }
