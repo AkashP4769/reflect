@@ -15,7 +15,8 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   late String selectedServer;
   final servers = {
     'Localhost': 'http://192.168.29.226:3000/api',
-    'Vercel': 'https://reflect-server.vercel.app/api'
+    'Vercel': 'https://reflect-server.vercel.app/api',
+    'AWS': 'http/api'
   };
 
   @override
