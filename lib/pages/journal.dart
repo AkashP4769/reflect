@@ -68,6 +68,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
         final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
         chapters.add(Chapter.fromMap(chapterMap));
       }
+      chapters = chapters.reversed.toList();
       if(mounted) setState(() {});
     }
   }
