@@ -16,14 +16,14 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   final servers = {
     'Localhost': 'http://192.168.29.226:3000/api',
     'Vercel': 'https://reflect-server.vercel.app/api',
-    'AWS': 'http/api'
+    'AWS': 'http://13.233.167.195:3000/api'
   };
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    final String server = settingBox.get('baseUrl', defaultValue: 'http://192.168.29.226:3000/api');
+    final String server = settingBox.get('baseUrl', defaultValue: 'http://13.233.167.195:3000/api');
     selectedServer = server;
     setState(() {});
   }
@@ -51,7 +51,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             decoration: BoxDecoration(
-              color: themeData.colorScheme.secondaryContainer,
+              color: themeData.colorScheme.surface,
               borderRadius: BorderRadius.circular(15),
               boxShadow: const [
                 BoxShadow(
@@ -78,6 +78,10 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                     DropdownMenuEntry(
                       value: servers['Vercel'],
                       label:  'Vercel'
+                    ),
+                    DropdownMenuEntry(
+                      value: servers['AWS'],
+                      label:  'AWS'
                     ),
                   ],
                   onSelected: (String? value) {

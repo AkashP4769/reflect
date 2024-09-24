@@ -28,6 +28,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final chapterBox = Hive.box("chapters");
   final ChapterService chapterService = ChapterService();
 
+  
+
 
 
   List<Chapter> chapters = [
@@ -36,11 +38,11 @@ class _HomePageState extends ConsumerState<JournalPage> {
     //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
   ];
 
-  void createChapter(String title, String description) async {
+  void createChapter(String title, String description, List<String>? images) async {
     final chapter = {
       "title": title,
       "description": description,
-      "imageUrl": [],
+      "imageUrl": images ?? [],
       "entryCount": 0,
     };
     final bool status = await chapterService.createChapter(chapter);
@@ -66,7 +68,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
         final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
         chapters.add(Chapter.fromMap(chapterMap));
       }
-      setState(() {});
+      if(mounted) setState(() {});
     }
   }
 
@@ -227,7 +229,7 @@ class EmptyChapters extends StatelessWidget {
 
 class NewChapter extends ConsumerStatefulWidget {
   final void Function() toggleCreate;
-  final void Function(String title, String description) addChapter;
+  final void Function(String title, String description, List<String>? images) addChapter;
   final double tween;
   const NewChapter({super.key, required this.toggleCreate, required this.addChapter, required this.tween});
 
@@ -238,10 +240,20 @@ class NewChapter extends ConsumerStatefulWidget {
 class _NewChapterState extends ConsumerState<NewChapter> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
+  late String randomImage;
 
+  final possibleImages = [
+      "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png",
+      "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg",
+      "https://cdn.pixabay.com/photo/2023/09/29/11/19/sunrays-8283601_1280.jpg",
+      "https://cdn.pixabay.com/photo/2023/10/27/12/13/vineyard-8345243_960_720.jpg",
+      "https://cdn.pixabay.com/photo/2023/10/26/08/24/autumn-8342089_960_720.jpg"
+  ];
+
+  
   void _addChapter() {
     if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
-    widget.addChapter(titleController.text.trim(), descriptionController.text.trim());
+    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [randomImage]);
     titleController.clear();
     descriptionController.clear();
   }
@@ -272,7 +284,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                           height: 300,
                           width: 300,
                           color: Colors.white,
-                          child: CachedNetworkImage(imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png", fit: BoxFit.cover,),
+                          child: CachedNetworkImage(imageUrl: randomImage, fit: BoxFit.cover,),
                         ),
                         TextField(
                           controller: titleController,
@@ -352,6 +364,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     super.initState();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
+    randomImage = possibleImages[DateTime.now().microsecond % possibleImages.length];
   }
 
   @override

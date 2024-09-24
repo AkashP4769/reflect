@@ -105,7 +105,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   Future<void> fetchEntries() async {
     print("fetching entries");
     final List<Map<String, dynamic>> data = await entryService.getEntries(chapter.id);
-    print(data.toString());
+    //print(data.toString());
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       await entryBox.put(userId, { chapter.id : data });
@@ -153,6 +153,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     super.dispose();
   }
 
+  void popScreenWithUpdate(){
+    Navigator.pop(context, true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
@@ -162,7 +166,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     return WillPopScope(
       onWillPop: () async {
         // Intercept back button press and pop with the result 'haveUpdated'
-        Navigator.pop(context, haveUpdated);
+        print('haveUpdated: $haveUpdated');
+        popScreenWithUpdate();
         return false; // Prevent the default pop behavior
       },
       child: Scaffold(
@@ -184,7 +189,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 40,),
-                EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit,),
+                EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
             
                 const SizedBox(height: 20),
                 if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
@@ -282,13 +287,15 @@ class EntryListAppbar extends StatelessWidget {
     required this.themeData,
     required this.searchController,
     this.deleteChapter,
-    this.toggleEdit
+    this.toggleEdit,
+    this.popScreenWithUpdate
   });
 
   final ThemeData themeData;
   final TextEditingController searchController;
   final void Function()? deleteChapter;
   final void Function()? toggleEdit;
+  final void Function()? popScreenWithUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +307,7 @@ class EntryListAppbar extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
             onPressed: () {
-              Navigator.pop(context);
+              popScreenWithUpdate!();
             },
           ),
           //const SizedBox(width: 10),
