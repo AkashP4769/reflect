@@ -18,10 +18,14 @@ class EntryPage extends ConsumerStatefulWidget {
 class _EntryPageState extends ConsumerState<EntryPage> {
   bool isTitleEdited = false;
   bool isContentEdited = false;
+  bool isDateEdited = false;
+
   bool extendedToolbar = false;
 
   late quill.QuillController quillController;
   late TextEditingController titleController;
+  late DateTime date;
+
   late FocusNode titleFocusNode;
   late FocusNode contentFocusNode;
 
@@ -34,6 +38,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleController = TextEditingController(text: widget.entry.title);
     titleFocusNode = FocusNode();
     contentFocusNode = FocusNode();
+    date = widget.entry.date;
+
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
     else {
       quillController = quill.QuillController(
@@ -68,7 +74,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void addEntry() async {
-    final entry = Entry.fromQuill(titleController.text, quillController.document, widget.entry.date, [], widget.entry.chapterId!, null);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, [], widget.entry.chapterId!, null);
     final result = await entryService.createEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
@@ -80,7 +86,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void updateEntry() async {
-    final entry = Entry.fromQuill(titleController.text, quillController.document, widget.entry.date, [], widget.entry.chapterId!, widget.entry.id);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, [], widget.entry.chapterId!, widget.entry.id);
     final result = await entryService.updateEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
@@ -121,6 +127,40 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     );
   }
 
+  Future<DateTime?> showDatePickerr() async {
+    //show date and time picker
+    return showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    ).then((selectedDate){
+      print("Selected Date: $selectedDate");
+      if (selectedDate != null) {
+        showTimePicker(
+          context: context,
+          
+          initialTime: TimeOfDay.fromDateTime(date),
+        ).then((selectedTime) {
+          if (selectedTime != null) {
+            DateTime selectedDateTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute,
+            );
+            setState(() {
+              date = selectedDateTime;
+              isDateEdited = true;
+            }); // You can use the selectedDateTime as needed.
+          }
+        });
+      }
+    });
+
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -157,7 +197,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(DateFormat("dd MMM yyyy | hh:mm a").format(widget.entry.date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: showDatePickerr,
+                    child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
+                  ),
                   GestureDetector(
                     onTap: deleteEntry,
                     child: const Icon(Icons.delete_outline, color: Colors.red,),
@@ -267,7 +310,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 SizedBox(
                   width: 120,
                   child: ElevatedButton(
-                    onPressed: isTitleEdited || isContentEdited ? (){
+                    onPressed: isTitleEdited || isContentEdited || isDateEdited ? (){
                       if(widget.entry.id == null) addEntry();
                       else updateEntry();
                     } : null,

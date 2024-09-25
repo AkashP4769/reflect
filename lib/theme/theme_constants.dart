@@ -43,6 +43,18 @@ ThemeData lightTheme = ThemeData(
   ),
   bottomSheetTheme: const BottomSheetThemeData(
     backgroundColor: Colors.transparent
+  ),
+
+  timePickerTheme: const TimePickerThemeData(
+    hourMinuteColor: Color(0xffFFE3C3),
+    dialHandColor: Color.fromARGB(255, 34, 34, 34),
+    dialBackgroundColor: Color(0xffFFE3C3),
+
+    dayPeriodTextStyle: const TextStyle(
+      fontSize: 20, // Adjust font size
+      color: Color(0xffFFAC5F), // Set selected AM/PM text color
+      fontWeight: FontWeight.w600, // You can also adjust other styles
+    ),
   )
 );
 
@@ -87,6 +99,29 @@ ThemeData darkTheme = ThemeData(
   ),
   bottomSheetTheme: const BottomSheetThemeData(
     backgroundColor: Colors.transparent
+  ),
+
+  timePickerTheme: TimePickerThemeData(
+    dialHandColor: const Color(0xffFFAC5F),
+    dialBackgroundColor: const Color(0xff141414),
+    hourMinuteColor: const Color((0xff141414)),
+    hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return const Color(0xffFFAC5F);
+      }
+      return Colors.white;
+    }),
+    dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return const Color(0xffFFAC5F);
+      }
+      return Colors.white;
+    }),
+    dayPeriodTextStyle: const TextStyle(
+      fontSize: 20, // Adjust font size
+      color: Color(0xffFFAC5F), // Set selected AM/PM text color
+      fontWeight: FontWeight.w600, // You can also adjust other styles
+    ),
   )
   
   
