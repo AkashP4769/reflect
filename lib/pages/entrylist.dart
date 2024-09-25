@@ -25,6 +25,7 @@ class EntryListPage extends ConsumerStatefulWidget {
 class _EntryListPageState extends ConsumerState<EntryListPage> {
   late Chapter chapter = widget.chapter!;
   List<Entry> entries = [];
+  List<bool> visibleMap = List.generate(100, (index) => true);
 
   late TextEditingController searchController;
   late TextEditingController titleController;
@@ -162,7 +163,16 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final themeData = ref.watch(themeManagerProvider);
     List<Entry> validEntries = entries == null ? [] : entries!.reversed.toList();
     if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList().reversed.toList();
-    //print(entries.length);
+
+    Map<String, List<Entry>> groupedEntries = {};
+    validEntries.forEach((entry){
+      final date = DateFormat('MMM yyyy').format(entry.date);
+      if(groupedEntries[date] == null) groupedEntries[date] = [entry];
+      else groupedEntries[date]!.add(entry);
+    });
+
+    print("visibleMap: $visibleMap");
+    
     return WillPopScope(
       onWillPop: () async {
         // Intercept back button press and pop with the result 'haveUpdated'
@@ -226,28 +236,72 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   ),
                 ),
                 
-                if(!isEditing && validEntries.isNotEmpty) 
+                if(!isEditing && validEntries.isNotEmpty)
                 ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: validEntries.length,
+                  itemCount: groupedEntries.length,
                   clipBehavior: Clip.none,
                   physics: const ScrollPhysics(),
                   padding: const EdgeInsets.symmetric(vertical: 0),
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () async {
-                        final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
-                        if(result == 'entry_updated') fetchEntries();
-                        if(result == 'entry_deleted'){
-                          haveUpdated = true;
-                          fetchEntries();
-                        }
-                      },
-                      child: EntryCard(entry: validEntries[index], themeData: themeData)
+                  itemBuilder: (context, index){
+                    final date = groupedEntries.keys.elementAt(index);
+                    final entries = groupedEntries[date];
+
+  
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            children: [
+                              Text(date, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                              Container(
+                                //color: Colors.green,
+                                child: GestureDetector(
+                                  onTap: (){
+                                    visibleMap[index] = !visibleMap[index];
+                                    setState(() {});
+                                  },
+                                  child: Icon(visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: themeData.colorScheme.onPrimary,)
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        if(visibleMap[index]) ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: entries!.length,
+                          clipBehavior: Clip.none,
+                          physics: const ScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(vertical: 0),
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () async {
+                                final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                                if(result == 'entry_updated') fetchEntries();
+                                if(result == 'entry_deleted'){
+                                  haveUpdated = true;
+                                  fetchEntries();
+                                }
+                              },
+                              child: EntryCard(entry: validEntries[index], themeData: themeData)
+                            );
+                          },
+                        ),
+                        SizedBox(height: 20,)
+                      ],
                     );
-                  },
-                )
+                  }
+                
+                ) 
+                    
+
+
+                
                 else if(!isEditing && validEntries.isEmpty) Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
