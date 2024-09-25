@@ -11,6 +11,7 @@ import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/pages/entrylist.dart';
 import 'package:reflect/services/chapter_service.dart';
+import 'package:reflect/services/timestamp_service.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   final String? searchQuery;
@@ -27,16 +28,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   final chapterBox = Hive.box("chapters");
   final ChapterService chapterService = ChapterService();
+  final TimestampService timestampService = TimestampService();
 
-  
-
-
-
-  List<Chapter> chapters = [
-    //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 16, imageUrl: "https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_640.png"),
-    //Chapter(title: "Embracing the Unknown.", description: "A time of stepping into uncertainty with courage. trusting the process and allowing life to unfold in unexpected ways.", entryCount: 2, imageUrl: "https://cdn.pixabay.com/photo/2024/02/23/21/25/landscape-8592826_1280.jpg"),
-    //Chapter(title: "A New Begining", description: "it marks the start of a new phase in life, where every step feels like an adventure into the unknown.", entryCount: 2)
-  ];
+  List<Chapter> chapters = [];
 
   void createChapter(String title, String description, List<String>? images) async {
     final chapter = {
@@ -46,6 +40,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
       "entryCount": 0,
     };
     final bool status = await chapterService.createChapter(chapter);
+    timestampService.updateChapterTimestamp();
     SnackBar snackBar;
     if(status) {
       fetchChapters();
@@ -74,14 +69,16 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> fetchChapters() async {
-    isFetching = true;
-    if(mounted) setState(() {});
+    //isFetching = true;
+    //if(mounted) setState(() {});
+    final chapterTimestamp = timestampService.getChapterTimestamp();
+    print("chapterTimestamp $chapterTimestamp");
     final List<Map<String, dynamic>> data = await chapterService.getChapters();
     if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
     }
-    isFetching = false;
+    //isFetching = false;
     loadChaptersFromCache();
     if(mounted) setState(() {});
   }

@@ -13,6 +13,7 @@ import 'package:reflect/pages/entry.dart';
 import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/entryService.dart';
+import 'package:reflect/services/timestamp_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
   final Chapter? chapter;
@@ -42,10 +43,13 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final entryService = EntryService();
   final entryBox = Hive.box("entries");
 
+  final timestampService = TimestampService();
+
   void deleteChapter() async {
     final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
+      timestampService.updateChapterTimestamp();
       Navigator.pop(context, true);
       Navigator.pop(context, true);
     }
@@ -87,6 +91,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
+      timestampService.updateChapterTimestamp();
       fetchChaptersAndUpdate();
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));

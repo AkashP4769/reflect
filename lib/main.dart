@@ -27,6 +27,7 @@ void main() async {
   await Hive.openBox('chapters');
   await Hive.openBox('entries');
   await Hive.openBox('settings');
+  await Hive.openBox('timestamps');
 
   runApp(const ProviderScope(child: MainApp()));
 }
