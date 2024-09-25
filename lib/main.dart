@@ -24,9 +24,9 @@ void main() async {
 
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
-  Hive.openBox('chapters');
-  Hive.openBox('entries');
-  Hive.openBox('settings');
+  await Hive.openBox('chapters');
+  await Hive.openBox('entries');
+  await Hive.openBox('settings');
 
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -36,7 +36,9 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(themeManagerProvider.notifier).initializeTheme();
     final themeData = ref.watch(themeManagerProvider);
+    
     return MaterialApp(
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
