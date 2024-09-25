@@ -158,7 +158,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         });
       }
     });
-
   }
 
   @override

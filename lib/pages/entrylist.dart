@@ -30,6 +30,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   late TextEditingController searchController;
   late TextEditingController titleController;
   late TextEditingController descriptionController;
+  late DateTime chapterDate;
 
   bool isTyping = false;
   bool isEditing = false;
@@ -51,10 +52,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
   }
 
-  void editChapter(String title, String description) async {
-    //Navigator.pop(context);
-    //await ChapterService().updateChapter();
-  }
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
 
@@ -68,6 +65,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     searchController = TextEditingController();
     titleController = TextEditingController(text: widget.chapter!.title);
     descriptionController = TextEditingController(text: widget.chapter!.description);
+    chapterDate = widget.chapter!.createdAt;
     
     entries = [ //Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},], chapterId: chapter.id),
                 //Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}], chapterId: chapter.id),
@@ -94,14 +92,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
 
-  /*Future<void> fetchChapter() async {
-    final List<Map<String, dynamic>> data = await chapterService.getChapters();
-    if(data.isNotEmpty) {
-      final String userId = FirebaseAuth.instance.currentUser!.uid;
-      chapterBox.put(userId, {"chapters": data});
-    }
-    setState(() {});
-  }*/
 
   Future<void> fetchEntries() async {
     print("fetching entries");
@@ -123,8 +113,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       entries = [];
       chapter = chapter.copyWith(entryCount: 0);
     }
-
-    
     setState(() {});
   }
 
@@ -143,6 +131,39 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     });
     if(mounted) setState(() {});
   }
+
+  Future<DateTime?> showDatePickerr() async {
+    //show date and time picker
+    return showDatePicker(
+      context: context,
+      initialDate: chapterDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    ).then((selectedDate){
+      print("Selected Date: $selectedDate");
+      if (selectedDate != null) {
+        showTimePicker(
+          context: context,
+          
+          initialTime: TimeOfDay.fromDateTime(chapterDate),
+        ).then((selectedTime) {
+          if (selectedTime != null) {
+            DateTime selectedDateTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute,
+            );
+            setState(() {
+              chapterDate = selectedDateTime;
+              //isDateEdited = true;
+            }); // You can use the selectedDateTime as needed.
+          }
+        });
+      }
+    });
+  } 
 
 
   @override
@@ -202,7 +223,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
             
                 const SizedBox(height: 20),
-                if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, editChapter: editChapter, titleController: titleController, descriptionController: descriptionController,),
+                if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
                 if(isEditing) Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(

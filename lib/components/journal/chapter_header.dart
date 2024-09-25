@@ -7,10 +7,14 @@ class ChapterHeader extends StatelessWidget {
   final bool isEditing;
   final Chapter chapter;
   final ThemeData themeData;
-  final void Function(String title, String description)? editChapter;
+  //final void Function(String title, String description, DateTime dateTime)? editChapter;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
-  const ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.editChapter, required this.titleController, required this.descriptionController}); 
+  final DateTime date;
+  final Function()? showDatePickerr;
+  const ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.titleController, required this.descriptionController, required this.date, required this.showDatePickerr});
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +90,17 @@ class ChapterHeader extends StatelessWidget {
                   Text('Entries - ${chapter.entryCount}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
                 ],
               ),
-              Row(
-                children: [
-                  Icon(Icons.lock_clock, color: themeData.colorScheme.onPrimary,),
-                  const SizedBox(width: 5),
-                  Text('Created - ${DateFormat('dd/MM/yyyy').format(chapter.createdAt)}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
-                ],
+              GestureDetector(
+                onTap: isEditing ? (){
+                  showDatePickerr!();
+                } : null,
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_clock, color: themeData.colorScheme.onPrimary,),
+                    const SizedBox(width: 5),
+                    Text('Created - ${DateFormat('dd/MM/yyyy').format(date)}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
+                  ],
+                ),
               )
             ],
           ),
