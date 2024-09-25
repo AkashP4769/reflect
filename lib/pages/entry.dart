@@ -132,34 +132,40 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-            end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-          )
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            EntryAppbar(themeData: themeData),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(DateFormat("dd MMM yyyy | hh:mm a").format(widget.entry.date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
-                IconButton(onPressed: deleteEntry, icon: Icon(Icons.delete_outline), color: Colors.redAccent,),
-              ],
-            ),
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              clipBehavior: Clip.none,
-              child: TextField(
+      body: SingleChildScrollView(
+        clipBehavior: Clip.none,
+        scrollDirection: Axis.vertical,
+        physics: const ScrollPhysics(),
+          
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          //height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
+              end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
+              colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+            )
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              EntryAppbar(themeData: themeData),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(DateFormat("dd MMM yyyy | hh:mm a").format(widget.entry.date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: deleteEntry,
+                    child: const Icon(Icons.delete_outline, color: Colors.red,),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 00),
+              TextField(
                 controller: titleController,
                 focusNode: titleFocusNode,
                 style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
@@ -173,41 +179,41 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 ),
                 maxLines: null,
               ),
-            ),
-            Expanded(
-              child: quill.QuillEditor.basic(
-                controller: quillController,
-                focusNode: contentFocusNode,
-                configurations: quill.QuillEditorConfigurations(
-                  //checkBoxReadOnly: true
-                  placeholder: "Start writing here...",
-                  keyboardAppearance: themeData.brightness,
-                  customStyles: quill.DefaultStyles(
-                    paragraph: quill.DefaultTextBlockStyle(
-                      themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
-                      const quill.HorizontalSpacing(0, 0),
-                      const quill.VerticalSpacing(0, 0),
-                      quill.VerticalSpacing.zero,
-                      null
+              quill.QuillEditor.basic(
+                    controller: quillController,
+                    focusNode: contentFocusNode,
+                    scrollController: ScrollController(),
+                    configurations: quill.QuillEditorConfigurations(
+                      //checkBoxReadOnly: true
+                      placeholder: "Start writing here...",
+                      keyboardAppearance: themeData.brightness,
+                      customStyles: quill.DefaultStyles(
+                        paragraph: quill.DefaultTextBlockStyle(
+                          themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
+                          const quill.HorizontalSpacing(0, 0),
+                          const quill.VerticalSpacing(0, 0),
+                          quill.VerticalSpacing.zero,
+                          null
+                        ),
+                        placeHolder: quill.DefaultTextBlockStyle(
+                          themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                          const quill.HorizontalSpacing(0, 0),
+                          const quill.VerticalSpacing(0, 0),
+                          quill.VerticalSpacing.zero,
+                          null
+                        ),
+                      )
+                        
                     ),
-                    placeHolder: quill.DefaultTextBlockStyle(
-                      themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                      const quill.HorizontalSpacing(0, 0),
-                      const quill.VerticalSpacing(0, 0),
-                      quill.VerticalSpacing.zero,
-                      null
-                    ),
-                  )
-                    
-                ),
-              ),
-            ),
-        
-            
-            const SizedBox(height: 80,)
-            
-            
-          ],
+                  ),
+              
+          
+              
+              const SizedBox(height: 80,)
+              
+              
+            ],
+          ),
         ),
       ),
       bottomSheet: Container(
