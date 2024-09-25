@@ -5,10 +5,10 @@ class Entry{
   final String? chapterId;
   final String? title;
   final List<Map<String,dynamic>>? content;
-  final DateTime date = DateTime.now();
+  final DateTime date;
   final List<String>? tags;
 
-  Entry({this.title, this.content, DateTime? date, this.id, this.tags, this.chapterId});
+  Entry({this.title, this.content, this.id, this.tags, this.chapterId, DateTime? date}) : date = date ?? DateTime.now();
 
   factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<String>? tags, String chapterId, String? id) {
     return Entry(

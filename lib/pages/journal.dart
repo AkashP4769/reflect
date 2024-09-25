@@ -254,7 +254,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
       "https://cdn.pixabay.com/photo/2016/05/25/18/02/maple-1415541_960_720.jpg",
       "https://cdn.pixabay.com/photo/2023/03/15/20/55/sunbeam-7855454_1280.jpg",
       "https://cdn.pixabay.com/photo/2020/06/23/19/23/fog-5333546_1280.jpg",
-      "https://cdn.pixabay.com/photo/2020/12/06/17/58/trees-5809559_1280.jpg"
+      "https://cdn.pixabay.com/photo/2020/12/06/17/58/trees-5809559_1280.jpg",
+      "https://cdn.pixabay.com/photo/2024/09/19/22/21/ai-generated-9059933_1280.jpg",
+      "https://cdn.pixabay.com/photo/2023/10/24/08/24/sailboats-8337698_1280.jpg",
   ];
 
   
