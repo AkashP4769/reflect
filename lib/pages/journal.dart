@@ -55,6 +55,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final String userId = FirebaseAuth.instance.currentUser!.uid;
     final cachedData = chapterBox.get(userId);
     print("cachedData $cachedData");
+
     if(cachedData == null) return;
     final cachedChapters = cachedData["chapters"] ?? [];
     if(cachedChapters.isNotEmpty) {
@@ -69,17 +70,18 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> fetchChapters() async {
-    //isFetching = true;
-    //if(mounted) setState(() {});
     final chapterTimestamp = timestampService.getChapterTimestamp();
-    print("chapterTimestamp $chapterTimestamp");
-    final List<Map<String, dynamic>> data = await chapterService.getChapters();
-    if(data.isNotEmpty) {
+    final List<Map<String, dynamic>>? data = await chapterService.getChapters();
+    if(data == null) return;
+    else if (data.isNotEmpty) {
+      print("adding data to  cache");
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
+      timestampService.updateChapterTimestamp();
+      loadChaptersFromCache();
     }
     //isFetching = false;
-    loadChaptersFromCache();
+    //
     if(mounted) setState(() {});
   }
 
@@ -87,7 +89,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    chapterBox.clear();
     loadChaptersFromCache();
     fetchChapters();
   }
@@ -146,19 +147,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
                         return GestureDetector(
                           onTap: () async {
-                            /*Future<void> recursivePush() async {
-                              print("pushing chapter ${chapters[index].title}");
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                              print(result);
-                              if(result != null && result == 'deleted') fetchChapters();
-                              else if(result != null && result == 'updated') {
-                                await fetchChapters();
-                              }
-                            }
-                            recursivePush();*/
-                            print("pushing chapter ${chapters[index].title}");
+                            //print("pushing chapter ${chapters[index].title}");
                             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                            print(result);
+                            //print(result);
                             if(result != null && result == true) fetchChapters();
                             //else if(result != null && result == 'updated') fetchChapters();
                               
@@ -170,9 +161,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                         return GestureDetector(
                           onTap: () async {
-                            print("pushing chapter ${chapters[index].title}");
+                            //print("pushing chapter ${chapters[index].title}");
                             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                            print(result);
+                            //print(result);
                             if(result != null && result == true) fetchChapters();
                             //else if(result != null && result == 'updated') fetchChapters();
                               

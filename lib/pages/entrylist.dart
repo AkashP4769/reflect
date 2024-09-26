@@ -79,7 +79,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     fetchEntries();
 
     searchController.addListener(() {
-      print(searchController.text);
+      //print(searchController.text);
       if(searchController.text.isNotEmpty) isTyping = true;
       else isTyping = false;
       setState(() {});
@@ -99,7 +99,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
 
   Future<void> fetchEntries() async {
-    print("fetching entries");
+    //print("fetching entries");
+    print("chapterTimestamp: ${timestampService.getChapterTimestamp()}");
     final List<Map<String, dynamic>> data = await entryService.getEntries(chapter.id);
     //print(data.toString());
     if(data.isNotEmpty) {
@@ -123,17 +124,18 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
 
   Future<void> fetchChaptersAndUpdate() async {
-    final List<Map<String, dynamic>> data = await chapterService.getChapters();
-    if(data.isNotEmpty) {
+    final List<Map<String, dynamic>>? data = await chapterService.getChapters();
+    if(data == null) print('load from cache');
+    else if(data.isNotEmpty) {
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
+
+      data.forEach((chapter){
+        if(chapter["_id"] == widget.chapter!.id) {
+          this.chapter = Chapter.fromMap(chapter);
+        }
+      });
     }
-    
-    data.forEach((chapter){
-      if(chapter["_id"] == widget.chapter!.id) {
-        this.chapter = Chapter.fromMap(chapter);
-      }
-    });
     if(mounted) setState(() {});
   }
 
@@ -197,12 +199,12 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       else groupedEntries[date]!.add(entry);
     });
 
-    print("visibleMap: $visibleMap");
+    //print("visibleMap: $visibleMap");
     
     return WillPopScope(
       onWillPop: () async {
         // Intercept back button press and pop with the result 'haveUpdated'
-        print('haveUpdated: $haveUpdated');
+        //print('haveUpdated: $haveUpdated');
         popScreenWithUpdate();
         return false; // Prevent the default pop behavior
       },

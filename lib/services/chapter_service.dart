@@ -3,20 +3,26 @@ import 'dart:convert';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/services/backend_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:reflect/services/timestamp_service.dart';
 
 class ChapterService extends BackendServices {
-  Future<List<Map<String, dynamic>>> getChapters() async {
+  Future<List<Map<String, dynamic>>?> getChapters() async {
     try{
       print("baseurl: $baseUrl");
-      final response = await http.get(Uri.parse('$baseUrl/chapters/${user!.uid}'));
+      final date = TimestampService().getChapterTimestamp();
+      final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date'));
+      print(response.statusCode);
+      if(response.statusCode == 304){
+        print("User already has latest");
+        return null;
+      }
       if(response.statusCode == 200){
-        print(response.body);
         final decodedList = jsonDecode(response.body) as List;
         return decodedList.map((chapter) => chapter as Map<String, dynamic>).toList();
       }
       return [];
     } catch(e){
-      print("Error fetching chapters: $e");
+      print("Error fetching chapters here?: $e");
       return [];
     }
   }

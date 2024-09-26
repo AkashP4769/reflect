@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:reflect/services/user_service.dart';
 
 class AuthService{
   static Future<String> signInWithGoogle() async {
@@ -17,7 +19,7 @@ class AuthService{
       print("signed in on google");
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
 
-
+      await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
       /*//add user to firestore
       if(userCredential.user != null){
         await UserService.addUser(userCredential.user!.uid, userCredential.user!.displayName, userCredential.user!.email, userCredential.user!.phoneNumber);
