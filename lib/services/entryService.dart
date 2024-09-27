@@ -22,7 +22,7 @@ class EntryService extends BackendServices {
   Future<bool> createEntry(Map<String, dynamic> entry) async {
     try{
       print(entry.toString());
-      final response = await http.post(Uri.parse('$baseUrl/entries/'), body: jsonEncode({"entry":entry}), headers: {'Content-Type': 'application/json'});
+      final response = await http.post(Uri.parse('$baseUrl/entries/'), body: jsonEncode({"entrybody":entry, 'uid':user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 201) return true;
       return false;
     } catch(e){
@@ -33,7 +33,7 @@ class EntryService extends BackendServices {
 
   Future<bool> updateEntry(Map<String, dynamic> entry) async {
     try{
-      final response = await http.post(Uri.parse('$baseUrl/entries/update/'), body: jsonEncode({"entry":entry}), headers: {'Content-Type': 'application/json'});
+      final response = await http.post(Uri.parse('$baseUrl/entries/update/'), body: jsonEncode({"entry":entry, 'uid':user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200) return true;
       return false;
     } catch(e){
@@ -44,7 +44,7 @@ class EntryService extends BackendServices {
 
   Future<bool> deleteEntry(String chapterId, String entryId) async {
     try{
-      final response = await http.delete(Uri.parse('$baseUrl/entries/?chapterId=$chapterId&entryId=$entryId'));
+      final response = await http.delete(Uri.parse('$baseUrl/entries/?chapterId=$chapterId&entryId=$entryId&uid=${user!.uid}'));
       if(response.statusCode == 200) return true;
       return false;
     } catch(e){

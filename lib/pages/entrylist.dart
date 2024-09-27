@@ -49,7 +49,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
-      timestampService.updateChapterTimestamp();
+      //timestampService.updateChapterTimestamp();
       Navigator.pop(context, true);
       Navigator.pop(context, true);
     }
@@ -91,7 +91,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
-      timestampService.updateChapterTimestamp();
+      //timestampService.updateChapterTimestamp();
       fetchChaptersAndUpdate();
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
@@ -119,7 +119,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       entries = [];
       chapter = chapter.copyWith(entryCount: 0);
     }
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
 
@@ -183,7 +183,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   void popScreenWithUpdate(){
-    Navigator.pop(context, true);
+    Navigator.pop(context, haveUpdated);
   }
 
   @override

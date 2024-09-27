@@ -40,7 +40,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
       "entryCount": 0,
     };
     final bool status = await chapterService.createChapter(chapter);
-    timestampService.updateChapterTimestamp();
+    //timestampService.updateChapterTimestamp();
     SnackBar snackBar;
     if(status) {
       fetchChapters();
@@ -77,7 +77,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
       print("adding data to  cache");
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
-      timestampService.updateChapterTimestamp();
+      //timestampService.updateChapterTimestamp();
       loadChaptersFromCache();
     }
     //isFetching = false;
