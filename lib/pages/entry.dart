@@ -176,85 +176,90 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         scrollDirection: Axis.vertical,
         physics: const ScrollPhysics(),
           
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          //height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-              end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-              colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-            )
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              EntryAppbar(themeData: themeData),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: showDatePickerr,
-                    child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
-                  ),
-                  GestureDetector(
-                    onTap: deleteEntry,
-                    child: const Icon(Icons.delete_outline, color: Colors.red,),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 00),
-              TextField(
-                controller: titleController,
-                focusNode: titleFocusNode,
-                style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  hintText: "Title...",
-                  hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-                  
-                ),
-                maxLines: null,
-              ),
-              quill.QuillEditor.basic(
-                    controller: quillController,
-                    focusNode: contentFocusNode,
-                    scrollController: ScrollController(),
-                    configurations: quill.QuillEditorConfigurations(
-                      //checkBoxReadOnly: true
-                      placeholder: "Start writing here...",
-                      keyboardAppearance: themeData.brightness,
-                      customStyles: quill.DefaultStyles(
-                        paragraph: quill.DefaultTextBlockStyle(
-                          themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
-                          const quill.HorizontalSpacing(0, 0),
-                          const quill.VerticalSpacing(0, 0),
-                          quill.VerticalSpacing.zero,
-                          null
-                        ),
-                        placeHolder: quill.DefaultTextBlockStyle(
-                          themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                          const quill.HorizontalSpacing(0, 0),
-                          const quill.VerticalSpacing(0, 0),
-                          quill.VerticalSpacing.zero,
-                          null
-                        ),
-                      )
-                        
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            //height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
+                end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
+                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+              )
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                EntryAppbar(themeData: themeData),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: showDatePickerr,
+                      child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
                     ),
+                    GestureDetector(
+                      onTap: deleteEntry,
+                      child: const Icon(Icons.delete_outline, color: Colors.red,),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 00),
+                TextField(
+                  controller: titleController,
+                  focusNode: titleFocusNode,
+                  style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    hintText: "Title...",
+                    hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                    
                   ),
-              
-          
-              
-              const SizedBox(height: 80,)
-              
-              
-            ],
+                  maxLines: null,
+                ),
+                quill.QuillEditor.basic(
+                      controller: quillController,
+                      focusNode: contentFocusNode,
+                      scrollController: ScrollController(),
+                      configurations: quill.QuillEditorConfigurations(
+                        //checkBoxReadOnly: true
+                        placeholder: "Start writing here...",
+                        keyboardAppearance: themeData.brightness,
+                        customStyles: quill.DefaultStyles(
+                          paragraph: quill.DefaultTextBlockStyle(
+                            themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
+                            const quill.HorizontalSpacing(0, 0),
+                            const quill.VerticalSpacing(0, 0),
+                            quill.VerticalSpacing.zero,
+                            null
+                          ),
+                          placeHolder: quill.DefaultTextBlockStyle(
+                            themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                            const quill.HorizontalSpacing(0, 0),
+                            const quill.VerticalSpacing(0, 0),
+                            quill.VerticalSpacing.zero,
+                            null
+                          ),
+                        )
+                          
+                      ),
+                    ),
+                
+            
+                
+                const SizedBox(height: 80,)
+                
+                
+              ],
+            ),
           ),
         ),
       ),
