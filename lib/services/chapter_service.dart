@@ -19,7 +19,7 @@ class ChapterService extends BackendServices {
       }
       if(response.statusCode == 200){
         final decodedList = jsonDecode(response.body) as List;
-        TimestampService().updateChapterTimestamp();
+        await TimestampService().updateChapterTimestamp();
         return decodedList.map((chapter) => chapter as Map<String, dynamic>).toList();
       }
       return [];

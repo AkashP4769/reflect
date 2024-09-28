@@ -96,11 +96,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     print("lastEntriesUpdated: $lastEntriesUpdated");
     final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
 
-    if(data == null) loadFromCache();
+    if(data == null){
+      await loadFromCache();
+      return;
+    }
 
     else if(data.isNotEmpty) {
       await entryBox.put(userId, { chapter.id : data });
-      timestampService.updateEntryTimestamp(chapter.id);
+      await timestampService.updateEntryTimestamp(chapter.id);
       loadFromCache();
       fetchChaptersAndUpdate();
     }
@@ -120,6 +123,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
       List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
       entries = entriesList;
+
+      setState(() {});
     }
   }
 
