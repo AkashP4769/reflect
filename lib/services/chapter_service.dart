@@ -8,10 +8,10 @@ import 'package:reflect/services/timestamp_service.dart';
 class ChapterService extends BackendServices {
   Future<List<Map<String, dynamic>>?> getChapters() async {
     try{
-      print("baseurl: $baseUrl");
+      //print("baseurl: $baseUrl");
       final date = TimestampService().getChapterTimestamp();
       print("date for getchapters(): $date");
-      final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date'));
+      final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date')).timeout(const Duration(seconds: 10));
       print(response.statusCode);
       if(response.statusCode == 304){
         print("User already has latest");
@@ -22,10 +22,12 @@ class ChapterService extends BackendServices {
         await TimestampService().updateChapterTimestamp();
         return decodedList.map((chapter) => chapter as Map<String, dynamic>).toList();
       }
-      return [];
+
+      print("status code: ${response.statusCode}");
+      return null;
     } catch(e){
       print("Error fetching chapters here?: $e");
-      return [];
+      return null;
     }
   }
 

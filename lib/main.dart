@@ -29,6 +29,12 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox('timestamps');
 
+  //final timestampBox = Hive.box('timestamps');
+  //timestampBox.clear();
+
+  //final entryBox = Hive.box('entries');
+  //entryBox.clear();
+
   runApp(const ProviderScope(child: MainApp()));
 }
 

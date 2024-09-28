@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -92,17 +95,21 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
 
   Future<void> fetchEntries() async {
+    await loadFromCache();
+
     final lastEntriesUpdated = timestampService.getEntryTimestamp(chapter.id);
     print("lastEntriesUpdated: $lastEntriesUpdated");
     final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
 
+
     if(data == null){
-      await loadFromCache();
       return;
     }
 
     else if(data.isNotEmpty) {
-      await entryBox.put(userId, { chapter.id : data });
+      await entryBox.put(chapter.id, data);
+      print("data: $data");
+      print("Entries put successfully");
       await timestampService.updateEntryTimestamp(chapter.id);
       loadFromCache();
       fetchChaptersAndUpdate();
@@ -117,12 +124,18 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   Future<void> loadFromCache() async {
-    final cachedData = entryBox.get(userId)[chapter.id];
-    print("cached data: cachedData");
+    final cachedData = await entryBox.get(chapter.id);
+    print("cached data: $cachedData");
     if(cachedData != null){
+      //List<Map<String, dynamic>> entriesData = cachedData.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+      print("loading cache data entries");
       List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
+      print("no problem see");
+      
       List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
       entries = entriesList;
+
+      //entries = cachedData.map((entry) => Entry.fromJson(jsonDecode(entry.toString()))).toList();
 
       setState(() {});
     }
