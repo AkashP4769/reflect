@@ -32,6 +32,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   late DateTime chapterDate;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
 
   bool isTyping = false;
   bool isEditing = false;
@@ -45,22 +46,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   final timestampService = TimestampService();
 
-  void deleteChapter() async {
-    final status = await ChapterService().deleteChapter(chapter.id);
-    if(status) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
-      //timestampService.updateChapterTimestamp();
-      Navigator.pop(context, true);
-      Navigator.pop(context, true);
-    }
-    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
-  }
-
-
-  void toggleEdit() => setState(() => isEditing = !isEditing);
-
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -71,11 +56,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     descriptionController = TextEditingController(text: widget.chapter!.description);
     chapterDate = widget.chapter!.createdAt;
     
-    entries = [ //Entry(title: 'Quiet Revelations', content: [{'insert':"As I sat by the window, watching the rain, I realized how much I’ve grown over the past year. It hasn’t been easy, but the small, quiet moments of realization...\n"},], chapterId: chapter.id),
-                //Entry(title: "Reflections of the Past", content: [{'insert':  "Looking back, I can see how much I’ve changed. The things that once seemed so important don’t hold the same weight anymore. It’s funny how time and perspective can shift our understanding...\n"}], chapterId: chapter.id),
-                //Entry(title: "Lost and Found", content: [{'insert': "I’ve been feeling lost lately, like I’m adrift in a sea of uncertainty. But in the midst of all the chaos, I’ve found moments of clarity and peace. It’s in these moments that I realize...\n"}], chapterId: chapter.id),
-    ];
-    
     fetchEntries();
 
     searchController.addListener(() {
@@ -84,6 +64,19 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       else isTyping = false;
       setState(() {});
     });
+  }
+
+  void toggleEdit() => setState(() => isEditing = !isEditing);
+
+  void deleteChapter() async {
+    final status = await ChapterService().deleteChapter(chapter.id);
+    if(status) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
+      //timestampService.updateChapterTimestamp();
+      Navigator.pop(context, true);
+      Navigator.pop(context, true);
+    }
+    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
   }
 
   void updateChapter() async {
@@ -99,27 +92,35 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
 
   Future<void> fetchEntries() async {
-    //print("fetching entries");
-    print("chapterTimestamp: ${timestampService.getChapterTimestamp()}");
-    final List<Map<String, dynamic>> data = await entryService.getEntries(chapter.id);
-    //print(data.toString());
-    if(data.isNotEmpty) {
-      final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final lastEntriesUpdated = timestampService.getEntryTimestamp(chapter.id);
+    print("lastEntriesUpdated: $lastEntriesUpdated");
+    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
+
+    if(data == null) loadFromCache();
+
+    else if(data.isNotEmpty) {
       await entryBox.put(userId, { chapter.id : data });
-      final cachedData = entryBox.get(userId)[chapter.id];
-      print("cached data: $cachedData");
-      if(cachedData != null){
-        List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
-        List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
-        entries = entriesList;
-      }
+      timestampService.updateEntryTimestamp(chapter.id);
+      loadFromCache();
       fetchChaptersAndUpdate();
     }
+
     else {
       entries = [];
       chapter = chapter.copyWith(entryCount: 0);
     }
+
     if(mounted) setState(() {});
+  }
+
+  Future<void> loadFromCache() async {
+    final cachedData = entryBox.get(userId)[chapter.id];
+    print("cached data: cachedData");
+    if(cachedData != null){
+      List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
+      List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
+      entries = entriesList;
+    }
   }
 
 
@@ -127,7 +128,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final List<Map<String, dynamic>>? data = await chapterService.getChapters();
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
-      final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
 
       data.forEach((chapter){

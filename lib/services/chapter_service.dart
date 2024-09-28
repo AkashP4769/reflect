@@ -10,6 +10,7 @@ class ChapterService extends BackendServices {
     try{
       print("baseurl: $baseUrl");
       final date = TimestampService().getChapterTimestamp();
+      print("date for getchapters(): $date");
       final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date'));
       print(response.statusCode);
       if(response.statusCode == 304){

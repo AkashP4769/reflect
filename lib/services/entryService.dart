@@ -5,14 +5,19 @@ import 'package:http/http.dart' as http;
 import 'package:reflect/services/backend_services.dart';
 
 class EntryService extends BackendServices {
-  Future<List<Map<String, dynamic>>> getEntries(String chapterId) async {
+  Future<List<Map<String, dynamic>>?> getEntries(String chapterId, String date) async {
     try{
-      final response = await http.get(Uri.parse('$baseUrl/entries/$chapterId'));
+      final response = await http.get(Uri.parse('$baseUrl/entries/?chapterId=$chapterId&uid=${user!.uid}&date=$date'));
       if(response.statusCode == 200){
+        print("Entries fetched successfully");
         final decodedList = jsonDecode(response.body) as List;
         return decodedList.map((entry) => entry as Map<String, dynamic>).toList();
       }
-      return [];
+
+      if(response.statusCode == 304) print("user already has latest entries");
+
+      return null;
+
     } catch(e){
       print("Error fetching entries: $e");
       return [];

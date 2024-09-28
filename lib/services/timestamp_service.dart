@@ -7,28 +7,26 @@ class TimestampService{
   final timestampBox = Hive.box('timestamps');
 
   void updateChapterTimestamp(){
-    timestampBox.put(user!.uid, {'chapters': DateTime.now().toIso8601String()});
-  }
-
-  void updateEntryTimestamp(String entryId){
-    timestampBox.put(user!.uid, {'entries': {entryId: DateTime.now().toIso8601String()}});
+    timestampBox.put(user!.uid, DateTime.now().toIso8601String());
   }
 
   String getChapterTimestamp(){
-    final userTimeStamps =  timestampBox.get(user!.uid);
-    if(userTimeStamps != null){
-      return userTimeStamps['chapters'];
+    final chapterTime = timestampBox.get(user!.uid);
+    if(chapterTime != null){
+      return chapterTime;
     }
     return DateTime.now().subtract(const Duration(days: 1000)).toIso8601String();
   }
 
-  String getEntryTimestamp(String entryId){
-    final userTimeStamps =  timestampBox.get(user!.uid);
-    if(userTimeStamps != null){
-      return userTimeStamps['entries'][entryId];
+  void updateEntryTimestamp(String chapterId){
+    timestampBox.put(chapterId, DateTime.now().toIso8601String());
+  }
+
+  String getEntryTimestamp(String chapterId){
+    final entriesOfChapterTime = timestampBox.get(chapterId);
+    if(entriesOfChapterTime != null){
+      return entriesOfChapterTime;
     }
     return DateTime.now().subtract(const Duration(days: 1000)).toIso8601String();
   }
-
-
 }
