@@ -59,7 +59,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     descriptionController = TextEditingController(text: widget.chapter!.description);
     chapterDate = widget.chapter!.createdAt;
     
-    fetchEntries();
+    fetchEntries(false);
 
     searchController.addListener(() {
       //print(searchController.text);
@@ -88,18 +88,18 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
       //timestampService.updateChapterTimestamp();
-      fetchChaptersAndUpdate();
+      fetchChaptersAndUpdate(true);
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
   }
 
 
-  Future<void> fetchEntries() async {
+  Future<void> fetchEntries(bool explicit) async {
     await loadFromCache();
 
     final lastEntriesUpdated = timestampService.getEntryTimestamp(chapter.id);
     print("lastEntriesUpdated: $lastEntriesUpdated");
-    /*final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
+    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated, explicit);
 
 
     if(data == null){
@@ -112,7 +112,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       print("Entries put successfully");
       await timestampService.updateEntryTimestamp(chapter.id);
       loadFromCache();
-      fetchChaptersAndUpdate();
+      fetchChaptersAndUpdate(explicit);
     }
 
     else {
@@ -120,7 +120,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       chapter = chapter.copyWith(entryCount: 0);
     }
 
-    if(mounted) setState(() {});*/
+    if(mounted) setState(() {});
   }
 
   Future<void> loadFromCache() async {
@@ -154,8 +154,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
 
-  Future<void> fetchChaptersAndUpdate() async {
-    final List<Map<String, dynamic>>? data = await chapterService.getChapters();
+  Future<void> fetchChaptersAndUpdate(bool explicit) async {
+    final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
       chapterBox.put(userId, {"chapters": data});
@@ -240,137 +240,142 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          //padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
-              end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
-              colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-            )
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 40,),
-                EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            fetchEntries(true);
+          },
+          child: Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            //padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
+                end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
+                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+              )
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 40,),
+                  EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
+              
+                  const SizedBox(height: 20),
+                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
+                  if(isEditing) Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton(
+                            onPressed: toggleEdit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: themeData.colorScheme.surface,
+                              elevation: 10
+                            ),
+                            child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
+                          ),
+                        ),
+                        const SizedBox(width: 20,),
+                        Expanded(
+                          flex: 4,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 10,
+                            ),
+                            onPressed: (){
+                              toggleEdit();
+                              updateChapter();
+                            },
+                            child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  
+                  if(!isEditing && validEntries.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: groupedEntries.length,
+                    clipBehavior: Clip.none,
+                    physics: const ScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    itemBuilder: (context, index){
+                      final date = groupedEntries.keys.elementAt(index);
+                      final entries = groupedEntries[date];
+          
             
-                const SizedBox(height: 20),
-                if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
-                if(isEditing) Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: Row(
+                              children: [
+                                Text(date, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                                Container(
+                                  //color: Colors.green,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      visibleMap[index] = !visibleMap[index];
+                                      setState(() {});
+                                    },
+                                    child: Icon(visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: themeData.colorScheme.onPrimary,)
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          if(visibleMap[index]) ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: entries!.length,
+                            clipBehavior: Clip.none,
+                            physics: const ScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                                  if(result == 'entry_updated') fetchEntries(true);
+                                  if(result == 'entry_deleted'){
+                                    haveUpdated = true;
+                                    fetchEntries(true);
+                                  }
+                                },
+                                child: EntryCard(entry: validEntries[index], themeData: themeData)
+                              );
+                            },
+                          ),
+                          SizedBox(height: 20,)
+                        ],
+                      );
+                    }
+                  
+                  ) 
+                      
+          
+          
+                  
+                  else if(!isEditing && validEntries.isEmpty) Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: ElevatedButton(
-                          onPressed: toggleEdit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: themeData.colorScheme.surface,
-                            elevation: 10
-                          ),
-                          child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
-                        ),
-                      ),
-                      const SizedBox(width: 20,),
-                      Expanded(
-                        flex: 4,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 10,
-                          ),
-                          onPressed: (){
-                            toggleEdit();
-                            updateChapter();
-                          },
-                          child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
-                        ),
-                      )
+                      SizedBox(height: 40,),
+                      Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
+                      
                     ],
                   ),
-                ),
-                
-                if(!isEditing && validEntries.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: groupedEntries.length,
-                  clipBehavior: Clip.none,
-                  physics: const ScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(vertical: 0),
-                  itemBuilder: (context, index){
-                    final date = groupedEntries.keys.elementAt(index);
-                    final entries = groupedEntries[date];
-
-  
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Row(
-                            children: [
-                              Text(date, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                              Container(
-                                //color: Colors.green,
-                                child: GestureDetector(
-                                  onTap: (){
-                                    visibleMap[index] = !visibleMap[index];
-                                    setState(() {});
-                                  },
-                                  child: Icon(visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: themeData.colorScheme.onPrimary,)
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        if(visibleMap[index]) ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: entries!.length,
-                          clipBehavior: Clip.none,
-                          physics: const ScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(vertical: 0),
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () async {
-                                final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
-                                if(result == 'entry_updated') fetchEntries();
-                                if(result == 'entry_deleted'){
-                                  haveUpdated = true;
-                                  fetchEntries();
-                                }
-                              },
-                              child: EntryCard(entry: validEntries[index], themeData: themeData)
-                            );
-                          },
-                        ),
-                        SizedBox(height: 20,)
-                      ],
-                    );
-                  }
-                
-                ) 
-                    
-
-
-                
-                else if(!isEditing && validEntries.isEmpty) Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 40,),
-                    Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
-                    
-                  ],
-                ),
-                SizedBox(height: 70,)
-              ],
+                  SizedBox(height: 70,)
+                ],
+              ),
             ),
           ),
         ),
@@ -382,7 +387,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
               if(result == 'entry_added'){
                 haveUpdated = true;
-                fetchEntries(); 
+                fetchEntries(true); 
               }
             }, 
             child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),

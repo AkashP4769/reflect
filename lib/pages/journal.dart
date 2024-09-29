@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/image_stack.dart';
@@ -32,6 +33,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   List<Chapter> chapters = [];
 
+  //final RefreshController refreshController = RefreshController(initialRefresh: false);
+
   void createChapter(String title, String description, List<String>? images) async {
     final chapter = {
       "title": title,
@@ -43,7 +46,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     //timestampService.updateChapterTimestamp();
     SnackBar snackBar;
     if(status) {
-      fetchChapters();
+      fetchChapters(true);
       toggleCreate();
       snackBar = SnackBar(content: Text("Chapter created successfully"));
     }
@@ -69,9 +72,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
     }
   }
 
-  Future<void> fetchChapters() async {
+  Future<void> fetchChapters(bool explicit) async {
     final chapterTimestamp = timestampService.getChapterTimestamp();
-    final List<Map<String, dynamic>>? data = await chapterService.getChapters();
+    final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
     if(data == null) return;
     else if (data.isNotEmpty) {
       print("adding data to  cache");
@@ -90,7 +93,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     // TODO: implement initState
     super.initState();
     loadChaptersFromCache();
-    fetchChapters();
+    fetchChapters(false);
   }
 
   void toggleCreate() => setState(() => isCreate = !isCreate);
@@ -99,92 +102,97 @@ class _HomePageState extends ConsumerState<JournalPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
 
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-        )
-      ),
-      child: TweenAnimationBuilder(
-        tween: Tween<double>(begin: 0.0, end: 1.0), 
-        duration: const Duration(milliseconds: 1000), 
-        builder: (context, value, child){
-          if(isFetching) {
-            return Center(
-              child: SpinKitCircle(
-                color: themeData.colorScheme.onPrimary,
-                size: 50.0,
+    return RefreshIndicator(
+      onRefresh: () async {
+        await fetchChapters(true);
+      },
+      child: Container(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+          )
+        ),
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(begin: 0.0, end: 1.0), 
+          duration: const Duration(milliseconds: 1000), 
+          builder: (context, value, child){
+            if(isFetching) {
+              return Center(
+                child: SpinKitCircle(
+                  color: themeData.colorScheme.onPrimary,
+                  size: 50.0,
+                ),
+              );
+            }
+            if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
+            if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
+            return Scaffold(
+              backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+              body: SingleChildScrollView(
+                clipBehavior: Clip.none,
+                child: Column(
+                  //mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text("Chapters", style: themeData.textTheme.titleLarge,),
+                    const SizedBox(height: 10),
+                    /*ElevatedButton(
+                      onPressed: () => setState((){}), 
+                      child: Text("Refresh")
+                    ),*/
+                    ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      clipBehavior: Clip.none,
+                      itemCount: chapters.length,
+                      physics: const ScrollPhysics(),
+                      itemBuilder: (context, index){
+                        if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
+                          return GestureDetector(
+                            onTap: () async {
+                              //print("pushing chapter ${chapters[index].title}");
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              //print(result);
+                              if(result != null && result == true) fetchChapters(false);
+                              //else if(result != null && result == 'updated') fetchChapters();
+                                
+                            },
+                            
+                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                          );
+                        }
+                        else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
+                          return GestureDetector(
+                            onTap: () async {
+                              //print("pushing chapter ${chapters[index].title}");
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              //print(result);
+                              if(result != null && result == true) fetchChapters(false);
+                              //else if(result != null && result == 'updated') fetchChapters();
+                                
+                            },
+                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                          );
+                        }
+                        else return Container();
+                      }
+                    ),
+                  ],
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: toggleCreate,
+                child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
+                backgroundColor: themeData.colorScheme.primary,
               ),
             );
           }
-          if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
-          if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
-          return Scaffold(
-            backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-            body: SingleChildScrollView(
-              clipBehavior: Clip.none,
-              child: Column(
-                //mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 10),
-                  Text("Chapters", style: themeData.textTheme.titleLarge,),
-                  const SizedBox(height: 10),
-                  /*ElevatedButton(
-                    onPressed: () => setState((){}), 
-                    child: Text("Refresh")
-                  ),*/
-                  ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    clipBehavior: Clip.none,
-                    itemCount: chapters.length,
-                    physics: const ScrollPhysics(),
-                    itemBuilder: (context, index){
-                      if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
-                        return GestureDetector(
-                          onTap: () async {
-                            //print("pushing chapter ${chapters[index].title}");
-                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                            //print(result);
-                            if(result != null && result == true) fetchChapters();
-                            //else if(result != null && result == 'updated') fetchChapters();
-                              
-                          },
-                          
-                          child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                        );
-                      }
-                      else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
-                        return GestureDetector(
-                          onTap: () async {
-                            //print("pushing chapter ${chapters[index].title}");
-                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                            //print(result);
-                            if(result != null && result == true) fetchChapters();
-                            //else if(result != null && result == 'updated') fetchChapters();
-                              
-                          },
-                          child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                        );
-                      }
-                      else return Container();
-                    }
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: toggleCreate,
-              child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
-              backgroundColor: themeData.colorScheme.primary,
-            ),
-          );
-        }
-      )
+        )
+      ),
     );
   }
 }
