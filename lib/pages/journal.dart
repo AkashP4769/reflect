@@ -159,7 +159,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                               //print("pushing chapter ${chapters[index].title}");
                               final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
                               //print(result);
-                              if(result != null && result == true) fetchChapters(false);
+                              if(result != null && result == true) fetchChapters(true);
                               //else if(result != null && result == 'updated') fetchChapters();
                                 
                             },
@@ -173,7 +173,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                               //print("pushing chapter ${chapters[index].title}");
                               final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
                               //print(result);
-                              if(result != null && result == true) fetchChapters(false);
+                              if(result != null && result == true) fetchChapters(true);
                               //else if(result != null && result == 'updated') fetchChapters();
                                 
                             },
