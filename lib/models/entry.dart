@@ -78,4 +78,9 @@ class Entry{
       'tags': tags,
     };
   }
+
+  @override
+  String toString(){
+    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}';
+  }
 }

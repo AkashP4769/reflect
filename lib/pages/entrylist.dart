@@ -108,8 +108,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     else if(data.isNotEmpty) {
       await entryBox.put(chapter.id, data);
-      print("data: $data");
-      print("Entries put successfully");
       await timestampService.updateEntryTimestamp(chapter.id);
       loadFromCache();
       fetchChaptersAndUpdate(explicit);
@@ -125,29 +123,18 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   Future<void> loadFromCache() async {
     final cachedData = await entryBox.get(chapter.id);
-    //print("cached data: ");
-    print("all data :::::::: " + entryBox.values.toList().toString());
-    //cachedData?.forEach((entry) => print("entryAAAA: $entry"));
     if(cachedData != null){
-      //List<Map<String, dynamic>> entriesData = cachedData.map((item) => Map<String, dynamic>.from(item as Map)).toList();
-      print("loading cache data entries");
-      //List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
-      //List<Map<String, dynamic>> entriesData = cachedData.map((entry) => Map<String, dynamic>.from(entry)).toList();
-
       List<Map<String, dynamic>> entriesData;
       try {
         entriesData = (cachedData as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
       } catch (e) {
         print("Error parsing cache: $e");
-        // Fallback in case cache is corrupted or doesn't match expected type
         entriesData = [];
       }
       print("no problem see");
       
       List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
       entries = entriesList;
-
-      //entries = cachedData.map((entry) => Entry.fromJson(jsonDecode(entry.toString()))).toList();
 
       setState(() {});
     }
@@ -158,7 +145,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
-      chapterBox.put(userId, {"chapters": data});
+      chapterBox.put(userId, data);
 
       data.forEach((chapter){
         if(chapter["_id"] == widget.chapter!.id) {
@@ -222,11 +209,21 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     List<Entry> validEntries = entries == null ? [] : entries!.reversed.toList();
     if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList().reversed.toList();
 
+    print("validEntries:");
+    validEntries.forEach((element) {
+      print(element.toString());
+    });
+
     Map<String, List<Entry>> groupedEntries = {};
     validEntries.forEach((entry){
       final date = DateFormat('MMM yyyy').format(entry.date);
       if(groupedEntries[date] == null) groupedEntries[date] = [entry];
       else groupedEntries[date]!.add(entry);
+    });
+
+    print("groupedEntries: ");
+    groupedEntries.forEach((key, value) {
+      print("$key: ${value.toString()}");
     });
 
     //print("visibleMap: $visibleMap");
@@ -308,7 +305,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                     padding: const EdgeInsets.symmetric(vertical: 0),
                     itemBuilder: (context, index){
                       final date = groupedEntries.keys.elementAt(index);
-                      final entries = groupedEntries[date];
+                      final _entries = groupedEntries[date];
           
             
                       return Column(
@@ -336,21 +333,21 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                           if(visibleMap[index]) ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.vertical,
-                            itemCount: entries!.length,
+                            itemCount: _entries!.length,
                             clipBehavior: Clip.none,
                             physics: const ScrollPhysics(),
                             padding: const EdgeInsets.symmetric(vertical: 0),
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () async {
-                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: _entries[index],)));
                                   if(result == 'entry_updated') fetchEntries(true);
                                   if(result == 'entry_deleted'){
                                     haveUpdated = true;
                                     fetchEntries(true);
                                   }
                                 },
-                                child: EntryCard(entry: validEntries[index], themeData: themeData)
+                                child: EntryCard(entry: _entries[index], themeData: themeData)
                               );
                             },
                           ),

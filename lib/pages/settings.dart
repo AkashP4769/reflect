@@ -42,55 +42,61 @@ class _HomePageState extends ConsumerState<SettingsPage> {
         )
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 20),
-          Text('Settings', style: themeData.textTheme.titleLarge),
-          const SizedBox(height: 20),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            decoration: BoxDecoration(
-              color: themeData.colorScheme.surface,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: const [
-                BoxShadow(
-                  color:  Color.fromARGB(64, 0, 0, 0),
-                  spreadRadius: 0,
-                  blurRadius: 4,
-                  offset: Offset(0, 6), // changes position of shadow
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Server', style: themeData.textTheme.titleMedium),
-                const SizedBox(height: 20),
-                DropdownMenu<String?>(
-                  label: Text('Server', style: themeData.textTheme.titleSmall),
-                  initialSelection: selectedServer,
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                      value: servers['Localhost'],
-                      label:  'Localhost'
-                    ),
-                    DropdownMenuEntry(
-                      value: servers['Vercel'],
-                      label:  'Vercel'
-                    ),
-                    DropdownMenuEntry(
-                      value: servers['AWS'],
-                      label:  'AWS'
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text('Settings', style: themeData.textTheme.titleLarge),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: themeData.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: const [
+                    BoxShadow(
+                      color:  Color.fromARGB(64, 0, 0, 0),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: Offset(0, 6), // changes position of shadow
                     ),
                   ],
-                  onSelected: (String? value) {
-                    settingBox.put('baseUrl', value);
-                  },
-                )
-              ],
-            ),
-          )
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Server', style: themeData.textTheme.titleMedium),
+                    const SizedBox(height: 20),
+                    DropdownMenu<String?>(
+                      label: Text('Server', style: themeData.textTheme.titleSmall),
+                      initialSelection: selectedServer,
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry(
+                          value: servers['Localhost'],
+                          label:  'Localhost'
+                        ),
+                        DropdownMenuEntry(
+                          value: servers['Vercel'],
+                          label:  'Vercel'
+                        ),
+                        DropdownMenuEntry(
+                          value: servers['AWS'],
+                          label:  'AWS'
+                        ),
+                      ],
+                      onSelected: (String? value) {
+                        settingBox.put('baseUrl', value);
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.1.0" , style: themeData.textTheme.titleSmall))
         ],
       ),
     );
