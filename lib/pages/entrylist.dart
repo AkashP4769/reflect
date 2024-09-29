@@ -145,7 +145,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
-      chapterBox.put(userId, data);
+      chapterBox.put(userId, {"chapters": data});
 
       data.forEach((chapter){
         if(chapter["_id"] == widget.chapter!.id) {

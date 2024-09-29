@@ -70,26 +70,34 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                   children: [
                     Text('Server', style: themeData.textTheme.titleMedium),
                     const SizedBox(height: 20),
-                    DropdownMenu<String?>(
-                      label: Text('Server', style: themeData.textTheme.titleSmall),
-                      initialSelection: selectedServer,
-                      dropdownMenuEntries: [
-                        DropdownMenuEntry(
-                          value: servers['Localhost'],
-                          label:  'Localhost'
+                    Theme(
+                      data: themeData,
+                      child: DropdownMenu<String?>(
+                        label: Text('Server', style: themeData.textTheme.titleSmall),
+                        initialSelection: selectedServer,
+                        menuStyle: MenuStyle(
+                          backgroundColor: WidgetStateProperty.all(themeData.colorScheme.surface),
                         ),
-                        DropdownMenuEntry(
-                          value: servers['Vercel'],
-                          label:  'Vercel'
-                        ),
-                        DropdownMenuEntry(
-                          value: servers['AWS'],
-                          label:  'AWS'
-                        ),
-                      ],
-                      onSelected: (String? value) {
-                        settingBox.put('baseUrl', value);
-                      },
+                        textStyle: themeData.textTheme.bodyMedium,
+                        
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
+                            value: servers['Localhost'],
+                            label:  'Localhost',
+                          ),
+                          DropdownMenuEntry(
+                            value: servers['Vercel'],
+                            label:  'Vercel'
+                          ),
+                          DropdownMenuEntry(
+                            value: servers['AWS'],
+                            label:  'AWS'
+                          ),
+                        ],
+                        onSelected: (String? value) {
+                          settingBox.put('baseUrl', value);
+                        },
+                      ),
                     )
                   ],
                 ),

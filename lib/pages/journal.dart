@@ -130,7 +130,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
               );
             }
             if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
-            if(chapters.isEmpty) return EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value);
+            if(chapters.isEmpty) return Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value)));
             return Scaffold(
               backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
               body: SingleChildScrollView(

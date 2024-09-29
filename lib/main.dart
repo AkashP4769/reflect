@@ -35,6 +35,9 @@ void main() async {
   //final entryBox = Hive.box('entries');
   //entryBox.clear();
 
+  //final chapterbox = Hive.box('chapters');
+  //chapterbox.clear();
+
   runApp(const ProviderScope(child: MainApp()));
 }
 
