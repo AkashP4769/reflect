@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,7 +99,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     final lastEntriesUpdated = timestampService.getEntryTimestamp(chapter.id);
     print("lastEntriesUpdated: $lastEntriesUpdated");
-    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
+    /*final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated);
 
 
     if(data == null){
@@ -120,16 +120,28 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       chapter = chapter.copyWith(entryCount: 0);
     }
 
-    if(mounted) setState(() {});
+    if(mounted) setState(() {});*/
   }
 
   Future<void> loadFromCache() async {
     final cachedData = await entryBox.get(chapter.id);
-    print("cached data: $cachedData");
+    //print("cached data: ");
+    print("all data :::::::: " + entryBox.values.toList().toString());
+    //cachedData?.forEach((entry) => print("entryAAAA: $entry"));
     if(cachedData != null){
       //List<Map<String, dynamic>> entriesData = cachedData.map((item) => Map<String, dynamic>.from(item as Map)).toList();
       print("loading cache data entries");
-      List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
+      //List<Map<String, dynamic>> entriesData = cachedData as List<Map<String, dynamic>>;
+      //List<Map<String, dynamic>> entriesData = cachedData.map((entry) => Map<String, dynamic>.from(entry)).toList();
+
+      List<Map<String, dynamic>> entriesData;
+      try {
+        entriesData = (cachedData as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      } catch (e) {
+        print("Error parsing cache: $e");
+        // Fallback in case cache is corrupted or doesn't match expected type
+        entriesData = [];
+      }
       print("no problem see");
       
       List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;

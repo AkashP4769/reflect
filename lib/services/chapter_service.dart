@@ -11,7 +11,7 @@ class ChapterService extends BackendServices {
       //print("baseurl: $baseUrl");
       final date = TimestampService().getChapterTimestamp();
       print("date for getchapters(): $date");
-      final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date')).timeout(const Duration(seconds: 10));
+      final response = await http.get(Uri.parse('$baseUrl/chapters/?uid=${user!.uid}&date=$date')).timeout(const Duration(seconds: 5), onTimeout: () => http.Response('Error', 408));
       print(response.statusCode);
       if(response.statusCode == 304){
         print("User already has latest");
