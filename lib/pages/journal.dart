@@ -270,6 +270,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: SingleChildScrollView(
+        clipBehavior: Clip.none,
         child: Align(
           alignment: Alignment.center,
           child: Column(
