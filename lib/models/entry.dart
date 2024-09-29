@@ -47,7 +47,7 @@ class Entry{
       chapterId: json['chapterId'],
       title: json['title'],
       content: json['content'] != null ? List<Map<String, dynamic>>.from(json['content']) : null,
-      date: DateTime.parse(json['date']),
+      date: DateTime.parse(json['date']).toLocal(),
       tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
     );
   }
@@ -63,7 +63,7 @@ class Entry{
             (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
           ))
         : null,
-      date: DateTime.parse(data['date']).toLocal(),
+      date: DateTime.parse(data['date']),
       tags: (data['tags'] == null || (data['tags'] as List).isEmpty)? [] : (data['tags'] as List).map((imageUrl) => imageUrl as String).toList(),
     );
   }
@@ -74,7 +74,7 @@ class Entry{
       'chapterId': chapterId,
       'title': title,
       'content': content,
-      'date': date.toIso8601String(),
+      'date': date.toLocal().toIso8601String(),
       'tags': tags,
     };
   }
