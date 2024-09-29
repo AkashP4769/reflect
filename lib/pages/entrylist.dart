@@ -83,7 +83,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   void updateChapter() async {
-    final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim()).toMap());
+    final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate).toMap());
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;

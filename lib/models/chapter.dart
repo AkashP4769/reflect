@@ -64,7 +64,7 @@ class Chapter {
       'title': title,
       'description': description,
       'imageUrl': imageUrl,
-      'createdAt': createdAt.toIso8601String(),
+      'date': createdAt.toIso8601String(),
       'entryCount': entryCount,
     };
   }
@@ -76,7 +76,7 @@ class Chapter {
       title: map['title'] as String,
       description: map['description'] as String,
       imageUrl: (map['imageUrl'] == null || (map['imageUrl'] as List).isEmpty)? [] : (map['imageUrl'] as List).map((imageUrl) => imageUrl as String).toList(),
-      createdAt: DateTime.parse(map['createdAt']),
+      createdAt: DateTime.parse(map['date'] ?? map['createdAt']).toLocal(),
       entryCount: map['entryCount'] as int,
     );
   }
@@ -145,7 +145,7 @@ class ChapterAdvanced extends Chapter{
         description: data['description'],
         imageUrl: (data['imageUrl'] == null || (data['imageUrl'] as List).isEmpty)? [] : (data['imageUrl'] as List).map((imageUrl) => imageUrl as String).toList(),
         entryCount: data['entryCount'],
-        createdAt: DateTime.parse(data['createdAt']),
+        createdAt: DateTime.parse(data['date']),
       ),
       entries: (data['entries'] as List<dynamic>?)?.map((entry) => Entry.fromMap(entry as Map<String, dynamic>)).toList() ?? []
     );

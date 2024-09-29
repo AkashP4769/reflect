@@ -35,12 +35,13 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   //final RefreshController refreshController = RefreshController(initialRefresh: false);
 
-  void createChapter(String title, String description, List<String>? images) async {
+  void createChapter(String title, String description, List<String>? images, DateTime date) async {
     final chapter = {
       "title": title,
       "description": description,
       "imageUrl": images ?? [],
       "entryCount": 0,
+      "createdAt": date.toIso8601String(),
     };
     final bool status = await chapterService.createChapter(chapter);
     //timestampService.updateChapterTimestamp();
@@ -226,7 +227,7 @@ class EmptyChapters extends StatelessWidget {
 
 class NewChapter extends ConsumerStatefulWidget {
   final void Function() toggleCreate;
-  final void Function(String title, String description, List<String>? images) addChapter;
+  final void Function(String title, String description, List<String>? images, DateTime time) addChapter;
   final double tween;
   const NewChapter({super.key, required this.toggleCreate, required this.addChapter, required this.tween});
 
@@ -258,7 +259,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
   
   void _addChapter() {
     if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
-    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [randomImage]);
+    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [randomImage], DateTime.now());
     titleController.clear();
     descriptionController.clear();
   }

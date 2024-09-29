@@ -63,7 +63,7 @@ class Entry{
             (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
           ))
         : null,
-      date: DateTime.parse(data['date']),
+      date: DateTime.parse(data['date']).toLocal(),
       tags: (data['tags'] == null || (data['tags'] as List).isEmpty)? [] : (data['tags'] as List).map((imageUrl) => imageUrl as String).toList(),
     );
   }
