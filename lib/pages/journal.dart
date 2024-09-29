@@ -134,6 +134,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
             return Scaffold(
               backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
               body: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 clipBehavior: Clip.none,
                 child: Column(
                   //mainAxisSize: MainAxisSize.min,

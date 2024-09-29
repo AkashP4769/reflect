@@ -253,6 +253,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               )
             ),
             child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
