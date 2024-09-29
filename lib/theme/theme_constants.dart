@@ -45,10 +45,23 @@ ThemeData lightTheme = ThemeData(
     backgroundColor: Colors.transparent
   ),
 
-  timePickerTheme: const TimePickerThemeData(
-    hourMinuteColor: Color(0xffFFE3C3),
-    dialHandColor: Color.fromARGB(255, 34, 34, 34),
-    dialBackgroundColor: Color(0xffFFE3C3),
+  timePickerTheme: TimePickerThemeData(
+    hourMinuteColor: const Color(0xffFFE3C3),
+    dialHandColor: const Color(0xffFFAC5F),
+    dialBackgroundColor: const Color(0xffFFE3C3),
+
+    hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return const Color(0xffFFAC5F);
+      }
+      return Colors.black;
+    }),
+    dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return const Color(0xffFFAC5F);
+      }
+      return Colors.black;
+    }),
 
     dayPeriodTextStyle: const TextStyle(
       fontSize: 20, // Adjust font size
