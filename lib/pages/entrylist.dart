@@ -6,6 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:reflect/components/entrylist/editing_chapter_header.dart';
+import 'package:reflect/components/entrylist/entrylist_appbar.dart';
+import 'package:reflect/components/entrylist/grouped_entry_builder.dart';
 import 'package:reflect/components/journal/chapter_header.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/main.dart';
@@ -48,6 +51,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final entryBox = Hive.box("entries");
 
   final timestampService = TimestampService();
+
+  void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
 
   @override
   void initState() {
@@ -226,12 +231,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       print("$key: ${value.toString()}");
     });
 
-    //print("visibleMap: $visibleMap");
     
     return WillPopScope(
       onWillPop: () async {
-        // Intercept back button press and pop with the result 'haveUpdated'
-        //print('haveUpdated: $haveUpdated');
         popScreenWithUpdate();
         return false; // Prevent the default pop behavior
       },
@@ -263,105 +265,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               
                   const SizedBox(height: 20),
                   if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
-                  if(isEditing) Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton(
-                            onPressed: toggleEdit,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeData.colorScheme.surface,
-                              elevation: 10
-                            ),
-                            child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
-                          ),
-                        ),
-                        const SizedBox(width: 20,),
-                        Expanded(
-                          flex: 4,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 10,
-                            ),
-                            onPressed: (){
-                              toggleEdit();
-                              updateChapter();
-                            },
-                            child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
                   if(!isEditing && validEntries.isNotEmpty)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: groupedEntries.length,
-                    clipBehavior: Clip.none,
-                    physics: const ScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(vertical: 0),
-                    itemBuilder: (context, index){
-                      final date = groupedEntries.keys.elementAt(index);
-                      final _entries = groupedEntries[date];
-          
-            
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: Row(
-                              children: [
-                                Text(date, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                                Container(
-                                  //color: Colors.green,
-                                  child: GestureDetector(
-                                    onTap: (){
-                                      visibleMap[index] = !visibleMap[index];
-                                      setState(() {});
-                                    },
-                                    child: Icon(visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: themeData.colorScheme.onPrimary,)
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          if(visibleMap[index]) ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: _entries!.length,
-                            clipBehavior: Clip.none,
-                            physics: const ScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(vertical: 0),
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: _entries[index],)));
-                                  if(result == 'entry_updated') fetchEntries(true);
-                                  if(result == 'entry_deleted'){
-                                    haveUpdated = true;
-                                    fetchEntries(true);
-                                  }
-                                },
-                                child: EntryCard(entry: _entries[index], themeData: themeData)
-                              );
-                            },
-                          ),
-                          SizedBox(height: 20,)
-                        ],
-                      );
-                    }
-                  
-                  ) 
+                  GroupedEntryBuilder(groupedEntries: groupedEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
                       
-          
-          
-                  
                   else if(!isEditing && validEntries.isEmpty) Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -396,80 +304,3 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 }
 
-class EntryListAppbar extends StatelessWidget {
-  const EntryListAppbar({
-    super.key,
-    required this.themeData,
-    required this.searchController,
-    this.deleteChapter,
-    this.toggleEdit,
-    this.popScreenWithUpdate
-  });
-
-  final ThemeData themeData;
-  final TextEditingController searchController;
-  final void Function()? deleteChapter;
-  final void Function()? toggleEdit;
-  final void Function()? popScreenWithUpdate;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
-            onPressed: () {
-              popScreenWithUpdate!();
-            },
-          ),
-          //const SizedBox(width: 10),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(left: 10),
-              height: 45,
-              //width: double.infinity,
-              child: SearchBar(
-                controller: searchController,
-                backgroundColor: WidgetStateProperty.all(themeData.colorScheme.secondaryContainer),
-                elevation: WidgetStateProperty.all(0),
-                trailing: [
-                  IconButton(
-                    onPressed: (){},
-                    icon: const Icon(Icons.search),
-                    color: themeData.colorScheme.onPrimary,
-                  ),
-                  
-                ],
-              ),
-            ),
-          ),
-          PopupMenuButton(
-            color: themeData.colorScheme.secondaryContainer,
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.edit, color: themeData.colorScheme.onPrimary,),
-                  title: Text('Edit Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                  onTap: (){
-                    Navigator.pop(context);
-                    toggleEdit!();
-                  },
-                ),
-              ),
-              PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
-                  title: Text('Delete Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                  onTap: deleteChapter,
-                ),
-              ),
-            ]
-          )
-        ],
-      ),
-    );
-  }
-}
