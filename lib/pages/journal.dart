@@ -11,6 +11,7 @@ import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/pages/entrylist.dart';
+import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
@@ -45,7 +46,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
       "createdAt": date.toIso8601String(),
     };
     final bool status = await chapterService.createChapter(chapter);
-    //timestampService.updateChapterTimestamp();
     SnackBar snackBar;
     if(status) {
       fetchChapters(true);
@@ -57,19 +57,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> loadChaptersFromCache() async {
-    final String userId = FirebaseAuth.instance.currentUser!.uid;
-    final cachedData = chapterBox.get(userId);
-    print("cachedData $cachedData");
-
-    if(cachedData == null) return;
-    final cachedChapters = cachedData["chapters"] ?? [];
-    if(cachedChapters.isNotEmpty) {
-      chapters.clear();
-      for (var chapter in cachedChapters) {
-        final Map<String, dynamic> chapterMap = Map<String, dynamic>.from(chapter as Map<dynamic, dynamic>);
-        chapters.add(Chapter.fromMap(chapterMap));
-      }
-      chapters = chapters.reversed.toList();
+    final _entries = CacheService().loadChaptersFromCache();
+    if(_entries != null) {
+      chapters = _entries;
       if(mounted) setState(() {});
     }
   }
@@ -82,11 +72,10 @@ class _HomePageState extends ConsumerState<JournalPage> {
       print("adding data to  cache");
       final String userId = FirebaseAuth.instance.currentUser!.uid;
       chapterBox.put(userId, {"chapters": data});
-      //timestampService.updateChapterTimestamp();
+      timestampService.updateChapterTimestamp();
       loadChaptersFromCache();
     }
-    //isFetching = false;
-    //
+
     if(mounted) setState(() {});
   }
 
@@ -132,21 +121,18 @@ class _HomePageState extends ConsumerState<JournalPage> {
             }
             if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
             if(chapters.isEmpty) return Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value)));
+            
             return Scaffold(
               backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
               body: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 clipBehavior: Clip.none,
                 child: Column(
-                  //mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 10),
                     Text("Chapters", style: themeData.textTheme.titleLarge,),
                     const SizedBox(height: 10),
-                    /*ElevatedButton(
-                      onPressed: () => setState((){}), 
-                      child: Text("Refresh")
-                    ),*/
+
                     ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
@@ -157,25 +143,17 @@ class _HomePageState extends ConsumerState<JournalPage> {
                         if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
                           return GestureDetector(
                             onTap: () async {
-                              //print("pushing chapter ${chapters[index].title}");
                               final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                              //print(result);
                               if(result != null && result == true) fetchChapters(true);
-                              //else if(result != null && result == 'updated') fetchChapters();
-                                
                             },
-                            
                             child: ChapterCard(chapter: chapters[index], themeData: themeData)
                           );
                         }
                         else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                           return GestureDetector(
                             onTap: () async {
-                              //print("pushing chapter ${chapters[index].title}");
                               final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
-                              //print(result);
                               if(result != null && result == true) fetchChapters(true);
-                              //else if(result != null && result == 'updated') fetchChapters();
                                 
                             },
                             child: ChapterCard(chapter: chapters[index], themeData: themeData)
