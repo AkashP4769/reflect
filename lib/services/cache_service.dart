@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/services/timestamp_service.dart';
 
 import '../models/chapter.dart';
 
@@ -25,5 +26,11 @@ class CacheService{
     }
 
     return null;
+  }
+
+  Future<void> addChaptersToCache(List<Map<String,dynamic>>? data) async {
+    print("adding data to  cache");
+    await chapterBox.put(userId, {"chapters": data});
+    await TimestampService().updateChapterTimestamp();
   }
 }

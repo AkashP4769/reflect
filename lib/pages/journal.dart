@@ -32,10 +32,10 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final chapterBox = Hive.box("chapters");
   final ChapterService chapterService = ChapterService();
   final TimestampService timestampService = TimestampService();
+  final CacheService cacheService = CacheService();
 
   List<Chapter> chapters = [];
 
-  //final RefreshController refreshController = RefreshController(initialRefresh: false);
 
   void createChapter(String title, String description, List<String>? images, DateTime date) async {
     final chapter = {
@@ -57,7 +57,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> loadChaptersFromCache() async {
-    final _entries = CacheService().loadChaptersFromCache();
+    final _entries = cacheService.loadChaptersFromCache();
     if(_entries != null) {
       chapters = _entries;
       if(mounted) setState(() {});
@@ -65,14 +65,10 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> fetchChapters(bool explicit) async {
-    final chapterTimestamp = timestampService.getChapterTimestamp();
     final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
     if(data == null) return;
     else if (data.isNotEmpty) {
-      print("adding data to  cache");
-      final String userId = FirebaseAuth.instance.currentUser!.uid;
-      chapterBox.put(userId, {"chapters": data});
-      timestampService.updateChapterTimestamp();
+      cacheService.addChaptersToCache(data);
       loadChaptersFromCache();
     }
 
