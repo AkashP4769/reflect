@@ -19,6 +19,7 @@ import 'package:reflect/pages/entry.dart';
 import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/entryService.dart';
+import 'package:reflect/services/entrylist_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
@@ -51,6 +52,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final entryBox = Hive.box("entries");
 
   final timestampService = TimestampService();
+  final entrylistService = EntrylistService();
 
   void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
 
@@ -211,27 +213,17 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    List<Entry> validEntries = entries == null ? [] : entries!.reversed.toList();
-    if(isTyping) validEntries = entries.where((element) => element.title!.toLowerCase().contains(searchController.text.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(searchController.text.toLowerCase())).toList().reversed.toList();
 
-    print("validEntries:");
-    validEntries.forEach((element) {
-      print(element.toString());
-    });
+    List<Entry> validEntries = entries;
+    if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
 
-    Map<String, List<Entry>> groupedEntries = {};
-    validEntries.forEach((entry){
-      final date = DateFormat('MMM yyyy').format(entry.date);
-      if(groupedEntries[date] == null) groupedEntries[date] = [entry];
-      else groupedEntries[date]!.add(entry);
-    });
+    validEntries = entrylistService.sortEntries(validEntries, 'rev');
 
-    print("groupedEntries: ");
-    groupedEntries.forEach((key, value) {
-      print("$key: ${value.toString()}");
-    });
 
+    final Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(validEntries);
     
+
+
     return WillPopScope(
       onWillPop: () async {
         popScreenWithUpdate();
