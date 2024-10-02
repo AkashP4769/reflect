@@ -3,10 +3,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/backend_services.dart';
+import 'package:reflect/services/timestamp_service.dart';
 
 class EntryService extends BackendServices {
-  Future<List<Map<String, dynamic>>?> getEntries(String chapterId, String date, bool? explicit) async {
+  Future<List<Map<String, dynamic>>?> getEntries(String chapterId,bool? explicit) async {
     try{
+      final date = TimestampService().getEntryTimestamp(chapterId);
+      print("lastEntriesUpdated: $date");
+
       final response = await http.get(Uri.parse('$baseUrl/entries/?chapterId=$chapterId&uid=${user!.uid}&date=$date&explicit=${explicit == true ? 'true' :'false'}')).timeout(const Duration(seconds: 5), onTimeout: () => http.Response('Error', 408));
       if(response.statusCode == 200){
         print("Entries fetched successfully");

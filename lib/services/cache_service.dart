@@ -7,6 +7,7 @@ import '../models/chapter.dart';
 
 class CacheService{
   final Box chapterBox = Hive.box('chapters');
+  final Box entryBox = Hive.box('entries');
   final String userId = FirebaseAuth.instance.currentUser!.uid;
 
   List<Chapter>? loadChaptersFromCache(){
@@ -32,5 +33,27 @@ class CacheService{
     print("adding data to  cache");
     await chapterBox.put(userId, {"chapters": data});
     await TimestampService().updateChapterTimestamp();
+  }
+
+  Future<void> addEntryToCache(List<Map<String, dynamic>>? data, String chapterId) async {
+    await entryBox.put(chapterId, data);
+    await TimestampService().updateEntryTimestamp(chapterId);
+  }
+
+  List<Entry>? loadEntriesFromCache(String chapterId)  {
+    final cachedData = entryBox.get(chapterId);
+    if(cachedData != null){
+      List<Map<String, dynamic>> entriesData;
+      try {
+        entriesData = (cachedData as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      } catch (e) {
+        print("Error parsing cache: $e");
+        entriesData = [];
+      }
+      
+      List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();
+      return entriesList;
+    }
+    return null;
   }
 }

@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
 import 'package:reflect/pages/journal.dart';
+import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
@@ -53,6 +54,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   final timestampService = TimestampService();
   final entrylistService = EntrylistService();
+  final cacheService = CacheService();
 
   void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
 
@@ -69,7 +71,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     fetchEntries(false);
 
     searchController.addListener(() {
-      //print(searchController.text);
       if(searchController.text.isNotEmpty) isTyping = true;
       else isTyping = false;
       setState(() {});
@@ -82,7 +83,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
-      //timestampService.updateChapterTimestamp();
       Navigator.pop(context, true);
       Navigator.pop(context, true);
     }
@@ -94,7 +94,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     if(newChapter["_id"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
-      //timestampService.updateChapterTimestamp();
       fetchChaptersAndUpdate(true);
     }
     else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
@@ -103,19 +102,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   Future<void> fetchEntries(bool explicit) async {
     await loadFromCache();
-
-    final lastEntriesUpdated = timestampService.getEntryTimestamp(chapter.id);
-    print("lastEntriesUpdated: $lastEntriesUpdated");
-    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, lastEntriesUpdated, explicit);
-
+    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, explicit);
 
     if(data == null){
       return;
     }
 
     else if(data.isNotEmpty) {
-      await entryBox.put(chapter.id, data);
-      await timestampService.updateEntryTimestamp(chapter.id);
+      cacheService.addEntryToCache(data, chapter.id);
       loadFromCache();
       fetchChaptersAndUpdate(explicit);
     }
@@ -129,22 +123,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   Future<void> loadFromCache() async {
-    final cachedData = await entryBox.get(chapter.id);
-    if(cachedData != null){
-      List<Map<String, dynamic>> entriesData;
-      try {
-        entriesData = (cachedData as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
-      } catch (e) {
-        print("Error parsing cache: $e");
-        entriesData = [];
+      final newEntries = cacheService.loadEntriesFromCache(chapter.id)!;
+      if(newEntries != null){
+        entries = newEntries;
+        setState(() {});
       }
-      print("no problem see");
-      
-      List<Entry> entriesList = entriesData.map((entry) => Entry.fromMap(entry)).toList();;
-      entries = entriesList;
-
-      setState(() {});
-    }
   }
 
 
@@ -164,18 +147,15 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   Future<DateTime?> showDatePickerr() async {
-    //show date and time picker
     return showDatePicker(
       context: context,
       initialDate: chapterDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     ).then((selectedDate){
-      print("Selected Date: $selectedDate");
       if (selectedDate != null) {
         showTimePicker(
           context: context,
-          
           initialTime: TimeOfDay.fromDateTime(chapterDate),
         ).then((selectedTime) {
           if (selectedTime != null) {
@@ -188,8 +168,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             );
             setState(() {
               chapterDate = selectedDateTime;
-              //isDateEdited = true;
-            }); // You can use the selectedDateTime as needed.
+            }); 
           }
         });
       }
@@ -213,17 +192,12 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-
     List<Entry> validEntries = entries;
+
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
-
     validEntries = entrylistService.sortEntries(validEntries, 'rev');
-
-
     final Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(validEntries);
     
-
-
     return WillPopScope(
       onWillPop: () async {
         popScreenWithUpdate();
