@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/entry/tag_panel.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/services/entryService.dart';
+import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
+
 
 class EntryPage extends ConsumerStatefulWidget {
   final Entry entry;
@@ -24,6 +27,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   late quill.QuillController quillController;
   late TextEditingController titleController;
+  late SlidingUpPanelController panelController;
+  late ScrollController scrollController;
   late DateTime date;
 
   late FocusNode titleFocusNode;
@@ -38,6 +43,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleController = TextEditingController(text: widget.entry.title);
     titleFocusNode = FocusNode();
     contentFocusNode = FocusNode();
+    panelController = SlidingUpPanelController();
+    
+    panelController.hide();
     date = widget.entry.date;
 
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
@@ -47,6 +55,21 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         selection: const TextSelection.collapsed(offset: 0),
       );
     }
+
+    
+
+    scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.offset >=
+              scrollController.position.maxScrollExtent &&
+          !scrollController.position.outOfRange) {
+        panelController.expand();
+      } else if (scrollController.offset <=
+              scrollController.position.minScrollExtent &&
+          !scrollController.position.outOfRange) {
+        panelController.anchor();
+      } else {}
+    });
 
     titleController.addListener(() {
       if(!isTitleEdited && titleController.text != widget.entry.title) {
@@ -161,171 +184,191 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void dispose() {
     titleController.dispose();
     quillController.dispose();
+    titleFocusNode.dispose();
+    contentFocusNode.dispose();
+    panelController.dispose();
+    
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    return Scaffold(
-      body: SingleChildScrollView(
-        clipBehavior: Clip.none,
-        scrollDirection: Axis.vertical,
-        physics: const ScrollPhysics(),
-          
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            //height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-                end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-              )
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                EntryAppbar(themeData: themeData),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      children: [
+        Scaffold(
+          body: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            scrollDirection: Axis.vertical,
+            physics: const ScrollPhysics(),
+              
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                //height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
+                    end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
+                    colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+                  )
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: showDatePickerr,
-                      child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
+                    const SizedBox(height: 40),
+                    EntryAppbar(themeData: themeData),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: showDatePickerr,
+                          child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
+                        ),
+                        GestureDetector(
+                          onTap: deleteEntry,
+                          child: const Icon(Icons.delete_outline, color: Colors.red,),
+                        ),
+                      ],
                     ),
-                    GestureDetector(
-                      onTap: deleteEntry,
-                      child: const Icon(Icons.delete_outline, color: Colors.red,),
+                    const SizedBox(height: 00),
+                    TextField(
+                      controller: titleController,
+                      focusNode: titleFocusNode,
+                      style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: InputDecoration(
+                        hintText: "Title...",
+                        hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                        
+                      ),
+                      maxLines: null,
+                    ),
+                    Wrap(
+                      children: [
+                        ElevatedButton(
+                          onPressed: (){
+                            panelController.anchor();
+                          }, 
+                          child: Text("Add Tag", style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary),),
+                        )
+                      ],
+                    ),
+                    quill.QuillEditor.basic(
+                          controller: quillController,
+                          focusNode: contentFocusNode,
+                          scrollController: ScrollController(),
+                          configurations: quill.QuillEditorConfigurations(
+                            //checkBoxReadOnly: true
+                            placeholder: "Start writing here...",
+                            keyboardAppearance: themeData.brightness,
+                            customStyles: quill.DefaultStyles(
+                              paragraph: quill.DefaultTextBlockStyle(
+                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
+                                const quill.HorizontalSpacing(0, 0),
+                                const quill.VerticalSpacing(0, 0),
+                                quill.VerticalSpacing.zero,
+                                null
+                              ),
+                              placeHolder: quill.DefaultTextBlockStyle(
+                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                const quill.HorizontalSpacing(0, 0),
+                                const quill.VerticalSpacing(0, 0),
+                                quill.VerticalSpacing.zero,
+                                null
+                              ),
+                            )
+                              
+                          ),
+                        ),      
+                    const SizedBox(height: 80,)
+                  ],
+                ),
+              ),
+            ),
+          ),
+          bottomSheet: Container(
+            color: themeData.colorScheme.tertiary,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  //mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: quill.QuillToolbar.simple(
+                        controller: quillController,
+                        configurations: quill.QuillSimpleToolbarConfigurations(
+                          showBoldButton: extendedToolbar ? false : true,
+                          showItalicButton: extendedToolbar ? false : true,
+                          showUnderLineButton: extendedToolbar ? false : true,
+                          showStrikeThrough: false, //
+                          showColorButton: extendedToolbar ? true :  false, //
+                          showBackgroundColorButton: false,
+                          showClearFormat: false, //
+                          showHeaderStyle: false,
+                          showListNumbers: extendedToolbar ? true :  false, //
+                          showListBullets: extendedToolbar ? true :  false, //
+                          showCodeBlock: false,
+                          showQuote: false, //
+                          showLink: false,
+                          showSubscript: false,
+                          showSuperscript: false,
+                          showAlignmentButtons: false,
+                          showClipboardCopy: false,
+                          showClipboardCut: false,
+                          showClipboardPaste: false,
+                          showDividers: false,
+                          showListCheck: false,
+                          showIndent: false,
+                          showFontFamily: false,
+                          showFontSize: false,
+                          showSearchButton: false, //
+                          showInlineCode: false, //
+                          showRedo: extendedToolbar ? true :  false, //
+                          showUndo: extendedToolbar ? false : true,
+                        )
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
+                    ),
+                    SizedBox(
+                      width: 120,
+                      child: ElevatedButton(
+                        onPressed: isTitleEdited || isContentEdited || isDateEdited ? (){
+                          if(widget.entry.id == null) addEntry();
+                          else updateEntry();
+                        } : null,
+                      
+                        style: ElevatedButton.styleFrom(
+                          disabledBackgroundColor: Colors.grey,
+                          backgroundColor: const Color(0xffFF9432),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          )
+                        ),
+                        child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 00),
-                TextField(
-                  controller: titleController,
-                  focusNode: titleFocusNode,
-                  style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: "Title...",
-                    hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-                    
-                  ),
-                  maxLines: null,
-                ),
-                quill.QuillEditor.basic(
-                      controller: quillController,
-                      focusNode: contentFocusNode,
-                      scrollController: ScrollController(),
-                      configurations: quill.QuillEditorConfigurations(
-                        //checkBoxReadOnly: true
-                        placeholder: "Start writing here...",
-                        keyboardAppearance: themeData.brightness,
-                        customStyles: quill.DefaultStyles(
-                          paragraph: quill.DefaultTextBlockStyle(
-                            themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
-                            const quill.HorizontalSpacing(0, 0),
-                            const quill.VerticalSpacing(0, 0),
-                            quill.VerticalSpacing.zero,
-                            null
-                          ),
-                          placeHolder: quill.DefaultTextBlockStyle(
-                            themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                            const quill.HorizontalSpacing(0, 0),
-                            const quill.VerticalSpacing(0, 0),
-                            quill.VerticalSpacing.zero,
-                            null
-                          ),
-                        )
-                          
-                      ),
-                    ),      
-                const SizedBox(height: 80,)
               ],
             ),
           ),
         ),
-      ),
-      bottomSheet: Container(
-        color: themeData.colorScheme.tertiary,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: quill.QuillToolbar.simple(
-                    controller: quillController,
-                    configurations: quill.QuillSimpleToolbarConfigurations(
-                      showBoldButton: extendedToolbar ? false : true,
-                      showItalicButton: extendedToolbar ? false : true,
-                      showUnderLineButton: extendedToolbar ? false : true,
-                      showStrikeThrough: false, //
-                      showColorButton: extendedToolbar ? true :  false, //
-                      showBackgroundColorButton: false,
-                      showClearFormat: false, //
-                      showHeaderStyle: false,
-                      showListNumbers: extendedToolbar ? true :  false, //
-                      showListBullets: extendedToolbar ? true :  false, //
-                      showCodeBlock: false,
-                      showQuote: false, //
-                      showLink: false,
-                      showSubscript: false,
-                      showSuperscript: false,
-                      showAlignmentButtons: false,
-                      showClipboardCopy: false,
-                      showClipboardCut: false,
-                      showClipboardPaste: false,
-                      showDividers: false,
-                      showListCheck: false,
-                      showIndent: false,
-                      showFontFamily: false,
-                      showFontSize: false,
-                      showSearchButton: false, //
-                      showInlineCode: false, //
-                      showRedo: extendedToolbar ? true :  false, //
-                      showUndo: extendedToolbar ? false : true,
-                    )
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
-                ),
-                SizedBox(
-                  width: 120,
-                  child: ElevatedButton(
-                    onPressed: isTitleEdited || isContentEdited || isDateEdited ? (){
-                      if(widget.entry.id == null) addEntry();
-                      else updateEntry();
-                    } : null,
-                  
-                    style: ElevatedButton.styleFrom(
-                      disabledBackgroundColor: Colors.grey,
-                      backgroundColor: const Color(0xffFF9432),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      )
-                    ),
-                    child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+
+        TagPanel(panelController: panelController, scrollController: scrollController, themeData: themeData,)
+      ],
     );
   }
 }
