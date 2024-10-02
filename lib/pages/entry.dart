@@ -128,18 +128,15 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   Future<DateTime?> showDatePickerr() async {
-    //show date and time picker
     return showDatePicker(
       context: context,
       initialDate: date,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     ).then((selectedDate){
-      print("Selected Date: $selectedDate");
       if (selectedDate != null) {
         showTimePicker(
           context: context,
-          
           initialTime: TimeOfDay.fromDateTime(date),
         ).then((selectedTime) {
           if (selectedTime != null) {
@@ -251,13 +248,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         )
                           
                       ),
-                    ),
-                
-            
-                
+                    ),      
                 const SizedBox(height: 80,)
-                
-                
               ],
             ),
           ),

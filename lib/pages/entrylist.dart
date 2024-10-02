@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,13 +6,10 @@ import 'package:reflect/components/entrylist/editing_chapter_header.dart';
 import 'package:reflect/components/entrylist/entrylist_appbar.dart';
 import 'package:reflect/components/entrylist/grouped_entry_builder.dart';
 import 'package:reflect/components/journal/chapter_header.dart';
-import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
-import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
-import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/entryService.dart';
@@ -82,21 +75,21 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   void deleteChapter() async {
     final status = await ChapterService().deleteChapter(chapter.id);
     if(status) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter deleted successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter deleted successfully')));
       Navigator.pop(context, true);
       Navigator.pop(context, true);
     }
-    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting chapter')));
+    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error deleting chapter')));
   }
 
   void updateChapter() async {
     final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate).toMap());
     if(newChapter["_id"] != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Chapter updated successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
       fetchChaptersAndUpdate(true);
     }
-    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating chapter')));
+    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error updating chapter')));
   }
 
 
@@ -123,11 +116,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   Future<void> loadFromCache() async {
-      final newEntries = cacheService.loadEntriesFromCache(chapter.id)!;
-      if(newEntries != null){
-        entries = newEntries;
-        setState(() {});
-      }
+    final newEntries = cacheService.loadEntriesFromCache(chapter.id);
+    if(newEntries != null){
+      entries = newEntries;
+      setState(() {});
+    }
   }
 
 
@@ -226,7 +219,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 40,),
+                  const SizedBox(height: 40,),
                   if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
               
                   const SizedBox(height: 20),
@@ -240,12 +233,12 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 40,),
+                      const SizedBox(height: 40,),
                       Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
                       
                     ],
                   ),
-                  SizedBox(height: 70,)
+                  const SizedBox(height: 70,)
                 ],
               ),
             ),
