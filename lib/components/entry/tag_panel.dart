@@ -1,12 +1,27 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
+import 'package:reflect/components/entry/tag_card.dart';
+import 'package:reflect/components/entry/tag_textfield.dart';
+import 'package:reflect/models/tag.dart';
 
 class TagPanel extends StatelessWidget {
   final SlidingUpPanelController panelController;
   final ScrollController scrollController;
   final ThemeData themeData;
-  const TagPanel({super.key, required this.panelController, required this.scrollController, required this.themeData});
+  TagPanel({super.key, required this.panelController, required this.scrollController, required this.themeData});
+
+  final List<Tag> allTags = [
+    Tag(name: 'tag1', color: '0xFF452659'),
+    Tag(name: 'tag2', color: '0xFF595635'),
+    Tag(name: 'tag3', color: '0xFF556889'),
+    Tag(name: 'tag4', color: '0xFF454569'),
+    Tag(name: 'tag5', color: '0xFF262635'),
+    Tag(name: 'tag6', color: '0xFF452365'),
+    Tag(name: 'tag7', color: '0xFF565632'),
+    Tag(name: 'tag8', color: '0xFF785623'),
+    Tag(name: 'tag9', color: '0xFFA45563'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +73,8 @@ class TagPanel extends StatelessWidget {
                         Icons.menu,
                         size: 30,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 8.0,
-                        ),
-                      ),
-                      Text(
-                        'click or drag',
-                      )
+                      SizedBox(width: 10.0),
+                      Text('click or drag',)
                     ],
                   ),
                 ),
@@ -76,7 +85,7 @@ class TagPanel extends StatelessWidget {
                 Flexible(
                   child: Container(
                     color: themeData.colorScheme.secondary,
-                    child: ListView.separated(
+                    child: /*ListView.separated(
                       shrinkWrap: true,
                       itemCount: 20,
                       controller: scrollController,
@@ -92,7 +101,42 @@ class TagPanel extends StatelessWidget {
                         );
                       },
                       
-                    ),
+                    ),*/
+                    SingleChildScrollView(
+                      clipBehavior: Clip.none,
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10,),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Create a new Tag", style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w600),),
+                          ),
+                          TagTextField(themeData: themeData,),
+
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Selected Tags", style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w600),),
+                          ),
+                          Wrap(
+                            children: [
+                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true)).toList()
+                            ],
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Available Tags", style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.w600),),
+                          ),
+                          Wrap(
+                            children: [
+                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: false))
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   ),
                 ),
               ],

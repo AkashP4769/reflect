@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/entry/tag_card.dart';
 import 'package:reflect/components/entry/tag_panel.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/models/tag.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 
@@ -35,6 +37,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late FocusNode contentFocusNode;
 
   EntryService entryService = EntryService();
+  List<Tag> selectedTags = [];
 
   @override
   void initState() {
@@ -236,7 +239,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 00),
+                    
                     TextField(
                       controller: titleController,
                       focusNode: titleFocusNode,
@@ -251,16 +254,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                       maxLines: null,
                     ),
+                    
+                    
                     Wrap(
                       children: [
-                        ElevatedButton(
-                          onPressed: (){
-                            panelController.anchor();
-                          }, 
-                          child: Text("Add Tag", style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary),),
+                        ...selectedTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true)),
+                        GestureDetector(
+                          onTap: () => panelController.anchor(),
+                          child: TagCard(tag: Tag(name: "Add tag +", color: const Color(0xffFF9432).value.toString()), themeData: themeData, selected: false)
                         )
                       ],
                     ),
+                    const SizedBox(height: 10),
                     quill.QuillEditor.basic(
                           controller: quillController,
                           focusNode: contentFocusNode,
