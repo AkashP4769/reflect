@@ -85,24 +85,7 @@ class TagPanel extends StatelessWidget {
                 Flexible(
                   child: Container(
                     color: themeData.colorScheme.secondary,
-                    child: /*ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: 20,
-                      controller: scrollController,
-                      physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text('list item $index'),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          height: 0.5,
-                        );
-                      },
-                      
-                    ),*/
-                    SingleChildScrollView(
+                    child: SingleChildScrollView(
                       clipBehavior: Clip.none,
                       physics: const ClampingScrollPhysics(),
                       child: Column(

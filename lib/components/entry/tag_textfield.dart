@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class TagTextField extends StatelessWidget {
   final ThemeData themeData;
   TagTextField({super.key, required this.themeData});
   final String selectedColor = '0xFF452659';
   final List<String> availableColors = [
-    '0xFF452659',
+    '0xd91139',
     '0xFF595635',
     '0xFF556889',
     '0xFF454569',
@@ -51,7 +52,16 @@ class TagTextField extends StatelessWidget {
               ),
             ),
           ),
-          PopupMenuButton<String>(
+          IconButton(
+            icon: CircleAvatar(
+              radius: 15,
+              backgroundColor: Color(int.parse(selectedColor)),
+            ),
+            onPressed: () {
+              showColorPicker(context);
+            },
+          ),
+          /*PopupMenuButton<String>(
             color: themeData.colorScheme.secondary,
             icon: CircleAvatar(
               radius: 15,
@@ -75,9 +85,38 @@ class TagTextField extends StatelessWidget {
                 );
               }).toList();
             },
-          ),
+          ),*/
         ],
       ),
+    );
+  }
+
+  void showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pick a color!'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              paletteType: PaletteType.hueWheel,
+              pickerColor: const Color(0xff443a49),
+              labelTypes: [],
+              onColorChanged: (Color color) {
+                print(color);
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Got it'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
