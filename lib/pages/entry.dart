@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/entry/tag_alertbox.dart';
 import 'package:reflect/components/entry/tag_card.dart';
 import 'package:reflect/components/entry/tag_panel.dart';
 import 'package:reflect/main.dart';
@@ -58,8 +59,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         selection: const TextSelection.collapsed(offset: 0),
       );
     }
-
-    
 
     scrollController = ScrollController();
     scrollController.addListener(() {
@@ -260,8 +259,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       children: [
                         ...selectedTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true)),
                         GestureDetector(
-                          onTap: () => panelController.anchor(),
-                          child: TagCard(tag: Tag(name: "Add tag +", color: const Color(0xffFF9432).value.toString()), themeData: themeData, selected: false)
+                          onTap: () => showTagAlertBox(context),
+                          child: TagCard(tag: Tag(name: selectedTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value.toString()), themeData: themeData, selected: false)
                         )
                       ],
                     ),
