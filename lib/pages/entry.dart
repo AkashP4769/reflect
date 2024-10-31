@@ -259,7 +259,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       children: [
                         ...selectedTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true)),
                         GestureDetector(
-                          onTap: () => showTagAlertBox(context),
+                          onTap: () => showDialog(context: context, builder: (context) => TagSelectionBox(themeData: themeData)),
                           child: TagCard(tag: Tag(name: selectedTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value.toString()), themeData: themeData, selected: false)
                         )
                       ],
