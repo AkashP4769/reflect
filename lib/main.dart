@@ -28,6 +28,7 @@ void main() async {
   await Hive.openBox('entries');
   await Hive.openBox('settings');
   await Hive.openBox('timestamps');
+  await Hive.openBox('tags');
 
   //final timestampBox = Hive.box('timestamps');
   //timestampBox.clear();
