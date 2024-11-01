@@ -12,8 +12,12 @@ import 'package:reflect/services/auth_service.dart';
 
 class SignUpCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
+  final String errorMsg;
+  final void Function(String name, String email, String password, String confirmPassword) signUpWithEmailAndPass;
+  final void Function() signInWithGoogle;
+  final void Function() signInWithApple;
   const SignUpCard({
-    super.key, required this.togglePage
+    super.key, required this.togglePage, required this.errorMsg, required this.signUpWithEmailAndPass, required this.signInWithGoogle, required this.signInWithApple
   });
 
   @override
@@ -25,7 +29,6 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
-  String errorMsg = '';
 
 
 
@@ -49,9 +52,9 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
     super.dispose();
   }
 
-  void signUpWithEmailAndPass(Color loadingColor) async {
+  /*void signUpWithEmailAndPass(Color loadingColor) async {
     if(passwordController.text != confirmPasswordController.text){
-      setState(() => errorMsg = "Passwords do not match!");
+      setState(() => widget.errorMsg = "Passwords do not match!");
       return;
     }
     showLoading(context, loadingColor);
@@ -70,7 +73,7 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
     String msg = await AuthService.signInWithGoogle();
     if(msg != '') setState(() => errorMsg = msg);
     if(mounted) Navigator.pop(context);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -101,19 +104,19 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                 SignUpPassField(text: "Password", controller: passwordController, themeData: themeData),
                 SignUpPassField(text: "Confirm Password", controller: confirmPasswordController, themeData: themeData),
                 
-                if(errorMsg != '') Row(
+                if(widget.errorMsg != '') Row(
                   children: [
                     const Icon(Icons.error, color: Colors.redAccent, size: 16,),
                     const SizedBox(width: 5,),
-                    Text(errorMsg, style: const TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                    Text(widget.errorMsg, style: const TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
                   ],
                 ),
-                SizedBox(height: errorMsg != '' ? 5 : 20,),
+                SizedBox(height: widget.errorMsg != '' ? 5 : 20,),
             
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () => signUpWithEmailAndPass(themeData.colorScheme.surfaceContainerHighest), 
+                    onPressed: () => widget.signUpWithEmailAndPass(nameController.text.trim(), emailController.text.trim(), passwordController.text, confirmPasswordController.text), 
                     style: themeData.elevatedButtonTheme.style,
                     child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
@@ -147,11 +150,11 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => signInWithGoogle(themeData.colorScheme.surfaceContainerHighest), 
+                        onTap: () => widget.signInWithGoogle(), 
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: () => signInWithApple(themeData.colorScheme.surfaceContainerHighest),
+                        onTap: () => widget.signInWithApple(),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

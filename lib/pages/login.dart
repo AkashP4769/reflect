@@ -15,9 +15,11 @@ class LoginPage extends StatefulWidget {
   final void Function()? signInwWithGoogle;
   final void Function()? signInWithApple;
   final void Function(String, String)? signInWithEmailAndPass;
+  final void Function(String name, String email, String password, String confirmPassword)? signUpWithEmailAndPass;
+
   final String? loginErrorMsg;
   final String? signupErrorMsg;
-  const LoginPage({super.key, this.signInwWithGoogle, this.signInWithApple, this.signInWithEmailAndPass, this.loginErrorMsg, this.signupErrorMsg});
+  const LoginPage({super.key, this.signInwWithGoogle, this.signInWithApple, this.signInWithEmailAndPass, this.signUpWithEmailAndPass, this.loginErrorMsg, this.signupErrorMsg});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -151,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _pageController,
                                   children: [
                                     LoginCard(togglePage: togglePage, signInWithEmailAndPass: widget.signInWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInwWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.loginErrorMsg!,),
-                                    SignUpCard(togglePage: togglePage,),
+                                    SignUpCard(togglePage: togglePage, signUpWithEmailAndPass: widget.signUpWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.signupErrorMsg!,),
                                   ],
                                 ),
                               ),

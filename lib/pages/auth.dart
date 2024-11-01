@@ -38,6 +38,17 @@ class _AuthPageState extends State<AuthPage> {
     Navigator.pop(context);
   }
 
+  void signUpWithEmailAndPass(String name, String email, String password, String confirmPassword) async {
+    if(password != confirmPassword){
+      setState(() => signupErrorMsg = "Passwords do not match!");
+      return;
+    }
+    showLoading(context, const Color(0xffFFAC5F));
+    String msg = await AuthService.createUserWithEmailAndPassword(name, email, password);
+    if(msg != '') setState(() => signupErrorMsg = msg);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +59,7 @@ class _AuthPageState extends State<AuthPage> {
             return const NavigationPage();
             }
           else {
-            return LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg);
+            return LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg);
           }
         },
       ),
