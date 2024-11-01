@@ -12,15 +12,15 @@ class TagPanel extends StatelessWidget {
   TagPanel({super.key, required this.panelController, required this.scrollController, required this.themeData});
 
   final List<Tag> allTags = [
-    Tag(name: 'tag1', color: '0xFF452659'),
-    Tag(name: 'tag2', color: '0xFF595635'),
-    Tag(name: 'tag3', color: '0xFF556889'),
-    Tag(name: 'tag4', color: '0xFF454569'),
-    Tag(name: 'tag5', color: '0xFF262635'),
-    Tag(name: 'tag6', color: '0xFF452365'),
-    Tag(name: 'tag7', color: '0xFF565632'),
-    Tag(name: 'tag8', color: '0xFF785623'),
-    Tag(name: 'tag9', color: '0xFFA45563'),
+    Tag(name: 'tag1', color: 0xFF452659),
+    Tag(name: 'tag2', color: 0xFF595635),
+    Tag(name: 'tag3', color: 0xFF556889),
+    Tag(name: 'tag4', color: 0xFF454569),
+    Tag(name: 'tag5', color: 0xFF262635),
+    Tag(name: 'tag6', color: 0xFF452365),
+    Tag(name: 'tag7', color: 0xFF565632),
+    Tag(name: 'tag8', color: 0xFF785623),
+    Tag(name: 'tag9', color: 0xFFA45563),
   ];
 
   @override

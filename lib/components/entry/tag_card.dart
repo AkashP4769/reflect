@@ -14,9 +14,9 @@ class TagCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       decoration: BoxDecoration(
-        color: selected ? Color(int.parse(tag.color)) : Colors.transparent,
+        color: selected ? Color(tag.color) : Colors.transparent,
         border: Border.all(
-          color: selected ?  Colors.transparent : Color(int.parse(tag.color)),
+          color: selected ?  Colors.transparent : Color(tag.color),
           width: 1.0,
         ),
         boxShadow: const [

@@ -8,10 +8,20 @@ class TagService {
   final User? user = FirebaseAuth.instance.currentUser;
 
   List<Tag> getAllTags(){
-    return tagbox.get(user!.uid, defaultValue: <Tag>[]);
+    final res = tagbox.get(user!.uid, defaultValue: []) as List;
+    List<Tag> tagList = [];
+    for (var tag in res) {
+      tagList.add(Tag.fromMap(tag));
+    }
+
+    return tagList;
   }
 
   void updateTags(List<Tag> tags){
-    tagbox.put(user!.uid, tags);
+    List<Map<String, dynamic>> taglist = [];
+    for (var tag in tags) {
+      taglist.add(tag.toMap());
+    }
+    tagbox.put(user!.uid, taglist);
   }
 }

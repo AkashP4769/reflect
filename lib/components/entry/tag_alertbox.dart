@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:reflect/components/entry/tag_card.dart';
+import 'package:reflect/models/tag.dart';
 import 'package:reflect/services/tag_service.dart';
 
 class TagSelectionBox extends StatefulWidget {
@@ -13,13 +15,35 @@ class TagSelectionBox extends StatefulWidget {
 
 class _TagSelectionBoxState extends State<TagSelectionBox> {
   final tagService = TagService();
+  List<Tag> userTags = [];
   int selectedColor = 0xFFFFAC5F;
-  TextEditingController tagController = TextEditingController();
+  TextEditingController textController = TextEditingController();
+
+  @override
+  void initState(){
+    super.initState();
+    userTags = tagService.getAllTags();
+  }
 
   @override
   void dispose() {
-    tagController.dispose();
+    textController.dispose();
     super.dispose();
+  }
+
+  void loadTags(){
+    userTags = tagService.getAllTags();
+    setState(() {});
+  }
+
+  void addTag() async {
+    print(textController.text);
+    if(textController.text.isNotEmpty){
+      userTags.add(Tag(name: textController.text.trim(), color: selectedColor));
+      textController.clear();
+      tagService.updateTags(userTags);
+      loadTags();
+    }
   }
 
   @override
@@ -37,12 +61,19 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                   const SizedBox(height: 10,),
                   Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
                   const SizedBox(height: 10,),
+                  Wrap(
+                    children: [
+                      ...userTags.map((tag) => TagCard(tag: tag, themeData: widget.themeData, selected: true))
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
                   Text('Create a Tag', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: textController,
+                          decoration: const InputDecoration(
                             hintText: 'Add a tag',
                             hintStyle: TextStyle(
                               color: Colors.grey,
@@ -65,7 +96,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                           });
                         },
                       ),
-                      IconButton(onPressed: (){}, 
+                      IconButton(onPressed: addTag, 
                         icon: Icon(Icons.check, color: widget.themeData.colorScheme.primary, size: 36,)
                       ),
                     ],
@@ -95,7 +126,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
           content: SingleChildScrollView(
             child: ColorPicker(
               paletteType: PaletteType.hueWheel,
-              pickerColor: const Color(0xff443a49),
+              pickerColor: const Color(0xFFFFAC5F),
               labelTypes: [],
               onColorChanged: (Color color) {
                 currentColor = color.value;

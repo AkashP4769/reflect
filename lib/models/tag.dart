@@ -1,7 +1,7 @@
 
 class Tag{
   final String name;
-  final String color;
+  final int color;
 
   Tag({required this.name, required this.color});
 
@@ -13,6 +13,17 @@ class Tag{
   }
 
   Map<String, dynamic> toJson(){
+    return {
+      'name': name,
+      'color': color
+    };
+  }
+
+  factory Tag.fromMap(Map<String, dynamic> map){
+    return Tag(name: map['name'], color: map['color']);
+  }
+
+  Map<String, dynamic> toMap(){
     return {
       'name': name,
       'color': color
