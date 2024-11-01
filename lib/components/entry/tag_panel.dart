@@ -104,7 +104,7 @@ class TagPanel extends StatelessWidget {
                           ),
                           Wrap(
                             children: [
-                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true)).toList()
+                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false,)).toList()
                             ],
                           ),
 
@@ -114,7 +114,7 @@ class TagPanel extends StatelessWidget {
                           ),
                           Wrap(
                             children: [
-                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: false))
+                              ...allTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: false, deleteBit: false,))
                             ],
                           ),
                         ],

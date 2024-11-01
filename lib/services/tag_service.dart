@@ -11,7 +11,8 @@ class TagService {
     final res = tagbox.get(user!.uid, defaultValue: []) as List;
     List<Tag> tagList = [];
     for (var tag in res) {
-      tagList.add(Tag.fromMap(tag));
+      tagList.add(Tag.fromMap(Map<String, dynamic>.from(tag)));
+
     }
 
     return tagList;

@@ -6,7 +6,8 @@ class TagCard extends StatelessWidget {
   final Tag tag;
   final ThemeData themeData;
   final bool selected;
-  const TagCard({super.key, required this.tag, required this.themeData, required this.selected});
+  final bool deleteBit;
+  const TagCard({super.key, required this.tag, required this.themeData, required this.selected, required this.deleteBit});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +15,9 @@ class TagCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       decoration: BoxDecoration(
-        color: selected ? Color(tag.color) : Colors.transparent,
+        color: selected ? Color(tag.color) : deleteBit ? Color.fromARGB(255, 255, 119, 119) : themeData.colorScheme.surfaceContainerHigh,
         border: Border.all(
-          color: selected ?  Colors.transparent : Color(tag.color),
+          color: selected ? Colors.transparent : deleteBit ? Color.fromARGB(255, 255, 119, 119) : Color(tag.color),
           width: 1.0,
         ),
         boxShadow: const [
@@ -30,9 +31,10 @@ class TagCard extends StatelessWidget {
       ),
       child: Text(
         tag.name,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: !selected ? themeData.colorScheme.onPrimary : Colors.white,
           fontSize: 14.0,
+          fontWeight: FontWeight.w600
         ),
       ),
     );
