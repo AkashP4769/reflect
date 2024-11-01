@@ -12,7 +12,12 @@ import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/theme/theme_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final void Function()? signInwWithGoogle;
+  final void Function()? signInWithApple;
+  final void Function(String, String)? signInWithEmailAndPass;
+  final String? loginErrorMsg;
+  final String? signupErrorMsg;
+  const LoginPage({super.key, this.signInwWithGoogle, this.signInWithApple, this.signInWithEmailAndPass, this.loginErrorMsg, this.signupErrorMsg});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -145,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: PageView(
                                   controller: _pageController,
                                   children: [
-                                    LoginCard(togglePage: togglePage,),
+                                    LoginCard(togglePage: togglePage, signInWithEmailAndPass: widget.signInWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInwWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.loginErrorMsg!,),
                                     SignUpCard(togglePage: togglePage,),
                                   ],
                                 ),

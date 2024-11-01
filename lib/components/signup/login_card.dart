@@ -13,7 +13,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
-  const LoginCard({super.key, required this.togglePage});
+  final void Function() signInwWithGoogle;
+  final void Function() signInWithApple;
+  final void Function(String, String) signInWithEmailAndPass;
+  final String errorMsg;
+  const LoginCard({super.key, required this.togglePage, required this.signInwWithGoogle, required this.signInWithApple, required this.signInWithEmailAndPass, required this.errorMsg});
 
   @override
   ConsumerState<LoginCard> createState() => _LoginCardState();
@@ -24,7 +28,6 @@ class _LoginCardState extends ConsumerState<LoginCard> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
-  String errorMsg = '';
 
   @override
   void initState() {
@@ -45,26 +48,6 @@ class _LoginCardState extends ConsumerState<LoginCard> {
     confirmPasswordController.dispose();
     super.dispose();
   }
-
-  void signInWithGoogle(Color loadingColor) async {
-    showLoading(context, loadingColor);
-    String msg = await AuthService.signInWithGoogle();
-    if(msg != '') setState(() => errorMsg = msg);
-    if(mounted) Navigator.pop(context);
-  }
-
-  void signInWithApple(Color loadingColor) async {
-    String msg = "Apple Sign In is not available yet!";
-    if(msg != '') setState(() => errorMsg = msg);
-  }
-
-  void signInWithEmailAndPass(Color loadingColor) async {
-    showLoading(context, loadingColor);
-    String msg = await AuthService.signInWithEmailPassword(emailController.text, passwordController.text);
-    if(msg != '') setState(() => errorMsg = msg);
-    /*if(mounted)*/ Navigator.pop(context);
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -92,20 +75,20 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                 SignUpTextField(text: "Email", controller: emailController, themeData: themeData,),
                 SignUpPassField(text: "Password", controller: passwordController, themeData: themeData,),
                 
-                if(errorMsg != '') Row(
+                if(widget.errorMsg != '') Row(
                   children: [
                     const Icon(Icons.error, color: Colors.redAccent, size: 16,),
                     const SizedBox(width: 5,),
-                    Text(errorMsg, style: const TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                    Text(widget.errorMsg!, style: const TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
                   ],
                 ),
-                SizedBox(height: errorMsg != '' ? 5 : 20,),
+                SizedBox(height: widget.errorMsg != '' ? 5 : 20,),
                 
             
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () => signInWithEmailAndPass(themeData.colorScheme.surfaceContainerHighest), 
+                    onPressed: () => widget.signInWithEmailAndPass(emailController.text, passwordController.text), 
                     style: themeData.elevatedButtonTheme.style,
                     child: Text("Login", style: themeData.textTheme.titleMedium),
                   ),
@@ -139,11 +122,11 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => signInWithGoogle(themeData.colorScheme.surfaceContainerHighest),
+                        onTap: () => widget.signInwWithGoogle(),
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: () => signInWithApple(themeData.colorScheme.surfaceContainerHighest),
+                        onTap: () => widget.signInWithApple(),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],
