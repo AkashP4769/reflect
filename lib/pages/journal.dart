@@ -43,8 +43,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
   String sortMethod = 'time';
   bool isAscending = false;
 
-  void loadSortSettings(){
-    final sortSettings = conversionService.getChapterSort();
+  void loadSortSettings() async {
+    final sortSettings = await conversionService.getChapterSort();
+    print("Sort settings: " + sortSettings.toString());
     if(sortSettings != null) {
       sortMethod = sortSettings['sortMethod'];
       isAscending = sortSettings['isAscending'];
@@ -81,6 +82,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   Future<void> loadChaptersFromCache() async {
     final _entries = cacheService.loadChaptersFromCache();
     if(_entries != null) {
+      loadSortSettings();
       chapters = conversionService.sortChapters(_entries, sortMethod, isAscending);
       if(mounted) setState(() {});
     }

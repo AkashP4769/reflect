@@ -10,8 +10,8 @@ class ConversionService {
     sortBox.put(user!.uid + "#chapter", {'sortMethod': sortMethod, 'isAscending': isAscending});
   }
 
-  Map<String, dynamic> getChapterSort(){
-    return sortBox.get(user!.uid + "#chapter") as Map<String, dynamic>;
+  Future<Map<String, dynamic>>? getChapterSort() async {
+    return Map<String, dynamic>.from(await sortBox.get(user!.uid + "#chapter"));
   }
 
   List<Chapter> sortChapters(List<Chapter> chapters, String sortMethod, bool isAscending){
