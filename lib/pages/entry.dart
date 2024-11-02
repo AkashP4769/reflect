@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/entry/sliding_carousel.dart';
 import 'package:reflect/components/entry/tag_alertbox.dart';
 import 'package:reflect/components/entry/tag_card.dart';
 import 'package:reflect/components/entry/tag_panel.dart';
@@ -188,6 +189,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     });
   }
 
+  void showTagSelection(ThemeData themeData) async {
+    List<Tag>? newEntryTags = await showDialog(
+      context: context, 
+      builder: (context) => TagSelectionBox(themeData: themeData, tags: entryTags),
+    );
+    print(newEntryTags.toString());
+    if(newEntryTags != null) {
+      entryTags = newEntryTags;
+      setState(() {});
+    }
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -261,15 +274,26 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     ),
                     
                     
-                    Wrap(
+                    /*Wrap(
                       children: [
                         ...entryTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false,)),
                         GestureDetector(
-                          onTap: () => showDialog(context: context, builder: (context) => TagSelectionBox(themeData: themeData, tags: entryTags,)),
+                          onTap: () async {
+                            List<Tag>? newEntryTags = await showDialog(
+                              context: context, 
+                              builder: (context) => TagSelectionBox(themeData: themeData, tags: entryTags),
+                            );
+                            print(newEntryTags.toString());
+                            if(newEntryTags != null) {
+                              entryTags = newEntryTags;
+                              setState(() {});
+                            }
+                          }, 
                           child: TagCard(tag: Tag(name: entryTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value), themeData: themeData, selected: false, deleteBit: false,)
                         )
                       ],
-                    ),
+                    ),*/
+                    SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                     const SizedBox(height: 10),
                     quill.QuillEditor.basic(
                           controller: quillController,

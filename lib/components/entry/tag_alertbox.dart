@@ -78,7 +78,16 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
   Widget build(BuildContext context) {
     return AlertDialog(
           contentPadding: const EdgeInsets.only(left:20, right: 10, top: 20, bottom: 20),
-          title: Text('Select new tags', style: widget.themeData.textTheme.bodyLarge!.copyWith(fontFamily: "Poppins", fontWeight: FontWeight.w600, fontSize: 24),),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select new tags', style: widget.themeData.textTheme.bodyLarge!.copyWith(fontFamily: "Poppins", fontWeight: FontWeight.w600, fontSize: 24),),
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(), 
+                icon: Icon(Icons.close)
+              )
+            ],
+          ),
           content: IntrinsicHeight(
             child: Container(
               width: MediaQuery.of(context).size.width, 
@@ -194,9 +203,11 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                final unionSet = entryTags.union(userTags);
+                tagService.updateTags(unionSet.toList());
+                Navigator.of(context).pop(entryTags.toList());
               },
-              child: const Text('Close'),
+              child: Text('Confirm', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, color: widget.themeData.colorScheme.primary),),
             ),
           ],
     );
