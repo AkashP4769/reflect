@@ -7,12 +7,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
+import 'package:reflect/components/journal/chapter_sorter.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/pages/entrylist.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
+import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
@@ -33,9 +35,29 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final ChapterService chapterService = ChapterService();
   final TimestampService timestampService = TimestampService();
   final CacheService cacheService = CacheService();
+  final ConversionService conversionService = ConversionService();
 
   List<Chapter> chapters = [];
 
+  bool isEditingSort = false;
+  String sortMethod = 'time';
+  bool isAscending = false;
+
+  void loadSortSettings(){
+    final sortSettings = conversionService.getChapterSort();
+    if(sortSettings != null) {
+      sortMethod = sortSettings['sortMethod'];
+      isAscending = sortSettings['isAscending'];
+    }
+  }
+
+  void onSort(String sortMethod, bool isAscending){
+    this.sortMethod = sortMethod;
+    this.isAscending = isAscending;
+
+    chapters = conversionService.sortChapters(chapters, sortMethod, isAscending);
+    setState(() {});
+  }
 
   void createChapter(String title, String description, List<String>? images, DateTime date) async {
     final chapter = {
@@ -59,7 +81,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   Future<void> loadChaptersFromCache() async {
     final _entries = cacheService.loadChaptersFromCache();
     if(_entries != null) {
-      chapters = _entries;
+      chapters = conversionService.sortChapters(_entries, sortMethod, isAscending);
       if(mounted) setState(() {});
     }
   }
@@ -88,7 +110,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-
     return RefreshIndicator(
       onRefresh: () async {
         await fetchChapters(true);
@@ -126,8 +147,22 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    Text("Chapters", style: themeData.textTheme.titleLarge,),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(child: Text("Chapters", style: themeData.textTheme.titleLarge,), alignment: Alignment.center,),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () => setState(() => isEditingSort = !isEditingSort), 
+                            icon: Icon(Icons.sort, color: isEditingSort ? themeData.colorScheme.primary : themeData.colorScheme.onPrimary,)
+                          ),
+                        )
+                      ],
+                    ),
                     const SizedBox(height: 10),
+                    if(isEditingSort) ChapterSorter(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
 
                     ListView.builder(
                       shrinkWrap: true,

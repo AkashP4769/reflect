@@ -61,31 +61,6 @@ class TagTextField extends StatelessWidget {
               showColorPicker(context);
             },
           ),
-          /*PopupMenuButton<String>(
-            color: themeData.colorScheme.secondary,
-            icon: CircleAvatar(
-              radius: 15,
-              backgroundColor: Color(int.parse(selectedColor)),
-            ),
-            onSelected: (String value) {
-              print(value);
-            },
-            popUpAnimationStyle: AnimationStyle(
-              curve: Curves.easeInOut,
-              reverseCurve: Curves.easeInOut,
-            ),
-            itemBuilder: (BuildContext context) {
-              return availableColors.map((String color) {
-                return PopupMenuItem<String>(
-                  value: color,
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Color(int.parse(color)),
-                  ),
-                );
-              }).toList();
-            },
-          ),*/
         ],
       ),
     );
