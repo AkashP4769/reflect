@@ -94,6 +94,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
       ),
 
       bottomNavigationBar: Container(
+        width: MediaQuery.of(context).size.width,
         //padding: const EdgeInsets.symmetric(vertical: 10),
         child: GNav(
           rippleColor: Colors.transparent,

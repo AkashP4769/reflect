@@ -295,7 +295,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         )
                       ],
                     ),*/
-                    const SizedBox(height: 10),
+                    
                     SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                     const SizedBox(height: 10),
                     quill.QuillEditor.basic(
