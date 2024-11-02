@@ -38,7 +38,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late FocusNode contentFocusNode;
 
   EntryService entryService = EntryService();
-  List<Tag> selectedTags = [];
+  List<Tag> entryTags = [];
 
   @override
   void initState() {
@@ -48,6 +48,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleFocusNode = FocusNode();
     contentFocusNode = FocusNode();
     panelController = SlidingUpPanelController();
+
+    for(var tag in widget.entry.tags!) {
+      entryTags.add(Tag(name: tag['name'], color: tag['color']));
+    }
+    entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
+    entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
     
     panelController.hide();
     date = widget.entry.date;
@@ -257,10 +263,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     
                     Wrap(
                       children: [
-                        ...selectedTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false,)),
+                        ...entryTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false,)),
                         GestureDetector(
                           onTap: () => showDialog(context: context, builder: (context) => TagSelectionBox(themeData: themeData)),
-                          child: TagCard(tag: Tag(name: selectedTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value), themeData: themeData, selected: false, deleteBit: false,)
+                          child: TagCard(tag: Tag(name: entryTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value), themeData: themeData, selected: false, deleteBit: false,)
                         )
                       ],
                     ),
