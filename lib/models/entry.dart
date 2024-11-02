@@ -1,4 +1,5 @@
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:reflect/models/tag.dart';
 
 class Entry{
   final String? id;
@@ -6,11 +7,11 @@ class Entry{
   final String? title;
   final List<Map<String,dynamic>>? content;
   final DateTime date;
-  final List<String>? tags;
+  final List<Map<String, dynamic>>? tags;
 
   Entry({this.title, this.content, this.id, this.tags, this.chapterId, DateTime? date}) : date = date ?? DateTime.now();
 
-  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<String>? tags, String chapterId, String? id) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id) {
     return Entry(
       id: id,
       chapterId: chapterId,
@@ -48,7 +49,7 @@ class Entry{
       title: json['title'],
       content: json['content'] != null ? List<Map<String, dynamic>>.from(json['content']) : null,
       date: DateTime.parse(json['date']).toLocal(),
-      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
+      tags: json['tags'] != null ? List<Map<String, dynamic>>.from(json['tags']) : null,
     );
   }
 
@@ -64,7 +65,11 @@ class Entry{
           ))
         : null,
       date: DateTime.parse(data['date']),
-      tags: (data['tags'] == null || (data['tags'] as List).isEmpty)? [] : (data['tags'] as List).map((imageUrl) => imageUrl as String).toList(),
+      tags: data['tags'] != null
+        ? List<Map<String, dynamic>>.from((data['tags'] as List).map(
+            (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
+          ))
+        : null,
     );
   }
 
