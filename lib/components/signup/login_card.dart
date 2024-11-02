@@ -13,9 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
-  final void Function() signInwWithGoogle;
-  final void Function() signInWithApple;
-  final void Function(String, String) signInWithEmailAndPass;
+  final void Function(Color) signInwWithGoogle;
+  final void Function(Color) signInWithApple;
+  final void Function(String, String, Color) signInWithEmailAndPass;
   final String errorMsg;
   const LoginCard({super.key, required this.togglePage, required this.signInwWithGoogle, required this.signInWithApple, required this.signInWithEmailAndPass, required this.errorMsg});
 
@@ -88,7 +88,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () => widget.signInWithEmailAndPass(emailController.text, passwordController.text), 
+                    onPressed: () => widget.signInWithEmailAndPass(emailController.text, passwordController.text, themeData.colorScheme.primary), 
                     style: themeData.elevatedButtonTheme.style,
                     child: Text("Login", style: themeData.textTheme.titleMedium),
                   ),
@@ -122,11 +122,11 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => widget.signInwWithGoogle(),
+                        onTap: () => widget.signInwWithGoogle(themeData.colorScheme.primary),
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: () => widget.signInWithApple(),
+                        onTap: () => widget.signInWithApple(themeData.colorScheme.primary),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

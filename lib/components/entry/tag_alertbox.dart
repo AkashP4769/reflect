@@ -60,6 +60,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
     }
     tagService.updateTags(newTags);
     tagDeleteState = false;
+    deleteBits = List.generate(100, (index) => false);
     loadTags();
   }
 

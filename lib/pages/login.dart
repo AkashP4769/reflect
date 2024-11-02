@@ -12,10 +12,10 @@ import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/theme/theme_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  final void Function()? signInwWithGoogle;
-  final void Function()? signInWithApple;
-  final void Function(String, String)? signInWithEmailAndPass;
-  final void Function(String name, String email, String password, String confirmPassword)? signUpWithEmailAndPass;
+  final void Function(Color)? signInwWithGoogle;
+  final void Function(Color)? signInWithApple;
+  final void Function(String, String, Color)? signInWithEmailAndPass;
+  final void Function(String name, String email, String password, String confirmPassword, Color)? signUpWithEmailAndPass;
 
   final String? loginErrorMsg;
   final String? signupErrorMsg;
@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _pageController,
                                   children: [
                                     LoginCard(togglePage: togglePage, signInWithEmailAndPass: widget.signInWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInwWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.loginErrorMsg!,),
-                                    SignUpCard(togglePage: togglePage, signUpWithEmailAndPass: widget.signUpWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.signupErrorMsg!,),
+                                    SignUpCard(togglePage: togglePage, signUpWithEmailAndPass: widget.signUpWithEmailAndPass!, signInWithApple: widget.signInWithApple!, signInWithGoogle: widget.signInwWithGoogle!, errorMsg: widget.signupErrorMsg!, ),
                                   ],
                                 ),
                               ),

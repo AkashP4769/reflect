@@ -13,9 +13,9 @@ import 'package:reflect/services/auth_service.dart';
 class SignUpCard extends ConsumerStatefulWidget {
   final void Function() togglePage;
   final String errorMsg;
-  final void Function(String name, String email, String password, String confirmPassword) signUpWithEmailAndPass;
-  final void Function() signInWithGoogle;
-  final void Function() signInWithApple;
+  final void Function(String name, String email, String password, String confirmPassword, Color loadingColor) signUpWithEmailAndPass;
+  final void Function(Color) signInWithGoogle;
+  final void Function(Color) signInWithApple;
   const SignUpCard({
     super.key, required this.togglePage, required this.errorMsg, required this.signUpWithEmailAndPass, required this.signInWithGoogle, required this.signInWithApple
   });
@@ -29,8 +29,6 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
-
-
 
   @override
   void initState() {
@@ -51,29 +49,6 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
     confirmPasswordController.dispose();
     super.dispose();
   }
-
-  /*void signUpWithEmailAndPass(Color loadingColor) async {
-    if(passwordController.text != confirmPasswordController.text){
-      setState(() => widget.errorMsg = "Passwords do not match!");
-      return;
-    }
-    showLoading(context, loadingColor);
-    String msg = await AuthService.createUserWithEmailAndPassword(nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
-    if(msg != '') setState(() => errorMsg = msg);
-    /*if(mounted)*/ Navigator.pop(context);
-  }
-
-  void signInWithApple(Color loadingColor) async {
-    String msg = "Apple Sign In is not available yet!";
-    if(msg != '') setState(() => errorMsg = msg);
-  }
-
-  void signInWithGoogle(Color loadingColor) async {
-    showLoading(context, loadingColor);
-    String msg = await AuthService.signInWithGoogle();
-    if(msg != '') setState(() => errorMsg = msg);
-    if(mounted) Navigator.pop(context);
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +91,7 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    onPressed: () => widget.signUpWithEmailAndPass(nameController.text.trim(), emailController.text.trim(), passwordController.text, confirmPasswordController.text), 
+                    onPressed: () => widget.signUpWithEmailAndPass(nameController.text.trim(), emailController.text.trim(), passwordController.text, confirmPasswordController.text, themeData.colorScheme.primary), 
                     style: themeData.elevatedButtonTheme.style,
                     child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: "Poppins", fontWeight: FontWeight.w600),),
                   ),
@@ -150,11 +125,11 @@ class _SignUpCardState extends ConsumerState<SignUpCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => widget.signInWithGoogle(), 
+                        onTap: () => widget.signInWithGoogle(themeData.colorScheme.primary), 
                         child: SignUpIconButton(imgSrc: 'google'),
                       ),
                       GestureDetector(
-                        onTap: () => widget.signInWithApple(),
+                        onTap: () => widget.signInWithApple(themeData.colorScheme.primary),
                         child: SignUpIconButton(imgSrc: 'apple'),
                       )
                     ],

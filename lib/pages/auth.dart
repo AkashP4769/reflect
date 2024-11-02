@@ -19,31 +19,31 @@ class _AuthPageState extends State<AuthPage> {
   String signupErrorMsg = '';
 
 
-  void signInWithGoogle() async {
-    showLoading(context, const Color(0xffFFAC5F));
+  void signInWithGoogle(Color loadingColor) async {
+    showLoading(context, loadingColor);
     String msg = await AuthService.signInWithGoogle();
     if(msg != '') setState(() => loginErrorMsg = msg);
     Navigator.pop(context);
   }
 
-  void signInWithApple() async {
+  void signInWithApple(Color loadingColor) async {
     String msg = "Apple Sign In is not available yet!";
     if(msg != '') setState(() => loginErrorMsg = msg);
   }
 
-  void signInWithEmailAndPass(String email, String password) async {
-    showLoading(context, const Color(0xffFFAC5F));
+  void signInWithEmailAndPass(String email, String password, Color loadingColor) async {
+    showLoading(context, loadingColor);
     String msg = await AuthService.signInWithEmailPassword(email, password);
     if(msg != '') setState(() => loginErrorMsg = msg);
     Navigator.pop(context);
   }
 
-  void signUpWithEmailAndPass(String name, String email, String password, String confirmPassword) async {
+  void signUpWithEmailAndPass(String name, String email, String password, String confirmPassword, Color loadingColor) async {
     if(password != confirmPassword){
       setState(() => signupErrorMsg = "Passwords do not match!");
       return;
     }
-    showLoading(context, const Color(0xffFFAC5F));
+    showLoading(context, loadingColor);
     String msg = await AuthService.createUserWithEmailAndPassword(name, email, password);
     if(msg != '') setState(() => signupErrorMsg = msg);
     Navigator.pop(context);
