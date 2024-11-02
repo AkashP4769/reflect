@@ -29,4 +29,12 @@ class Tag{
       'color': color
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Tag && runtimeType == other.runtimeType && name == other.name && color == other.color;
+
+  @override
+  int get hashCode => name.hashCode ^ color.hashCode;
 }

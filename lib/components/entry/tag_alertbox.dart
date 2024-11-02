@@ -9,8 +9,9 @@ import 'package:collection/collection.dart';
 
 class TagSelectionBox extends StatefulWidget {
   final ThemeData themeData;
+  final List<Tag> tags;
 
-  const TagSelectionBox({super.key, required this.themeData});
+  const TagSelectionBox({super.key, required this.themeData, required this.tags});
 
   @override
   State<TagSelectionBox> createState() => _TagSelectionBoxState();
@@ -18,17 +19,24 @@ class TagSelectionBox extends StatefulWidget {
 
 class _TagSelectionBoxState extends State<TagSelectionBox> {
   final tagService = TagService();
-  List<Tag> userTags = [];
+  Set<Tag> userTags = {};
+  Set<Tag> entryTags = {};
   int selectedColor = 0xFFFFAC5F;
   bool tagDeleteState = false;
   TextEditingController textController = TextEditingController();
 
   List<bool> deleteBits = List.generate(100, (index) => false);
 
+
   @override
   void initState(){
     super.initState();
-    userTags = tagService.getAllTags();
+    entryTags = widget.tags.toSet();
+    userTags = tagService.getAllTags().toSet();
+    userTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
+    userTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
+
+    userTags = userTags.difference(entryTags);
   }
 
   @override
@@ -38,7 +46,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
   }
 
   void loadTags(){
-    userTags = tagService.getAllTags();
+    userTags = tagService.getAllTags().toSet();
     setState(() {});
   }
 
@@ -47,19 +55,20 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
     if(textController.text.isNotEmpty){
       userTags.add(Tag(name: textController.text.trim(), color: selectedColor));
       textController.clear();
-      tagService.updateTags(userTags);
+      tagService.updateTags(userTags.toList());
       loadTags();
     }
   }
 
   void deleteTags(){
-    List<Tag> newTags = [];
-    for (var i = 0; i < userTags.length; i++) {
+    Set<Tag> newTags = {};
+    List<Tag> userTagsList = userTags.toList();
+    for (var i = 0; i < userTagsList.length; i++) {
       if(!deleteBits[i]){
-        newTags.add(userTags[i]);
+        newTags.add(userTagsList[i]);
       }
     }
-    tagService.updateTags(newTags);
+    tagService.updateTags(newTags.toList());
     tagDeleteState = false;
     deleteBits = List.generate(100, (index) => false);
     loadTags();
@@ -78,8 +87,28 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                 children: [
                   Text('Selected Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
                   const SizedBox(height: 10,),
+
+                  //entrytags
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ...entryTags.mapIndexed((index, tag) => 
+                        GestureDetector(
+                          onTap: (){
+                            entryTags.remove(tag);
+                            userTags.add(tag);
+                            setState(() {});
+                          },
+                          child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: deleteBits[index],)
+                        )
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
                   Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
                   const SizedBox(height: 10,),
+
+                  //usertags
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
@@ -96,6 +125,11 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                                 }
                               }
                               tagDeleteState = prevState;
+                              setState(() {});
+                            }
+                            else {
+                              entryTags.add(tag);
+                              userTags.remove(tag);
                               setState(() {});
                             }
                           },
