@@ -26,6 +26,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isTitleEdited = false;
   bool isContentEdited = false;
   bool isDateEdited = false;
+  bool isTagsEdited = false;
 
   bool extendedToolbar = false;
 
@@ -201,6 +202,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     print(newEntryTags.toString());
     if(newEntryTags != null) {
       entryTags = newEntryTags;
+      isTagsEdited = true;
       setState(() {});
     }
   }
@@ -384,7 +386,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     SizedBox(
                       width: 120,
                       child: ElevatedButton(
-                        onPressed: isTitleEdited || isContentEdited || isDateEdited ? (){
+                        onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited ? (){
                           if(widget.entry.id == null) addEntry();
                           else updateEntry();
                         } : null,
