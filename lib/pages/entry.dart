@@ -50,8 +50,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     contentFocusNode = FocusNode();
     panelController = SlidingUpPanelController();
 
-    for(var tag in widget.entry.tags!) {
-      entryTags.add(Tag(name: tag['name'], color: tag['color']));
+    if(widget.entry.tags != null){
+      for(var tag in widget.entry.tags!) {
+        entryTags.add(Tag(name: tag['name'], color: tag['color']));
+      }
     }
     entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
     entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
@@ -261,7 +263,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     TextField(
                       controller: titleController,
                       focusNode: titleFocusNode,
-                      style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                      style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(
                         hintText: "Title...",
@@ -293,6 +295,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         )
                       ],
                     ),*/
+                    const SizedBox(height: 10),
                     SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                     const SizedBox(height: 10),
                     quill.QuillEditor.basic(
@@ -305,14 +308,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             keyboardAppearance: themeData.brightness,
                             customStyles: quill.DefaultStyles(
                               paragraph: quill.DefaultTextBlockStyle(
-                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 18) ?? const TextStyle(),
+                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
                                 const quill.HorizontalSpacing(0, 0),
                                 const quill.VerticalSpacing(0, 0),
                                 quill.VerticalSpacing.zero,
                                 null
                               ),
                               placeHolder: quill.DefaultTextBlockStyle(
-                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 18, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
                                 const quill.HorizontalSpacing(0, 0),
                                 const quill.VerticalSpacing(0, 0),
                                 quill.VerticalSpacing.zero,
