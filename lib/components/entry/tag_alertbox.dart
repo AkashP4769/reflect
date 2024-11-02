@@ -33,8 +33,8 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
     super.initState();
     entryTags = widget.tags.toSet();
     userTags = tagService.getAllTags().toSet();
-    userTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
-    userTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
+    //userTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
+    //userTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
 
     userTags = userTags.difference(entryTags);
   }

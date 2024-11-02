@@ -55,8 +55,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         entryTags.add(Tag(name: tag['name'], color: tag['color']));
       }
     }
-    entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
-    entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
+    //entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
+    //entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
     
     panelController.hide();
     date = widget.entry.date;
@@ -108,7 +108,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void addEntry() async {
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, [], widget.entry.chapterId!, null);
+    final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null);
     final result = await entryService.createEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
@@ -120,7 +121,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void updateEntry() async {
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, [], widget.entry.chapterId!, widget.entry.id);
+    final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id);
     final result = await entryService.updateEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
