@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/entrylist/editing_chapter_header.dart';
+import 'package:reflect/components/entrylist/entry_sort_setting.dart';
 import 'package:reflect/components/entrylist/entrylist_appbar.dart';
 import 'package:reflect/components/entrylist/grouped_entry_builder.dart';
+import 'package:reflect/components/entrylist/ungrouped_entry_builder.dart';
 import 'package:reflect/components/journal/chapter_header.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
@@ -38,6 +40,13 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   bool isTyping = false;
   bool isEditing = false;
   bool haveUpdated = false;
+  bool isGroupedEntries = false;
+
+  //Sort Setting
+  bool isSortSettingVisible = false;
+  String sortMethod = 'time';
+  bool isAscending = false;
+
 
   final chapterService = ChapterService();
   final chapterBox = Hive.box("chapters");
@@ -71,6 +80,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
+  void toggleSortSetting() => setState(() => isSortSettingVisible = !isSortSettingVisible);
+  void toggleGroupedEntries() => setState(() => isGroupedEntries = !isGroupedEntries);
+
+  void onSort(String sortMethod, bool isAscending){
+    this.sortMethod = sortMethod;
+    this.isAscending = isAscending;
+    setState(() {});
+  }
 
   void deleteChapter() async {
     final status = await ChapterService().deleteChapter(chapter.id);
@@ -190,6 +207,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
     validEntries = entrylistService.sortEntries(validEntries, 'rev');
     final Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(validEntries);
+    print(isSortSettingVisible);
     
     return WillPopScope(
       onWillPop: () async {
@@ -220,15 +238,18 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40,),
-                  if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate,),
+                  if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
               
                   const SizedBox(height: 20),
                   if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
                   if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
-                  if(!isEditing && validEntries.isNotEmpty)
-                  GroupedEntryBuilder(groupedEntries: groupedEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
-                      
+                  EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData),
+
+                  if(!isEditing && validEntries.isNotEmpty) isGroupedEntries ?
+                  GroupedEntryBuilder(groupedEntries: groupedEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated) :
+                  UngroupedEntryBuilder(entries: entries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
+
                   else if(!isEditing && validEntries.isEmpty) Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,

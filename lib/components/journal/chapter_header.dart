@@ -96,7 +96,7 @@ class ChapterHeader extends StatelessWidget {
                 } : null,
                 child: Row(
                   children: [
-                    Icon(Icons.lock_clock, color: themeData.colorScheme.onPrimary,),
+                    Icon(Icons.schedule, color: themeData.colorScheme.onPrimary,),
                     const SizedBox(width: 5),
                     Text('Created - ${DateFormat('dd/MM/yyyy').format(date)}', style: themeData.textTheme.bodySmall?.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 14),)
                   ],

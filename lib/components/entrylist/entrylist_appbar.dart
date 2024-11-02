@@ -7,7 +7,8 @@ class EntryListAppbar extends StatelessWidget {
     required this.searchController,
     this.deleteChapter,
     this.toggleEdit,
-    this.popScreenWithUpdate
+    this.popScreenWithUpdate,
+    this.toggleSortSetting
   });
 
   final ThemeData themeData;
@@ -15,6 +16,7 @@ class EntryListAppbar extends StatelessWidget {
   final void Function()? deleteChapter;
   final void Function()? toggleEdit;
   final void Function()? popScreenWithUpdate;
+  final void Function()? toggleSortSetting;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class EntryListAppbar extends StatelessWidget {
             color: themeData.colorScheme.secondaryContainer,
             itemBuilder: (context) => [
               PopupMenuItem(
+                height: 50,
                 child: ListTile(
                   leading: Icon(Icons.edit, color: themeData.colorScheme.onPrimary,),
                   title: Text('Edit Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
@@ -68,6 +71,13 @@ class EntryListAppbar extends StatelessWidget {
                   leading: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
                   title: Text('Delete Chapter', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
                   onTap: deleteChapter,
+                ),
+              ),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(Icons.sort, color: themeData.colorScheme.onPrimary,),
+                  title: Text('Sort Entries', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                  onTap: toggleSortSetting,
                 ),
               ),
             ]

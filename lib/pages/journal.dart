@@ -7,7 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
-import 'package:reflect/components/journal/chapter_sorter.dart';
+import 'package:reflect/components/journal/chapter_sort_setting.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
@@ -164,7 +164,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    if(isEditingSort) ChapterSorter(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
+                    if(isEditingSort) ChapterSortSetting(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
 
                     ListView.builder(
                       shrinkWrap: true,
