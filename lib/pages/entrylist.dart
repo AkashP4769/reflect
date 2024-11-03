@@ -86,6 +86,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   void onSort(String sortMethod, bool isAscending){
     this.sortMethod = sortMethod;
     this.isAscending = isAscending;
+    print(sortMethod + " " + isAscending.toString());
     setState(() {});
   }
 
@@ -205,9 +206,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     List<Entry> validEntries = entries;
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
-    validEntries = entrylistService.sortEntries(validEntries, 'rev');
-    final Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(validEntries);
-    print(isSortSettingVisible);
+    if(!isGroupedEntries) validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
     
     return WillPopScope(
       onWillPop: () async {
@@ -244,11 +243,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
                   if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
-                  EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData),
+                  if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData),
 
                   if(!isEditing && validEntries.isNotEmpty) isGroupedEntries ?
-                  GroupedEntryBuilder(groupedEntries: groupedEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated) :
-                  UngroupedEntryBuilder(entries: entries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
+                  GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,) :
+                  UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
 
                   else if(!isEditing && validEntries.isEmpty) Column(
                     mainAxisSize: MainAxisSize.min,

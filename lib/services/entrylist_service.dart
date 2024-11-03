@@ -6,20 +6,19 @@ class EntrylistService {
     return entries.where((element) => element.title!.toLowerCase().contains(filterText.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(filterText.toLowerCase())).toList();
   }
 
-  List<Entry> sortEntries(List<Entry> entries, String method){
+  List<Entry> sortEntries(List<Entry> entries, String method, bool isAscending){
     switch(method){
-      case 'date':
+      case 'time':
         entries.sort((a, b) => a.date.compareTo(b.date));
         break;
-      case 'title':
-        entries.sort((a, b) => a.title!.compareTo(b.title!));
+      case 'alpha':
+        entries.sort((a, b) => a.title!.toLowerCase().compareTo(b.title!.toLowerCase()));
         break;
-      case 'content':
-        entries.sort((a, b) => a.getContentAsQuill().toPlainText().compareTo(b.getContentAsQuill().toPlainText()));
+      case 'length':
+        entries.sort((a, b) => a.getContentAsQuill().toPlainText().length.compareTo(b.getContentAsQuill().toPlainText().length));
         break;
-      case 'rev':
-        entries.reversed.toList();
     }
+    if (!isAscending) entries = entries.reversed.toList();
     return entries;
   }
 
@@ -30,7 +29,6 @@ class EntrylistService {
       if(groupedEntries[date] == null) groupedEntries[date] = [entry];
       else groupedEntries[date]!.add(entry);
     });
-
     return groupedEntries;
   }
 }

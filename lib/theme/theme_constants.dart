@@ -6,6 +6,7 @@ ThemeData lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: Color(0xffFFAC5F),
     onPrimary: Color.fromARGB(255, 34, 34, 34),
+    primaryFixed: Color(0xffFF9432),
     secondary: Color(0xffFFE3C3),
     secondaryContainer: Color.fromARGB(255, 255, 233, 207),
     onSecondary: Colors.black,
@@ -76,6 +77,7 @@ ThemeData darkTheme = ThemeData(
   fontFamily: "Poppins",
   colorScheme: const ColorScheme.dark(
     primary: Color(0xffFFAC5F),
+    primaryFixed: Color(0xffFF9432),
     onPrimary: Colors.white,
     secondary: Color(0xff303030),
     secondaryContainer: Color(0xff262626),

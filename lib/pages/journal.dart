@@ -158,7 +158,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                           child: IconButton(
                             padding: EdgeInsets.zero,
                             onPressed: () => setState(() => isEditingSort = !isEditingSort), 
-                            icon: Icon(Icons.sort, color: isEditingSort ? themeData.colorScheme.primary : themeData.colorScheme.onPrimary,)
+                            icon: Icon(Icons.sort, color: isEditingSort ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)
                           ),
                         )
                       ],

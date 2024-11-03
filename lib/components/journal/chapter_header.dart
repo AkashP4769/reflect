@@ -45,10 +45,10 @@ class ChapterHeader extends StatelessWidget {
           if(isEditing) TextField(
             controller: titleController,
             maxLines:  null,
-            style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432),), textAlign: TextAlign.center,
+            style: themeData.textTheme.titleLarge?.copyWith(color: themeData.colorScheme.primaryFixed,), textAlign: TextAlign.center,
             decoration: InputDecoration(
               hintText: 'Chapter Title',
-              hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.7),),
+              hintStyle: themeData.textTheme.titleLarge?.copyWith(color: themeData.colorScheme.primaryFixed.withOpacity(0.7),),
               alignLabelWithHint: true,
               contentPadding: EdgeInsets.zero,
               isDense: true,

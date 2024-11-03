@@ -2,34 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
+import 'package:reflect/services/entrylist_service.dart';
 
 class GroupedEntryBuilder extends StatefulWidget {
-  final Map<String, List<Entry>> groupedEntries;
+  final List<Entry> entries;
   final List<bool> visibleMap;
   final ThemeData themeData;
+  final String sortMethod;
+  final bool isAscending;
   final void Function(bool explicit) fetchEntries;
   final void Function(bool value) updateHaveEdit;
   
-  const GroupedEntryBuilder({super.key, required this.groupedEntries, required this.visibleMap, required this.themeData, required this.fetchEntries, required this.updateHaveEdit});
+  const GroupedEntryBuilder({super.key, required this.entries, required this.visibleMap, required this.themeData, required this.fetchEntries, required this.updateHaveEdit, required this.sortMethod, required this.isAscending});
 
   @override
   State<GroupedEntryBuilder> createState() => _GroupedEntryBuilderState();
 }
 
 class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
+  late Map<String, List<Entry>> groupedEntries;
+  final EntrylistService entrylistService = EntrylistService();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
-      itemCount: widget.groupedEntries.length,
+      itemCount: groupedEntries.length,
       clipBehavior: Clip.none,
       physics: const ScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 0),
       itemBuilder: (context, index){
-        final date = widget.groupedEntries.keys.elementAt(index);
-        final _entries = widget.groupedEntries[date];
-
+        final date = groupedEntries.keys.elementAt(widget.isAscending ? index : groupedEntries.length - 1 - index);
+        final _entries = groupedEntries[date];
+        final validEntries = entrylistService.sortEntries(_entries!, widget.sortMethod, widget.isAscending);
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -56,21 +69,22 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
             if(widget.visibleMap[index]) ListView.builder(
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              itemCount: _entries!.length,
+              itemCount: validEntries!.length,
               clipBehavior: Clip.none,
               physics: const ScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 0),
               itemBuilder: (context, index) {
+                
                 return GestureDetector(
                   onTap: () async {
-                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: _entries[index],)));
+                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
                     if(result == 'entry_updated') widget.fetchEntries(true);
                     if(result == 'entry_deleted'){
                       widget.updateHaveEdit(true);
                       widget.fetchEntries(true);
                     }
                   },
-                  child: EntryCard(entry: _entries[index], themeData: widget.themeData)
+                  child: EntryCard(entry: validEntries[index], themeData: widget.themeData)
                 );
               },
             ),
