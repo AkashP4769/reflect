@@ -32,7 +32,7 @@ class ChapterSortSetting extends StatelessWidget {
           Container(width: 2, height: 40, color: themeData.colorScheme.onPrimary.withOpacity(0.6),),
           IconButton(onPressed: (){ onSort("time", isAscending); }, icon: Icon(Icons.schedule, size: 26, color: sortMethod == 'time' ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)),
           IconButton(onPressed: (){ onSort("alpha", isAscending); }, icon: Icon(Icons.sort_by_alpha, size: 26, color: sortMethod == 'alpha' ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)),
-          IconButton(onPressed: (){ onSort("length", isAscending); }, icon: Icon(Icons.stacked_bar_chart, size: 26, color: sortMethod == 'length' ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)),
+          IconButton(onPressed: (){ onSort("count", isAscending); }, icon: Icon(Icons.stacked_bar_chart, size: 26, color: sortMethod == 'count' ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)),
           
         ],
       ),

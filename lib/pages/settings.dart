@@ -104,7 +104,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
               ),
             ],
           ),
-          Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.0" , style: themeData.textTheme.titleSmall))
+          Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.1" , style: themeData.textTheme.titleSmall))
         ],
       ),
     );

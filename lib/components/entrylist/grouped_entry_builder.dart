@@ -40,7 +40,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
       physics: const ScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 0),
       itemBuilder: (context, index){
-        final date = groupedEntries.keys.elementAt(widget.isAscending ? index : groupedEntries.length - 1 - index);
+        final date = groupedEntries.keys.elementAt(widget.isAscending && widget.sortMethod == 'time' ? index : groupedEntries.length - 1 - index);
         final _entries = groupedEntries[date];
         final validEntries = entrylistService.sortEntries(_entries!, widget.sortMethod, widget.isAscending);
 
