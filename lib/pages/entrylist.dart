@@ -11,12 +11,14 @@ import 'package:reflect/components/journal/chapter_header.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/models/tag.dart';
 import 'package:reflect/pages/entry.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
+import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
@@ -30,6 +32,10 @@ class EntryListPage extends ConsumerStatefulWidget {
 class _EntryListPageState extends ConsumerState<EntryListPage> {
   late Chapter chapter = widget.chapter!;
   List<Entry> entries = [];
+
+  List<Tag> tags = [];
+  List<bool> selectedTags = [];
+
   List<bool> visibleMap = List.generate(100, (index) => true);
 
   late TextEditingController searchController;
@@ -59,6 +65,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final entrylistService = EntrylistService();
   final conversionService = ConversionService();
   final cacheService = CacheService();
+  final tagService = TagService();
 
   void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
 
@@ -81,6 +88,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       else isTyping = false;
       setState(() {});
     });
+
+    
   }
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
@@ -90,8 +99,13 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);
   });
 
+  void toggleTagSelection(int index) => setState(() => selectedTags[index] = !selectedTags[index]);
+
   void loadSortSetting() async {
+    tags = tagService.getAllTags();
+    selectedTags = List.generate(tags.length, (index) => false);
     final sortSetting = await conversionService.getEntrySort();
+    
     if(sortSetting != null){
       sortMethod = sortSetting['sortMethod'];
       isAscending = sortSetting['isAscending'];
@@ -261,7 +275,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
                   if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
-                  if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData),
+                  if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
 
                   if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
                   GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,)
