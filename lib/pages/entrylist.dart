@@ -48,6 +48,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   bool isEditing = false;
   bool haveUpdated = false;
   bool isGroupedEntries = true;
+  bool isTaggingEnabled = false;
 
   //Sort Setting
   bool isSortSettingVisible = false;
@@ -88,8 +89,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       else isTyping = false;
       setState(() {});
     });
-
-    
   }
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
@@ -99,7 +98,13 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);
   });
 
-  void toggleTagSelection(int index) => setState(() => selectedTags[index] = !selectedTags[index]);
+  void toggleTagSelection(int index){
+    selectedTags[index] = !selectedTags[index];
+    bool isAnyTagSelected = selectedTags.any((element) => element);
+    if(isAnyTagSelected) isTaggingEnabled = true;
+    else isTaggingEnabled = false;
+    setState(() {});
+  }
 
   void loadSortSetting() async {
     tags = tagService.getAllTags();
@@ -239,7 +244,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
     validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
-    validEntries = entrylistService.filterEntryByTags(validEntries, tags, selectedTags);
+    if(isTaggingEnabled) validEntries = entrylistService.filterEntryByTags(validEntries, tags, selectedTags);
     
     return WillPopScope(
       onWillPop: () async {
