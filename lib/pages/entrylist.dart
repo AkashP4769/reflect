@@ -239,6 +239,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
     validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
+    validEntries = entrylistService.filterEntryByTags(validEntries, tags, selectedTags);
     
     return WillPopScope(
       onWillPop: () async {

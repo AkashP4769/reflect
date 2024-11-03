@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/models/tag.dart';
 
 class EntrylistService {
   List<Entry> applySearchFilter(List<Entry> entries, String filterText){
@@ -30,5 +31,24 @@ class EntrylistService {
       else groupedEntries[date]!.add(entry);
     });
     return groupedEntries;
+  }
+
+  List<Entry> filterEntryByTags(List<Entry> entries,List<Tag> tags,  List<bool> selectedTags){
+    List<Entry> filteredEntries = [];
+    Set<Tag> selectedTagSet = {};
+    for(int i = 0; i < tags.length; i++){
+      if(selectedTags[i]) selectedTagSet.add(tags[i]);
+    }
+
+    for(var entry in entries){
+      Set<Tag> entryTagSet = {};
+      for(var tag in entry.tags!){
+        entryTagSet.add(Tag.fromMap(tag));
+      }
+      if(selectedTagSet.intersection(entryTagSet).isNotEmpty){
+        filteredEntries.add(entry);
+      }
+    }
+    return filteredEntries;
   }
 }
