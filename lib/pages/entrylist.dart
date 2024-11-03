@@ -76,8 +76,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     fetchEntries(false);
 
-
-
     searchController.addListener(() {
       if(searchController.text.isNotEmpty) isTyping = true;
       else isTyping = false;
@@ -155,6 +153,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     final newEntries = cacheService.loadEntriesFromCache(chapter.id);
     if(newEntries != null){
       entries = newEntries;
+      //print('load from cache ${newEntries.toString()}');
       setState(() {});
     }
   }
@@ -224,7 +223,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     List<Entry> validEntries = entries;
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
-    if(!isGroupedEntries) validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
+    validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
+
+    print('valid entries: ${validEntries.length}');
     
     return WillPopScope(
       onWillPop: () async {
@@ -263,8 +264,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   
                   if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData),
 
-                  if(!isEditing && validEntries.isNotEmpty) isGroupedEntries ?
-                  GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,) :
+                  if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
+                  GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,)
+                  
+                  else if(!isEditing && validEntries.isNotEmpty && !isGroupedEntries)
                   UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
 
                   else if(!isEditing && validEntries.isEmpty) Column(

@@ -20,18 +20,19 @@ class GroupedEntryBuilder extends StatefulWidget {
 }
 
 class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
-  late Map<String, List<Entry>> groupedEntries;
   final EntrylistService entrylistService = EntrylistService();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    print("entries at grouped ${widget.entries.length}");
+    Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
