@@ -45,7 +45,6 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   void loadSortSettings() async {
     final sortSettings = await conversionService.getChapterSort();
-    print("Sort settings: " + sortSettings.toString());
     if(sortSettings != null) {
       sortMethod = sortSettings['sortMethod'];
       isAscending = sortSettings['isAscending'];

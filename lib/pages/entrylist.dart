@@ -14,6 +14,7 @@ import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
+import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
@@ -40,7 +41,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   bool isTyping = false;
   bool isEditing = false;
   bool haveUpdated = false;
-  bool isGroupedEntries = false;
+  bool isGroupedEntries = true;
 
   //Sort Setting
   bool isSortSettingVisible = false;
@@ -56,6 +57,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   final timestampService = TimestampService();
   final entrylistService = EntrylistService();
+  final conversionService = ConversionService();
   final cacheService = CacheService();
 
   void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
@@ -70,7 +72,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     descriptionController = TextEditingController(text: widget.chapter!.description);
     chapterDate = widget.chapter!.createdAt;
     
+    loadSortSetting();
+
     fetchEntries(false);
+
+
 
     searchController.addListener(() {
       if(searchController.text.isNotEmpty) isTyping = true;
@@ -81,12 +87,24 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
   void toggleSortSetting() => setState(() => isSortSettingVisible = !isSortSettingVisible);
-  void toggleGroupedEntries() => setState(() => isGroupedEntries = !isGroupedEntries);
+  void toggleGroupedEntries() => setState(() {
+    isGroupedEntries = !isGroupedEntries;
+    conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);
+  });
+
+  void loadSortSetting() async {
+    final sortSetting = await conversionService.getEntrySort();
+    if(sortSetting != null){
+      sortMethod = sortSetting['sortMethod'];
+      isAscending = sortSetting['isAscending'];
+      isGroupedEntries = sortSetting['isGroupedEntries'];
+    }
+  }
 
   void onSort(String sortMethod, bool isAscending){
     this.sortMethod = sortMethod;
     this.isAscending = isAscending;
-    print(sortMethod + " " + isAscending.toString());
+    conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);
     setState(() {});
   }
 

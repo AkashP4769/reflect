@@ -10,8 +10,10 @@ class ConversionService {
     sortBox.put(user!.uid + "#chapter", {'sortMethod': sortMethod, 'isAscending': isAscending});
   }
 
-  Future<Map<String, dynamic>>? getChapterSort() async {
-    return Map<String, dynamic>.from(await sortBox.get(user!.uid + "#chapter"));
+  Future<Map<String, dynamic>?> getChapterSort() async {
+    final sortSetting = await sortBox.get(user!.uid + "#chapter");
+    if(sortSetting != null) return Map<String, dynamic>.from(sortSetting);
+    return null;
   }
 
   List<Chapter> sortChapters(List<Chapter> chapters, String sortMethod, bool isAscending){
@@ -29,5 +31,15 @@ class ConversionService {
     if(!isAscending) chapters = chapters.reversed.toList();
     saveChapterSort(sortMethod, isAscending);
     return chapters;
+  }
+
+  void saveEntrySort(String sortMethod, bool isAscending, bool isGroupedEntries){
+    sortBox.put(user!.uid + "#entry", {'sortMethod': sortMethod, 'isAscending': isAscending, 'isGroupedEntries': isGroupedEntries});
+  }
+
+  Future<Map<String, dynamic>?> getEntrySort() async {
+    final sortSetting = await sortBox.get(user!.uid + "#entry");
+    if(sortSetting != null) return Map<String, dynamic>.from(sortSetting);
+    return null;
   }
 }
