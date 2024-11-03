@@ -27,7 +27,6 @@ class _UngroupedEntryBuilderState extends State<UngroupedEntryBuilder> {
       physics: const ScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 0),
       itemBuilder: (context, index) {
-        print('entry: ${widget.entries[index].title}');
         return GestureDetector(
           onTap: () async {
             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: widget.entries[index],)));

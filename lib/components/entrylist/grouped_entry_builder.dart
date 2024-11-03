@@ -31,7 +31,6 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    print("entries at grouped ${widget.entries.length}");
     Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     return ListView.builder(
       shrinkWrap: true,

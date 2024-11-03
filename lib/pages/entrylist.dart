@@ -97,6 +97,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       isAscending = sortSetting['isAscending'];
       isGroupedEntries = sortSetting['isGroupedEntries'];
     }
+    print('load Sorting $sortMethod $isAscending $isGroupedEntries');
   }
 
   void onSort(String sortMethod, bool isAscending){
@@ -224,8 +225,6 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
     validEntries = entrylistService.sortEntries(validEntries, sortMethod, isAscending);
-
-    print('valid entries: ${validEntries.length}');
     
     return WillPopScope(
       onWillPop: () async {

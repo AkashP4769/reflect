@@ -111,6 +111,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final _chapters = chapters;
     return RefreshIndicator(
       onRefresh: () async {
         await fetchChapters(true);
@@ -138,7 +139,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
               );
             }
             if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
-            if(chapters.isEmpty) return Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value)));
+            if(_chapters.isEmpty) return Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value)));
             
             return Scaffold(
               backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
@@ -169,26 +170,26 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       clipBehavior: Clip.none,
-                      itemCount: chapters.length,
+                      itemCount: _chapters.length,
                       physics: const ScrollPhysics(),
                       itemBuilder: (context, index){
                         if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
                           return GestureDetector(
                             onTap: () async {
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
                               if(result != null && result == true) fetchChapters(true);
                             },
-                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                            child: ChapterCard(chapter: _chapters[index], themeData: themeData)
                           );
                         }
-                        else if(chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
+                        else if(_chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || _chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
                           return GestureDetector(
                             onTap: () async {
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: chapters[index])));
+                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
                               if(result != null && result == true) fetchChapters(true);
                                 
                             },
-                            child: ChapterCard(chapter: chapters[index], themeData: themeData)
+                            child: ChapterCard(chapter: _chapters[index], themeData: themeData)
                           );
                         }
                         else return Container();
