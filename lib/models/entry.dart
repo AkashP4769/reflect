@@ -8,10 +8,11 @@ class Entry{
   final List<Map<String,dynamic>>? content;
   final DateTime date;
   final List<Map<String, dynamic>>? tags;
+  final bool? encrypted;
 
-  Entry({this.title, this.content, this.id, this.tags, this.chapterId, DateTime? date}) : date = date ?? DateTime.now();
+  Entry({this.title, this.content, this.id, this.tags, this.encrypted, this.chapterId, DateTime? date}) : date = date ?? DateTime.now();
 
-  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id, bool encrypted) {
     return Entry(
       id: id,
       chapterId: chapterId,
@@ -19,6 +20,7 @@ class Entry{
       content: document.toDelta().toJson(), // Store Delta as a Map
       date: date,
       tags: tags,
+      encrypted: false,
     );
   }
 
@@ -38,6 +40,7 @@ class Entry{
       'content': content,  // Store the Delta as a Map
       'date': date.toIso8601String(),
       'tags': tags,
+      'encrypted': encrypted,
     };
   }
 
@@ -50,6 +53,7 @@ class Entry{
       content: json['content'] != null ? List<Map<String, dynamic>>.from(json['content']) : null,
       date: DateTime.parse(json['date']).toLocal(),
       tags: json['tags'] != null ? List<Map<String, dynamic>>.from(json['tags']) : null,
+      encrypted: json['encrypted'],
     );
   }
 
@@ -70,6 +74,7 @@ class Entry{
             (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
           ))
         : null,
+      encrypted: data['encrypted'],
     );
   }
 
@@ -81,11 +86,12 @@ class Entry{
       'content': content,
       'date': date.toLocal().toIso8601String(),
       'tags': tags,
+      'encrypted': encrypted,
     };
   }
 
   @override
   String toString(){
-    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}';
+    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}, encrypted: $encrypted';
   }
 }

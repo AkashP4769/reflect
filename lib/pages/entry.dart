@@ -110,7 +110,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void addEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false);
     final result = await entryService.createEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
@@ -123,7 +123,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void updateEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false);
     final result = await entryService.updateEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));

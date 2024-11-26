@@ -157,6 +157,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         children: pages,
         controller: _pageController,
         onPageChanged: (int index){
+          print("new page $index");
           setState(() {
             currentPageIndex = index;
           });
