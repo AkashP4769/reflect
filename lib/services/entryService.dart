@@ -3,10 +3,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/backend_services.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
 class EntryService extends BackendServices {
-  Future<List<Map<String, dynamic>>?> getEntries(String chapterId,bool? explicit) async {
+  Future<List<Map<String, dynamic>>?> getEntries(String chapterId, bool? explicit) async {
     try{
       final date = TimestampService().getEntryTimestamp(chapterId);
       print("lastEntriesUpdated: $date");
@@ -43,6 +44,9 @@ class EntryService extends BackendServices {
 
   Future<bool> updateEntry(Map<String, dynamic> entry) async {
     try{
+      EncryptionService encryptionService = EncryptionService();
+      //encryptionService.encryptData(entry, )
+
       final response = await http.post(Uri.parse('$baseUrl/entries/update/'), body: jsonEncode({"entry":entry, 'uid':user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200) return true;
       return false;
