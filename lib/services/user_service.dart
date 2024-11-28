@@ -15,9 +15,12 @@ class UserService extends BackendServices {
       }), headers: {'Content-Type': 'application/json'});
 
       print(response.body);
-      //if response has status 'new user created' save the symmetric key
-
-      //else if response has status 'user already exists in different device' fetch the symmetric key
+      if([0, 2, 3].contains(jsonDecode(response.body)['message']['code'])){
+        // transmit full device info
+        final device = await EncryptionService.createDeviceDetails();
+        final response = await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});
+        print(response.body);
+      }
     } catch (e) {
       print("Error at addUser(): $e");
     }

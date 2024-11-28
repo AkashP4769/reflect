@@ -1,9 +1,14 @@
 import 'dart:convert'; // For JSON serialization/deserialization
+import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:conduit_password_hash/pbkdf2.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
+import 'package:reflect/models/device.dart';
 import 'package:unique_identifier/unique_identifier.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 
 // Encryption Function
 class EncryptionService {
@@ -15,6 +20,45 @@ class EncryptionService {
       identifier = 'Unknown';
     }
     return identifier;
+  }
+
+  static Future<Device> createDeviceDetails() async {
+    String deviceName = '';
+    String deviceType = '';
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    try {
+      // Check if the platform is Android
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName = androidInfo.model ?? 'Unknown Android Device';
+        deviceType = 'Android';
+      } 
+      // Check if the platform is iOS
+      else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName = iosInfo.name ?? 'Unknown iOS Device';
+        deviceType = 'iOS';
+      } 
+      // Handle other platforms (if needed)
+      else {
+        deviceName = 'Unknown Device';
+        deviceType = 'Unknown Platform';
+      }
+    } catch (e) {
+      print('Error fetching device details: $e');
+    }
+
+
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: 'q23421', encryptedKey: '124123');
+    return device;
+  }
+
+  Uint8List generateSymmetricKey() {
+    final random = Random.secure();
+    // Generate a list of 32 random bytes (256-bit key)
+    final keyBytes = List<int>.generate(32, (_) => random.nextInt(256));
+    return Uint8List.fromList(keyBytes);
   }
 
   Uint8List deriveKey(String password, String salt) {
