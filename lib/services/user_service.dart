@@ -11,7 +11,7 @@ class UserService extends BackendServices {
         'uid': uid,
         'name': name,
         'email': email,
-        'devices': [await EncryptionService.getDeviceID()] 
+        'deviceId': await EncryptionService.getDeviceID()
       }), headers: {'Content-Type': 'application/json'});
 
       print(response.body);
