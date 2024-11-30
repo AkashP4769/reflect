@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:reflect/services/user_service.dart';
 
 class AuthService{
-  static Future<String> signInWithGoogle() async {
+  static Future<Map<String, dynamic>> signInWithGoogle() async {
     try{
       print("inside signInWithGoogle function");
       final GoogleSignInAccount? gUser = await GoogleSignIn(scopes: <String>["email"]).signIn();
@@ -19,17 +19,17 @@ class AuthService{
       print("signed in on google");
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
 
-      await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
+      final authResponse = await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
       /*//add user to firestore
       if(userCredential.user != null){
         await UserService.addUser(userCredential.user!.uid, userCredential.user!.displayName, userCredential.user!.email, userCredential.user!.phoneNumber);
       }
       //return userCredential.user;*/
-      return '';
+      return authResponse;
     }
     catch(e){
       print("Error at signInWithGoogle(): $e");
-      return "Error: " + e.toString();
+      return {"code": -1, "message": "Error: ${e.toString()}"};
     }
   }
 
