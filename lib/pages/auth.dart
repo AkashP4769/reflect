@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
+import 'package:reflect/pages/waiting.dart';
 import 'package:reflect/services/auth_service.dart';
 
 class AuthPage extends StatefulWidget {
@@ -17,12 +18,20 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   String loginErrorMsg = '';
   String signupErrorMsg = '';
+  bool authPermission = false;
+  bool backendVerified = false;
 
 
   void signInWithGoogle(Color loadingColor) async {
     showLoading(context, loadingColor);
-    String msg = await AuthService.signInWithGoogle();
-    if(msg != '') setState(() => loginErrorMsg = msg);
+    final authResponse = await AuthService.signInWithGoogle();
+    if([-1].contains(authResponse["code"])) setState(() => loginErrorMsg = authResponse["message"]);
+    else if([3, 5].contains(authResponse["code"])) authPermission = true;
+    else authPermission = false;
+    
+    print("authPermission changed: $authPermission");
+    backendVerified = true;
+    setState(() {});
     Navigator.pop(context);
   }
 
@@ -55,8 +64,9 @@ class _AuthPageState extends State<AuthPage> {
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot){
-          if(snapshot.hasData) {
-            return const NavigationPage();
+          if(snapshot.hasData && backendVerified) {
+             if(authPermission) return NavigationPage();
+             else return WaitingPage();
             }
           else {
             return LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg);

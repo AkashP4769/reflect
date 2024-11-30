@@ -15,12 +15,13 @@ class UserService extends BackendServices {
       }), headers: {'Content-Type': 'application/json'});
 
       print(response.body);
-      if([0, 2, 3].contains(jsonDecode(response.body)['message']['code'])){
+      if([0, 2, 3, 5].contains(jsonDecode(response.body)['message']['code'])){
         final device = await EncryptionService.createDeviceDetails();
         final response = await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});
         print(response.body);
         return jsonDecode(response.body);
       }
+      
       return jsonDecode(response.body);
     } catch (e) {
       print("Error at addUser(): $e");
