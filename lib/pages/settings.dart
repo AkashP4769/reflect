@@ -140,6 +140,13 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                         return ListTile(
                           title: Text('Device ${devices[index]["deviceName"]}', style: themeData.textTheme.bodyMedium),
                           subtitle: Text('Platform: ${devices[index]["deviceType"]}', style: themeData.textTheme.bodySmall),
+                          trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : 
+                          IconButton(
+                            icon: Icon(Icons.check, color: themeData.colorScheme.primary),
+                            onPressed: () async {
+                              
+                            },
+                          ),
                         );
                       },
                     )

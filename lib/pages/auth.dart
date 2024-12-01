@@ -20,8 +20,8 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   String loginErrorMsg = '';
   String signupErrorMsg = '';
-  bool authPermission = false;
-  bool backendVerified = false;
+  bool authPermission = FirebaseAuth.instance.currentUser == null ? false : true;
+  bool backendVerified = FirebaseAuth.instance.currentUser == null ? false : true;
 
 
   void signInWithGoogle(Color loadingColor) async {
