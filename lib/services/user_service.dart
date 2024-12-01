@@ -28,4 +28,14 @@ class UserService extends BackendServices {
       return {'code': -1, 'message': 'Error: $e'};
     }
   }
+
+  Future<Map<String, dynamic>> getUserDevice() async {
+    try{
+      final response = await http.get(Uri.parse('$baseUrl/users/devices/${user!.uid}'));
+      return jsonDecode(response.body);
+    } catch(e){
+      print("Error at getUserDevice(): $e");
+      return {};
+    }
+  }
 }

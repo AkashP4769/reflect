@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/main.dart';
+import 'package:reflect/services/user_service.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -11,6 +12,7 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<SettingsPage> {
+  final UserService userService = UserService();
   final settingBox = Hive.box('settings');
   late String selectedServer;
   final servers = {
@@ -19,13 +21,18 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     'AWS': 'http://13.233.167.195:3000/api'
   };
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     final String server = settingBox.get('baseUrl', defaultValue: 'http://13.233.167.195:3000/api');
     selectedServer = server;
-    setState(() {});
+  }
+
+  void getAndPrintDevices() async {
+    final devices = await userService.getUserDevice();
+    print(devices);
   }
 
 
@@ -102,6 +109,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
+              ElevatedButton(onPressed: getAndPrintDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall))
             ],
           ),
           Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.2" , style: themeData.textTheme.titleSmall))
