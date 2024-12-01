@@ -19,8 +19,8 @@ class EncryptionService {
     } on PlatformException {
       identifier = 'Unknown';
     }
-    //return identifier;
-    return '12345';
+    return identifier;
+    //return '12345';
   }
 
   static Future<Device> createDeviceDetails() async {
@@ -51,8 +51,8 @@ class EncryptionService {
     }
 
 
-    //Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: 'q23421', encryptedKey: '124123');
-    final device = Device(deviceId: "12345", deviceName: "new device", deviceType: deviceType, publicKey: 'q23421', encryptedKey: '');
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: 'q23421', encryptedKey: '124123');
+    //final device = Device(deviceId: "12345", deviceName: "new device", deviceType: deviceType, publicKey: 'q23421', encryptedKey: '');
     return device;
   }
 

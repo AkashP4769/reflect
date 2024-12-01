@@ -20,11 +20,6 @@ class AuthService{
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
 
       final authResponse = await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
-      /*//add user to firestore
-      if(userCredential.user != null){
-        await UserService.addUser(userCredential.user!.uid, userCredential.user!.displayName, userCredential.user!.email, userCredential.user!.phoneNumber);
-      }
-      //return userCredential.user;*/
       return authResponse;
     }
     catch(e){

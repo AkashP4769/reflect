@@ -24,10 +24,15 @@ class _AuthPageState extends State<AuthPage> {
 
   void signInWithGoogle(Color loadingColor) async {
     showLoading(context, loadingColor);
+    authPermission = false;
+    backendVerified = false;
     final authResponse = await AuthService.signInWithGoogle();
-    if([-1].contains(authResponse["code"])) setState(() => loginErrorMsg = authResponse["message"]);
-    else if([3, 5].contains(authResponse["code"])) authPermission = true;
-    else authPermission = false;
+    /*if([-1].contains(authResponse["code"])) loginErrorMsg = authResponse["message"];
+    else if([3, 5, 0].contains(authResponse["code"])) authPermission = false;
+    else authPermission = true;*/
+
+    if(authResponse['code'] == 1) authPermission = true;
+    else loginErrorMsg = authResponse['message'];
     
     print("authPermission changed: $authPermission");
     backendVerified = true;
