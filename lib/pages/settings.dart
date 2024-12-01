@@ -20,6 +20,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     'Vercel': 'https://reflect-server.vercel.app/api',
     'AWS': 'http://13.233.167.195:3000/api'
   };
+  List<Map<String, dynamic>> devices = [];
 
 
   @override
@@ -31,7 +32,9 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   }
 
   void getAndPrintDevices() async {
-    final devices = await userService.getUserDevice();
+    final _devices = await userService.getUserDevice();
+    devices = _devices;
+    setState(() {});
     print(devices);
   }
 
@@ -109,7 +112,40 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
-              ElevatedButton(onPressed: getAndPrintDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall))
+              const SizedBox(height: 20),
+              ElevatedButton(onPressed: getAndPrintDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: themeData.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: const [
+                    BoxShadow(
+                      color:  Color.fromARGB(64, 0, 0, 0),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: Offset(0, 6), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text("Devices", style: themeData.textTheme.titleMedium),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: devices.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text('Device ${devices[index]["deviceName"]}', style: themeData.textTheme.bodyMedium),
+                          subtitle: Text('Platform: ${devices[index]["deviceType"]}', style: themeData.textTheme.bodySmall),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              )
             ],
           ),
           Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.2" , style: themeData.textTheme.titleSmall))

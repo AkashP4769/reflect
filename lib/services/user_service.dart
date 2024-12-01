@@ -29,13 +29,15 @@ class UserService extends BackendServices {
     }
   }
 
-  Future<Map<String, dynamic>> getUserDevice() async {
+  Future<List<Map<String, dynamic>>> getUserDevice() async {
     try{
+      List<Map<String, dynamic>> devices = [];
       final response = await http.get(Uri.parse('$baseUrl/users/devices/${user!.uid}'));
-      return jsonDecode(response.body);
+      final deviceData = jsonDecode(response.body)['devices'] as List;
+      return List<Map<String, dynamic>>.from(deviceData.map((device) => Map<String, dynamic>.from(device)).toList());
     } catch(e){
       print("Error at getUserDevice(): $e");
-      return {};
+      return [{}];
     }
   }
 }
