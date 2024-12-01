@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:reflect/models/device.dart';
 import 'package:reflect/services/backend_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/encryption_service.dart';
@@ -29,15 +30,14 @@ class UserService extends BackendServices {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getUserDevice() async {
+  Future<List<Device>> getUserDevice() async {
     try{
-      List<Map<String, dynamic>> devices = [];
       final response = await http.get(Uri.parse('$baseUrl/users/devices/${user!.uid}'));
       final deviceData = jsonDecode(response.body)['devices'] as List;
-      return List<Map<String, dynamic>>.from(deviceData.map((device) => Map<String, dynamic>.from(device)).toList());
+      return deviceData.map((device) => Device.fromMap(device)).toList();
     } catch(e){
       print("Error at getUserDevice(): $e");
-      return [{}];
+      return [];
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/main.dart';
+import 'package:reflect/models/device.dart';
 import 'package:reflect/services/user_service.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -20,7 +21,9 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     'Vercel': 'https://reflect-server.vercel.app/api',
     'AWS': 'http://13.233.167.195:3000/api'
   };
-  List<Map<String, dynamic>> devices = [];
+
+  List<Device> devices = [];
+  List<Device> newDevice = [];
 
 
   @override
@@ -29,11 +32,17 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     super.initState();
     final String server = settingBox.get('baseUrl', defaultValue: 'http://13.233.167.195:3000/api');
     selectedServer = server;
+    getDevices();
   }
 
-  void getAndPrintDevices() async {
+  void getDevices() async {
     final _devices = await userService.getUserDevice();
-    devices = _devices;
+
+    for(var device in _devices){
+      if(["", null].contains(device.encryptedKey)) newDevice.add(device);
+      else devices.add(device);
+    }
+
     setState(() {});
     print(devices);
   }
@@ -54,106 +63,129 @@ class _HomePageState extends ConsumerState<SettingsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text('Settings', style: themeData.textTheme.titleLarge),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: themeData.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: const [
-                    BoxShadow(
-                      color:  Color.fromARGB(64, 0, 0, 0),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(0, 6), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Server', style: themeData.textTheme.titleMedium),
-                    const SizedBox(height: 20),
-                    Theme(
-                      data: themeData,
-                      child: DropdownMenu<String?>(
-                        label: Text('Server', style: themeData.textTheme.titleSmall),
-                        initialSelection: selectedServer,
-                        menuStyle: MenuStyle(
-                          backgroundColor: WidgetStateProperty.all(themeData.colorScheme.surface),
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Text('Settings', style: themeData.textTheme.titleLarge),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: themeData.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: const [
+                      BoxShadow(
+                        color:  Color.fromARGB(64, 0, 0, 0),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(0, 6), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Server', style: themeData.textTheme.titleMedium),
+                      const SizedBox(height: 20),
+                      Theme(
+                        data: themeData,
+                        child: DropdownMenu<String?>(
+                          label: Text('Server', style: themeData.textTheme.titleSmall),
+                          initialSelection: selectedServer,
+                          menuStyle: MenuStyle(
+                            backgroundColor: WidgetStateProperty.all(themeData.colorScheme.surface),
+                          ),
+                          textStyle: themeData.textTheme.bodyMedium,
+                          
+                          dropdownMenuEntries: [
+                            DropdownMenuEntry(
+                              value: servers['Localhost'],
+                              label:  'Localhost',
+                            ),
+                            DropdownMenuEntry(
+                              value: servers['Vercel'],
+                              label:  'Vercel'
+                            ),
+                            DropdownMenuEntry(
+                              value: servers['AWS'],
+                              label:  'AWS'
+                            ),
+                          ],
+                          onSelected: (String? value) {
+                            settingBox.put('baseUrl', value);
+                          },
                         ),
-                        textStyle: themeData.textTheme.bodyMedium,
-                        
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: servers['Localhost'],
-                            label:  'Localhost',
-                          ),
-                          DropdownMenuEntry(
-                            value: servers['Vercel'],
-                            label:  'Vercel'
-                          ),
-                          DropdownMenuEntry(
-                            value: servers['AWS'],
-                            label:  'AWS'
-                          ),
-                        ],
-                        onSelected: (String? value) {
-                          settingBox.put('baseUrl', value);
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
+                //const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: themeData.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: const [
+                      BoxShadow(
+                        color:  Color.fromARGB(64, 0, 0, 0),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(0, 6), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("Devices", style: themeData.textTheme.titleMedium),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: devices.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('Device ${devices[index].deviceName}', style: themeData.textTheme.bodyMedium),
+                            subtitle: Text('Platform: ${devices[index].deviceType}', style: themeData.textTheme.bodySmall),
+                            trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : null
+                          );
                         },
                       ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(onPressed: getAndPrintDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: themeData.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: const [
-                    BoxShadow(
-                      color:  Color.fromARGB(64, 0, 0, 0),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(0, 6), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Text("Devices", style: themeData.textTheme.titleMedium),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: devices.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text('Device ${devices[index]["deviceName"]}', style: themeData.textTheme.bodyMedium),
-                          subtitle: Text('Platform: ${devices[index]["deviceType"]}', style: themeData.textTheme.bodySmall),
-                          trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : 
-                          IconButton(
-                            icon: Icon(Icons.check, color: themeData.colorScheme.primary),
-                            onPressed: () async {
-                              
-                            },
-                          ),
-                        );
-                      },
-                    )
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(height: 20),
+                      if(newDevice.isNotEmpty) Text("New Devices Login", style: themeData.textTheme.titleMedium),
+                      if(newDevice.isNotEmpty) ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: newDevice.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('Device ${newDevice[index].deviceName}', style: themeData.textTheme.bodyMedium),
+                            subtitle: Text('Platform: ${newDevice[index].deviceType}', style: themeData.textTheme.bodySmall),
+                            trailing: SizedBox(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  IconButton(icon: Icon(Icons.close, color: themeData.colorScheme.error), onPressed: (){}),
+                                  IconButton(icon: Icon(Icons.check, color: themeData.colorScheme.primary, weight: 40, fill: 0.8,), onPressed: (){}),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
           Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.2" , style: themeData.textTheme.titleSmall))
         ],

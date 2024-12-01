@@ -16,4 +16,14 @@ class Device{
       'encryptedKey': encryptedKey
     };
   }
+
+  factory Device.fromMap(Map<String, dynamic> map){
+    return Device(
+      deviceId: map['deviceId'],
+      deviceName: map['deviceName'],
+      deviceType: map['deviceType'],
+      publicKey: map['publicKey'],
+      encryptedKey: map['encryptedKey']
+    );
+  }
 }
