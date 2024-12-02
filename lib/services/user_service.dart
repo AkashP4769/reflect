@@ -40,4 +40,25 @@ class UserService extends BackendServices {
       return [];
     }
   }
+
+  Future<void> handleNewDevice(String deviceId, bool choice) async {
+    try{
+      String encryptedKey = '123';
+      final response = await http.post(Uri.parse('$baseUrl/users/devices/handleNew'),
+        body: jsonEncode({
+          "uid": user!.uid,
+          "deviceId":deviceId,
+          "choice": choice,
+          "encryptedKey": encryptedKey
+        }), headers:  {'Content-Type': 'application/json'}
+      );
+
+      print(response.body);
+    } catch(e) {
+      print("error at handleNewDevice: $e");
+    }
+  }
+
+  //add two numbers
+  
 }

@@ -37,7 +37,8 @@ class _HomePageState extends ConsumerState<SettingsPage> {
 
   void getDevices() async {
     final _devices = await userService.getUserDevice();
-
+    devices.clear();
+    newDevice.clear();
     for(var device in _devices){
       if(["", null].contains(device.encryptedKey)) newDevice.add(device);
       else devices.add(device);
@@ -45,6 +46,11 @@ class _HomePageState extends ConsumerState<SettingsPage> {
 
     setState(() {});
     print(devices);
+  }
+
+  void handleNewDevice(String deviceId, bool choice) async {
+    await userService.handleNewDevice(deviceId, choice);
+    getDevices();
   }
 
 
@@ -173,8 +179,8 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                               width: 100,
                               child: Row(
                                 children: [
-                                  IconButton(icon: Icon(Icons.close, color: themeData.colorScheme.error), onPressed: (){}),
-                                  IconButton(icon: Icon(Icons.check, color: themeData.colorScheme.primary, weight: 40, fill: 0.8,), onPressed: (){}),
+                                  IconButton(icon: Icon(Icons.close, color: themeData.colorScheme.error), onPressed: (){handleNewDevice(newDevice[index].deviceId, false);}),
+                                  IconButton(icon: Icon(Icons.check, color: themeData.colorScheme.primary, weight: 40, fill: 0.8,), onPressed: (){handleNewDevice(newDevice[index].deviceId, true);}),
                                 ],
                               ),
                             ),
