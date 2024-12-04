@@ -32,7 +32,7 @@ class EncryptionService {
       // Check if the platform is Android
       if (Platform.isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceName = androidInfo.model ?? 'Unknown Android Device';
+        deviceName = androidInfo.device ?? 'Unknown Android Device';
         deviceType = 'Android';
       } 
       // Check if the platform is iOS

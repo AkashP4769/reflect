@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reflect/components/setting/setting_container.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/device.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 class DeviceSetting extends StatefulWidget {
@@ -24,6 +25,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
     // TODO: implement initState
     super.initState();
     getDevices();
+    EncryptionService.createDeviceDetails().then((value) => print(value.toString()));
   }
 
   void getDevices() async {
@@ -36,7 +38,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
     }
 
     setState(() {});
-    print(devices);
+    //print(devices);
   }
 
   void handleNewDevice(String deviceId, bool choice) async {
@@ -59,14 +61,15 @@ class _DeviceSettingState extends State<DeviceSetting> {
             itemCount: devices.length,
             itemBuilder: (context, index) {
               return ListTile(
+                leading: Icon(devices[index].deviceType == 'Android' ? Icons.android : (devices[index].deviceType == "Apple" ? Icons.apple : Icons.phone) , color: themeData.colorScheme.onPrimary),
                 contentPadding: EdgeInsets.zero,
-                title: Text('Device ${devices[index].deviceName}', style: themeData.textTheme.bodyMedium),
-                subtitle: Text('Platform: ${devices[index].deviceType}', style: themeData.textTheme.bodySmall),
+                title: Text('${devices[index].deviceName}', style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600)),
+                subtitle: Text('${devices[index].deviceType}', style: themeData.textTheme.bodySmall),
                 trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : null
               );
             },
           ),
-          const SizedBox(height: 20),
+          if(newDevice.isNotEmpty) const SizedBox(height: 20),
           if(newDevice.isNotEmpty) Text("New Devices Login", style: themeData.textTheme.titleMedium),
           if(newDevice.isNotEmpty) ListView.builder(
             shrinkWrap: true,

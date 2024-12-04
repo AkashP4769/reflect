@@ -26,4 +26,9 @@ class Device{
       encryptedKey: map['encryptedKey']
     );
   }
+
+  @override
+  String toString(){
+    return 'Device{deviceId: $deviceId, deviceName: $deviceName, deviceType: $deviceType, publicKey: $publicKey, encryptedKey: $encryptedKey}';
+  }
 }
