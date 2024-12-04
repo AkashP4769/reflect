@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:reflect/components/setting/setting_container.dart';
 import 'package:reflect/main.dart';
 
 class ServerSetting extends StatefulWidget {
@@ -31,21 +32,8 @@ class _ServerSettingState extends State<ServerSetting> {
   @override
   Widget build(BuildContext context) {
     final themeData = widget.ref.watch(themeManagerProvider);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      decoration: BoxDecoration(
-        color: themeData.colorScheme.surface,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color:  Color.fromARGB(64, 0, 0, 0),
-            spreadRadius: 0,
-            blurRadius: 4,
-            offset: Offset(0, 6), // changes position of shadow
-          ),
-        ],
-      ),
+    return SettingContainer(
+      themeData: themeData,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
