@@ -54,7 +54,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("Devices", style: themeData.textTheme.titleMedium),
+          Align(alignment: Alignment.centerLeft, child: Text("Devices", style: themeData.textTheme.titleMedium)),
           ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
@@ -70,7 +70,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
             },
           ),
           if(newDevice.isNotEmpty) const SizedBox(height: 20),
-          if(newDevice.isNotEmpty) Text("New Devices Login", style: themeData.textTheme.titleMedium),
+          if(newDevice.isNotEmpty) Align(alignment: Alignment.centerLeft, child: Text("New Devices Login", style: themeData.textTheme.titleMedium)),
           if(newDevice.isNotEmpty) ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
@@ -78,6 +78,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
             itemBuilder: (context, index) {
               return ListTile(
                 contentPadding: EdgeInsets.zero,
+                leading: Icon(devices[index].deviceType == 'Android' ? Icons.android : (devices[index].deviceType == "Apple" ? Icons.apple : Icons.phone) , color: themeData.colorScheme.onPrimary),
                 title: Text('Device ${newDevice[index].deviceName}', style: themeData.textTheme.bodyMedium),
                 subtitle: Text('Platform: ${newDevice[index].deviceType}', style: themeData.textTheme.bodySmall),
                 trailing: SizedBox(
