@@ -27,6 +27,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isContentEdited = false;
   bool isDateEdited = false;
   bool isTagsEdited = false;
+  bool isFavouriteEdited = false;
 
   bool extendedToolbar = false;
 
@@ -35,6 +36,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late SlidingUpPanelController panelController;
   late ScrollController scrollController;
   late DateTime date;
+  late bool isFavourite;
 
   late FocusNode titleFocusNode;
   late FocusNode contentFocusNode;
@@ -61,6 +63,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     
     panelController.hide();
     date = widget.entry.date;
+    isFavourite = widget.entry.favourite ?? false;
 
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
     else {
@@ -110,7 +113,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void addEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite);
     final result = await entryService.createEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
@@ -123,7 +126,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void updateEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite);
     final result = await entryService.updateEntry(entry.toMap());
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
@@ -207,8 +210,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }
   }
 
+  void toggleFavourite(){
+    isFavourite = !isFavourite;
+    isFavouriteEdited = !isFavouriteEdited;
+    setState(() {});
+  }
+
   Future<bool> _onWillPop() async {
-    if (isTitleEdited || isContentEdited || isDateEdited || isTagsEdited) {
+    if (isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited) {
       // Show the alert dialog
       return await showDialog(
         context: context,
@@ -226,7 +235,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             ),
           ],
         ),
-      ) ?? false;
+      );
     }
     // If pageEdited is false, allow the pop without any dialog
     return true;
@@ -275,7 +284,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      EntryAppbar(themeData: themeData),
+                      EntryAppbar(themeData: themeData, deleteEntry: deleteEntry,),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -284,9 +293,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             onTap: showDatePickerr,
                             child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
                           ),
-                          GestureDetector(
-                            onTap: deleteEntry,
-                            child: const Icon(Icons.delete_outline, color: Colors.red,),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: GestureDetector(
+                              onTap: toggleFavourite,
+                              child: Icon(isFavourite ? Icons.favorite : Icons.favorite_outline_outlined, color: Colors.red,),
+                            ),
                           ),
                         ],
                       ),
@@ -413,7 +425,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       SizedBox(
                         width: 120,
                         child: ElevatedButton(
-                          onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited ? (){
+                          onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited ? (){
                             if(widget.entry.id == null) addEntry();
                             else updateEntry();
                           } : null,
@@ -446,9 +458,11 @@ class EntryAppbar extends StatelessWidget {
   const EntryAppbar({
     super.key,
     required this.themeData,
+    required this.deleteEntry,
   });
 
   final ThemeData themeData;
+  final void Function()? deleteEntry;
 
   @override
   Widget build(BuildContext context) {
@@ -466,8 +480,8 @@ class EntryAppbar extends StatelessWidget {
           //const SizedBox(width: 10),
           
           IconButton(
-            onPressed: (){}, 
-            icon: Icon(Icons.menu, color: themeData.colorScheme.onPrimary,),
+            onPressed: deleteEntry, 
+            icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
           )
         ],
       ),

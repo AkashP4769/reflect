@@ -9,10 +9,11 @@ class Entry{
   final DateTime date;
   final List<Map<String, dynamic>>? tags;
   final bool? encrypted;
+  final bool? favourite;
 
-  Entry({this.title, this.content, this.id, this.tags, this.encrypted, this.chapterId, DateTime? date}) : date = date ?? DateTime.now();
+  Entry({this.title, this.content, this.id, this.tags, this.encrypted, this.chapterId, this.favourite, DateTime? date}) : date = date ?? DateTime.now();
 
-  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id, bool encrypted) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id, bool encrypted, bool favourite) {
     return Entry(
       id: id,
       chapterId: chapterId,
@@ -21,6 +22,7 @@ class Entry{
       date: date,
       tags: tags,
       encrypted: false,
+      favourite: favourite,
     );
   }
 
@@ -41,6 +43,7 @@ class Entry{
       'date': date.toIso8601String(),
       'tags': tags,
       'encrypted': encrypted,
+      'favourite': favourite,
     };
   }
 
@@ -54,6 +57,7 @@ class Entry{
       date: DateTime.parse(json['date']).toLocal(),
       tags: json['tags'] != null ? List<Map<String, dynamic>>.from(json['tags']) : null,
       encrypted: json['encrypted'],
+      favourite: json['favourite'],
     );
   }
 
@@ -75,6 +79,7 @@ class Entry{
           ))
         : null,
       encrypted: data['encrypted'],
+      favourite: data['favourite'],
     );
   }
 
@@ -87,11 +92,12 @@ class Entry{
       'date': date.toLocal().toIso8601String(),
       'tags': tags,
       'encrypted': encrypted,
+      'favourite': favourite,
     };
   }
 
   @override
   String toString(){
-    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}, encrypted: $encrypted';
+    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}, encrypted: $encrypted , favourite: $favourite';
   }
 }
