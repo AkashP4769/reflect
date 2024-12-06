@@ -33,7 +33,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   late quill.QuillController quillController;
   late TextEditingController titleController;
-  late SlidingUpPanelController panelController;
+  //late SlidingUpPanelController panelController;
   late ScrollController scrollController;
   late DateTime date;
   late bool isFavourite;
@@ -51,7 +51,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleController = TextEditingController(text: widget.entry.title);
     titleFocusNode = FocusNode();
     contentFocusNode = FocusNode();
-    panelController = SlidingUpPanelController();
+    //panelController = SlidingUpPanelController();
+    scrollController = ScrollController();
 
     if(widget.entry.tags != null){
       for(var tag in widget.entry.tags!) {
@@ -61,7 +62,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     //entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
     //entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
     
-    panelController.hide();
+    //panelController.hide();
     date = widget.entry.date;
     isFavourite = widget.entry.favourite ?? false;
 
@@ -73,8 +74,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       );
     }
 
-    scrollController = ScrollController();
-    scrollController.addListener(() {
+    
+    /*scrollController.addListener(() {
       if (scrollController.offset >=
               scrollController.position.maxScrollExtent &&
           !scrollController.position.outOfRange) {
@@ -84,7 +85,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           !scrollController.position.outOfRange) {
         panelController.anchor();
       } else {}
-    });
+    });*/
+
+    quillController.document.changes.listen((_) => _scrollToBottom());
 
     titleController.addListener(() {
       if(!isTitleEdited && titleController.text != widget.entry.title) {
@@ -107,6 +110,19 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       else if(isContentEdited && quillContent == entryContent) {
         isContentEdited = false;
         setState(() {});
+      }
+    });
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        print("scrolling");
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
       }
     });
   }
@@ -247,7 +263,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     quillController.dispose();
     titleFocusNode.dispose();
     contentFocusNode.dispose();
-    panelController.dispose();
+    //panelController.dispose();
     
     super.dispose();
   }
@@ -257,198 +273,191 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final themeData = ref.watch(themeManagerProvider);
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Stack(
-        children: [
-          Scaffold(
-            body: SingleChildScrollView(
-              clipBehavior: Clip.none,
-              scrollDirection: Axis.vertical,
-              physics: const ScrollPhysics(),
-                
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  //height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-                      end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                      colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-                    )
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 40),
-                      EntryAppbar(themeData: themeData, deleteEntry: deleteEntry,),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: showDatePickerr,
-                            child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: GestureDetector(
-                              onTap: toggleFavourite,
-                              child: Icon(isFavourite ? Icons.favorite : Icons.favorite_outline_outlined, color: Colors.red,),
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      TextField(
-                        controller: titleController,
-                        focusNode: titleFocusNode,
-                        style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: "Title...",
-                          hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-                          
-                        ),
-                        maxLines: null,
-                      ),
-                      
-                      
-                      /*Wrap(
-                        children: [
-                          ...entryTags.map((tag) => TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false,)),
-                          GestureDetector(
-                            onTap: () async {
-                              List<Tag>? newEntryTags = await showDialog(
-                                context: context, 
-                                builder: (context) => TagSelectionBox(themeData: themeData, tags: entryTags),
-                              );
-                              print(newEntryTags.toString());
-                              if(newEntryTags != null) {
-                                entryTags = newEntryTags;
-                                setState(() {});
-                              }
-                            }, 
-                            child: TagCard(tag: Tag(name: entryTags.isEmpty ? "Add tag +" : "+", color: const Color(0xffFF9432).value), themeData: themeData, selected: false, deleteBit: false,)
-                          )
-                        ],
-                      ),*/
-                      
-                      SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
-                      const SizedBox(height: 10),
-                      quill.QuillEditor.basic(
-                            controller: quillController,
-                            focusNode: contentFocusNode,
-                            scrollController: ScrollController(),
-                            configurations: quill.QuillEditorConfigurations(
-                              //checkBoxReadOnly: true
-                              placeholder: "Start writing here...",
-                              keyboardAppearance: themeData.brightness,
-                              customStyles: quill.DefaultStyles(
-                                paragraph: quill.DefaultTextBlockStyle(
-                                  themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
-                                  const quill.HorizontalSpacing(0, 0),
-                                  const quill.VerticalSpacing(0, 0),
-                                  quill.VerticalSpacing.zero,
-                                  null
-                                ),
-                                placeHolder: quill.DefaultTextBlockStyle(
-                                  themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                  const quill.HorizontalSpacing(0, 0),
-                                  const quill.VerticalSpacing(0, 0),
-                                  quill.VerticalSpacing.zero,
-                                  null
-                                ),
-                              )
-                                
-                            ),
-                          ),      
-                      const SizedBox(height: 80,)
-                    ],
-                  ),
-                ),
-              ),
+      child: Scaffold(
+        body: SingleChildScrollView(
+          clipBehavior: Clip.none,
+          scrollDirection: Axis.vertical,
+          physics: const ScrollPhysics(),
+            
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            bottomSheet: Container(
-              color: themeData.colorScheme.tertiary,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              //height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
+                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
+                  colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+                )
+              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 40),
+                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry,),
+                  const SizedBox(height: 20),
                   Row(
-                    //mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: quill.QuillToolbar.simple(
-                          controller: quillController,
-                          configurations: quill.QuillSimpleToolbarConfigurations(
-                            showBoldButton: extendedToolbar ? false : true,
-                            showItalicButton: extendedToolbar ? false : true,
-                            showUnderLineButton: extendedToolbar ? false : true,
-                            showStrikeThrough: false, //
-                            showColorButton: extendedToolbar ? true :  false, //
-                            showBackgroundColorButton: false,
-                            showClearFormat: false, //
-                            showHeaderStyle: false,
-                            showListNumbers: extendedToolbar ? true :  false, //
-                            showListBullets: extendedToolbar ? true :  false, //
-                            showCodeBlock: false,
-                            showQuote: false, //
-                            showLink: false,
-                            showSubscript: false,
-                            showSuperscript: false,
-                            showAlignmentButtons: false,
-                            showClipboardCopy: false,
-                            showClipboardCut: false,
-                            showClipboardPaste: false,
-                            showDividers: false,
-                            showListCheck: false,
-                            showIndent: false,
-                            showFontFamily: false,
-                            showFontSize: false,
-                            showSearchButton: false, //
-                            showInlineCode: false, //
-                            showRedo: extendedToolbar ? true :  false, //
-                            showUndo: extendedToolbar ? false : true,
-                          )
-                        ),
+                      GestureDetector(
+                        onTap: showDatePickerr,
+                        child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
                       ),
-                      IconButton(
-                        onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
-                      ),
-                      SizedBox(
-                        width: 120,
-                        child: ElevatedButton(
-                          onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited ? (){
-                            if(widget.entry.id == null) addEntry();
-                            else updateEntry();
-                          } : null,
-                        
-                          style: ElevatedButton.styleFrom(
-                            disabledBackgroundColor: Colors.grey,
-                            backgroundColor: const Color(0xffFF9432),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            )
-                          ),
-                          child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: GestureDetector(
+                          onTap: toggleFavourite,
+                          child: Icon(isFavourite ? Icons.favorite : Icons.favorite_outline_outlined, color: Colors.red,),
                         ),
                       ),
                     ],
                   ),
+                  
+                  TextField(
+                    controller: titleController,
+                    focusNode: titleFocusNode,
+                    style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: "Title...",
+                      hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                      isDense: true,
+                    ),
+                    maxLines: null,
+                  ),
+                  SizedBox(height: 5,),
+                    
+                  SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+                  const SizedBox(height: 10),
+                  quill.QuillEditor.basic(
+                        controller: quillController,
+                        focusNode: contentFocusNode,
+                        scrollController: scrollController,
+        
+                        configurations: quill.QuillEditorConfigurations(
+                          //checkBoxReadOnly: true
+                          scrollable: true,
+                          placeholder: "Start writing here...",
+                          keyboardAppearance: themeData.brightness,
+                          //autoFocus: true,
+                          //expands: true,
+                          
+                          customStyles: quill.DefaultStyles(
+                            paragraph: quill.DefaultTextBlockStyle(
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
+                              const quill.HorizontalSpacing(0, 0),
+                              const quill.VerticalSpacing(0, 0),
+                              quill.VerticalSpacing.zero,
+                              null
+                            ),
+                            placeHolder: quill.DefaultTextBlockStyle(
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                              const quill.HorizontalSpacing(0, 0),
+                              const quill.VerticalSpacing(0, 0),
+                              quill.VerticalSpacing.zero,
+                              null
+                            ),
+                          )
+                            
+                        ),
+                      ),      
+                  Container(height: 80, color: Colors.blueAccent,),
+                  /*TextField(
+                    controller: new TextEditingController(),
+                    focusNode: titleFocusNode,
+                    style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: "Title...",
+                      hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                      isDense: true,
+                    ),
+                    maxLines: null,
+                  )*/
                 ],
               ),
             ),
           ),
-      
-          TagPanel(panelController: panelController, scrollController: scrollController, themeData: themeData,)
-        ],
+        ),
+        bottomSheet: Container(
+          color: themeData.colorScheme.tertiary,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: quill.QuillToolbar.simple(
+                      controller: quillController,
+                      configurations: quill.QuillSimpleToolbarConfigurations(
+                        showBoldButton: extendedToolbar ? false : true,
+                        showItalicButton: extendedToolbar ? false : true,
+                        showUnderLineButton: extendedToolbar ? false : true,
+                        showStrikeThrough: false, //
+                        showColorButton: extendedToolbar ? true :  false, //
+                        showBackgroundColorButton: false,
+                        showClearFormat: false, //
+                        showHeaderStyle: false,
+                        showListNumbers: extendedToolbar ? true :  false, //
+                        showListBullets: extendedToolbar ? true :  false, //
+                        showCodeBlock: false,
+                        showQuote: false, //
+                        showLink: false,
+                        showSubscript: false,
+                        showSuperscript: false,
+                        showAlignmentButtons: false,
+                        showClipboardCopy: false,
+                        showClipboardCut: false,
+                        showClipboardPaste: false,
+                        showDividers: false,
+                        showListCheck: false,
+                        showIndent: false,
+                        showFontFamily: false,
+                        showFontSize: false,
+                        showSearchButton: false, //
+                        showInlineCode: false, //
+                        showRedo: extendedToolbar ? true :  false, //
+                        showUndo: extendedToolbar ? false : true,
+                      )
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
+                  ),
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited ? (){
+                        if(widget.entry.id == null) addEntry();
+                        else updateEntry();
+                      } : null,
+                    
+                      style: ElevatedButton.styleFrom(
+                        disabledBackgroundColor: Colors.grey,
+                        backgroundColor: const Color(0xffFF9432),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        )
+                      ),
+                      child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
