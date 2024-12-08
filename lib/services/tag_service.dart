@@ -25,4 +25,25 @@ class TagService {
     }
     tagbox.put(user!.uid, taglist);
   }
+
+  List<Tag> parseTagFromEntryData(List<Map<String, dynamic>> entryData){
+    List<Tag> tagData = [];
+    for(var entry in entryData){
+      if(entry.containsKey('tags')){
+        for(var tags in entry['tags']){
+          tagData.add(Tag.fromMap(tags));
+        }
+      }
+    }
+
+    return tagData;
+  }
+
+  void updateTagFromEntryData(List<Tag> tags){
+    List<Map<String, dynamic>> taglist = [];
+    for (var tag in tags) {
+      taglist.add(tag.toMap());
+    }
+    tagbox.put(user!.uid, taglist);
+  }
 }
