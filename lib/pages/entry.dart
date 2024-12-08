@@ -218,12 +218,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     if(isFav != null){
       if(isFav != isFavourite){
         isFavourite = isFav;
-        isFavouriteEdited = true;
+        isFavouriteEdited = !isFavouriteEdited;
       } 
     }
     else {
       isFavourite = !isFavourite;
-      isFavouriteEdited = true;
+      isFavouriteEdited = !isFavouriteEdited;
     }
 
     setState(() {});
@@ -310,6 +310,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                     ],
                   ),
+                  Text(isFavourite.toString(),),
                   
                   TextField(
                     controller: titleController,

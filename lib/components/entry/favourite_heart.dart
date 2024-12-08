@@ -17,29 +17,26 @@ class _FavouriteHeartState extends State<FavouriteHeart> with SingleTickerProvid
   void initState() {
     // TODO: implement initState
     super.initState();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this
     );
 
+    print("initsate");
     _colorAnimation = ColorTween(
       begin: Colors.grey,
       end: Colors.redAccent
     ).animate(_controller);
 
+    if(widget.isFav){
+      _controller.value = 1.0;
+      setState((){});
+    }
+
     _controller.addListener(() {
       setState(() {});
     });
-
-    _controller.addStatusListener((status){
-      print("clicking");
-      if(status == AnimationStatus.completed){
-        widget.toggleIsFav(true);
-      } else if(status == AnimationStatus.dismissed){
-        widget.toggleIsFav(false);
-      }
-    });
-
   }
 
 
@@ -48,7 +45,13 @@ class _FavouriteHeartState extends State<FavouriteHeart> with SingleTickerProvid
     return GestureDetector(
       onTap: (){
         print("im clicking here ${widget.isFav}");
-        widget.isFav ? _controller.reverse() : _controller.forward();
+        if(widget.isFav){
+          widget.toggleIsFav(false);
+          _controller.reverse();
+        } else {
+          widget.toggleIsFav(true);
+          _controller.forward();
+        }
       },
       child: Icon(Icons.favorite, color: _colorAnimation.value, size: 25,),
     );
