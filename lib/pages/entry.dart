@@ -285,7 +285,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry,),
+                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true,),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -455,10 +455,12 @@ class EntryAppbar extends StatelessWidget {
     super.key,
     required this.themeData,
     required this.deleteEntry,
+    required this.showDelete,
   });
 
   final ThemeData themeData;
   final void Function()? deleteEntry;
+  final bool showDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +477,7 @@ class EntryAppbar extends StatelessWidget {
           ),
           //const SizedBox(width: 10),
           
-          IconButton(
+          if(showDelete) IconButton(
             onPressed: deleteEntry, 
             icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
           )
