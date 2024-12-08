@@ -470,7 +470,7 @@ class EntryAppbar extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.maybePop(context);
             },
           ),
           //const SizedBox(width: 10),
