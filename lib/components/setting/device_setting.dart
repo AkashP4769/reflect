@@ -33,7 +33,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
     devices.clear();
     newDevices.clear();
     for(var device in _devices){
-      if(["", null].contains(device.encryptedKey)){newDevices.add(device); newDevices.add(device); newDevices.add(device);}
+      if(["", null].contains(device.encryptedKey)){newDevices.add(device); /*newDevices.add(device); newDevices.add(device);*/}
       else devices.add(device);
     }
 
@@ -50,6 +50,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
   Widget build(BuildContext context) {
     final themeData = widget.ref.watch(themeManagerProvider);
     return SettingContainer(
+      //maxHeight: 400,
       themeData: themeData,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -58,8 +59,9 @@ class _DeviceSettingState extends State<DeviceSetting> {
           ListView.builder(
             shrinkWrap: true,
             clipBehavior: Clip.none,
-            //physics: const NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
+            //physics: ScrollPhysics(),
             itemCount: devices.length,
             itemBuilder: (context, index) {
               return Container(

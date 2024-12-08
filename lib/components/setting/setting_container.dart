@@ -5,12 +5,14 @@ import 'package:reflect/main.dart';
 class SettingContainer extends StatelessWidget {
   final ThemeData themeData;
   final Widget child;
-  const SettingContainer({super.key, required this.child, required this.themeData});
+  final double? maxHeight;
+  const SettingContainer({super.key, required this.child, required this.themeData, this.maxHeight});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      height: maxHeight,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       decoration: BoxDecoration(
         color: themeData.colorScheme.surface,

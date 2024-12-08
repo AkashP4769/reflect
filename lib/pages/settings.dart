@@ -19,6 +19,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
+      //height: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -27,11 +28,11 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
         )
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SingleChildScrollView(
-            child: Column(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
@@ -44,9 +45,9 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 DeviceSetting(ref: ref)
               ],
             ),
-          ),
-          Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.2" , style: themeData.textTheme.titleSmall))
-        ],
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.2.2" , style: themeData.textTheme.titleSmall))
+          ],
+        ),
       ),
     );
   }

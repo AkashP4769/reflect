@@ -74,19 +74,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       );
     }
 
-    
-    /*scrollController.addListener(() {
-      if (scrollController.offset >=
-              scrollController.position.maxScrollExtent &&
-          !scrollController.position.outOfRange) {
-        panelController.expand();
-      } else if (scrollController.offset <=
-              scrollController.position.minScrollExtent &&
-          !scrollController.position.outOfRange) {
-        panelController.anchor();
-      } else {}
-    });*/
-
     quillController.document.changes.listen((_) => _scrollToBottom());
 
     titleController.addListener(() {
