@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/entry/favourite_heart.dart';
 import 'package:reflect/components/entry/sliding_carousel.dart';
 import 'package:reflect/components/entry/tag_alertbox.dart';
 import 'package:reflect/components/entry/tag_card.dart';
@@ -213,9 +214,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }
   }
 
-  void toggleFavourite(){
-    isFavourite = !isFavourite;
-    isFavouriteEdited = !isFavouriteEdited;
+  void toggleFavourite(bool? isFav) {
+    if(isFav != null){
+      if(isFav != isFavourite){
+        isFavourite = isFav;
+        isFavouriteEdited = true;
+      } 
+    }
+    else {
+      isFavourite = !isFavourite;
+      isFavouriteEdited = true;
+    }
+
     setState(() {});
   }
 
@@ -296,10 +306,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: GestureDetector(
-                          onTap: toggleFavourite,
-                          child: Icon(isFavourite ? Icons.favorite : Icons.favorite_outline_outlined, color: Colors.red,),
-                        ),
+                        child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
                       ),
                     ],
                   ),
