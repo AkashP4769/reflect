@@ -127,13 +127,35 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   void deleteChapter() async {
-    final status = await ChapterService().deleteChapter(chapter.id);
-    if(status) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter deleted successfully')));
-      Navigator.pop(context, true);
-      Navigator.pop(context, true);
-    }
-    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error deleting chapter')));
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Chapter'),
+        content: const Text('Are you sure you want to delete this chapter?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final status = await ChapterService().deleteChapter(chapter.id);
+              if(status) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter deleted successfully')));
+                Navigator.pop(context, true); 
+                Navigator.pop(context, true);
+                Navigator.pop(context, true);
+              }
+              else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error deleting chapter')));
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      )
+    );
+
+    
   }
 
   void updateChapter() async {
