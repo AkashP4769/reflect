@@ -67,11 +67,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     date = widget.entry.date;
     isFavourite = widget.entry.favourite ?? false;
 
-    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic();
+    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(editorFocusNode: contentFocusNode);
     else {
       quillController = quill.QuillController(
         document: quill.Document.fromJson(widget.entry.content ?? []),
         selection: const TextSelection.collapsed(offset: 0),
+        editorFocusNode: contentFocusNode,
+        configurations: quill.QuillControllerConfigurations()
       );
     }
 
@@ -271,25 +273,25 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        body: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          scrollDirection: Axis.vertical,
-          physics: const ScrollPhysics(),
-            
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
+        body: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            //height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
+                end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
+                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+              )
             ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              //height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                  colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-                )
-              ),
+            child: SingleChildScrollView(
+              controller: scrollController, 
+              clipBehavior: Clip.none,
+              scrollDirection: Axis.vertical,
+              physics: const ScrollPhysics(),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,15 +335,17 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   quill.QuillEditor.basic(
                         controller: quillController,
                         focusNode: contentFocusNode,
-                        scrollController: scrollController,
-        
+                        //scrollController: scrollController,
+                        
+                        
+                    
                         configurations: quill.QuillEditorConfigurations(
-                          //checkBoxReadOnly: true
                           scrollable: true,
                           placeholder: "Start writing here...",
                           keyboardAppearance: themeData.brightness,
-                          //autoFocus: true,
-                          //expands: true,
+                          onPerformAction: (TextInputAction action) {
+                            print(action.toString());
+                          },
                           
                           customStyles: quill.DefaultStyles(
                             paragraph: quill.DefaultTextBlockStyle(
@@ -362,7 +366,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             
                         ),
                       ),      
-                  Container(height: 80, color: Colors.blueAccent,),
+                  
                   /*TextField(
                     controller: new TextEditingController(),
                     focusNode: titleFocusNode,
@@ -376,7 +380,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       isDense: true,
                     ),
                     maxLines: null,
-                  )*/
+                  ),*/
+                  Container(height: 80,),
                 ],
               ),
             ),
