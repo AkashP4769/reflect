@@ -30,7 +30,7 @@ class _AuthPageState extends State<AuthPage> {
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
-    if(authResponse['code'] == 1) authPermission = true;
+    if([0, 1].contains(authResponse['code'])) authPermission = true;
 
     print("authPermission changed: $authPermission");
     backendVerified = true;

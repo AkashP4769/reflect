@@ -37,7 +37,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
       else devices.add(device);
     }
 
-    setState(() {});
+    if(mounted) setState(() {});
     //print(devices);
   }
 

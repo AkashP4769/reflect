@@ -21,6 +21,7 @@ class GroupedEntryBuilder extends StatefulWidget {
 
 class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   final EntrylistService entrylistService = EntrylistService();
+  final Map<String, int> monthValue = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12};
 
   @override
   void initState() {
@@ -31,7 +32,9 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<Entry>> groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+    Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+    print(_groupedEntries.keys.toString());
+    final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => monthValue[a.key.split(' ')[0]]!.compareTo(monthValue[b.key.split(' ')[0]]!)));
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,

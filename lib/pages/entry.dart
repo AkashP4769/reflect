@@ -312,7 +312,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                     ],
                   ),
-                  Text(isFavourite.toString(),),
                   
                   TextField(
                     controller: titleController,
