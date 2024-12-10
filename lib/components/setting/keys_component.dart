@@ -14,20 +14,18 @@ class KeyComponent extends StatefulWidget {
 }
 
 class _KeyComponentState extends State<KeyComponent> {
-  late String privateKey; 
-  late String publicKey;
+  Map<String, Map<String, String>> rsaKeys = {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
   String? symmetricKey;
   final encryptionService = EncryptionService();
 
   void getKeys() async {
-    privateKey = "123";
-    publicKey = "456";
     //encryptionService.generateAndSaveSymmetricKey();
     final sk = await encryptionService.getSymmetricKey();
     //get string from Uint8List
     if(sk != null) symmetricKey = base64Encode(sk);
     else symmetricKey = "null";
 
+    rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
     setState(() {});
   }
 
@@ -48,8 +46,8 @@ class _KeyComponentState extends State<KeyComponent> {
           children: [
             ElevatedButton(onPressed: getKeys, child: Text("get keys")),
             Text("Symmetric key: $symmetricKey"),
-            Text("Private key: $privateKey"),
-            Text("Public key: ${publicKey}"),
+            Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
+            Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),
           ],
         ),
       ),

@@ -108,7 +108,7 @@ class EncryptionService {
     return AsymmetricKeyPair(publicKey, privateKey);
   }
 
-  Map<String, dynamic> generateSaveAndReturnRSAKeys(){
+  Map<String, Map<String, String>> generateSaveAndReturnRSAKeys(){
     const secureStorage = FlutterSecureStorage();
     final keyPair = generateRSAKeyPair();
     final publicKey = keyPair.publicKey;
