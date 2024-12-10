@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reflect/components/signup/bg_splash.dart';
+import 'package:reflect/firebase_options.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/auth.dart';
 import 'package:reflect/pages/entry.dart';

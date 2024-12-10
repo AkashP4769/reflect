@@ -17,6 +17,10 @@ class UserService extends BackendServices {
 
       print(response.body);
 
+      if(jsonDecode(response.body)['code'] == 0){
+        EncryptionService().generateAndSaveSymmetricKey();
+      }
+
       if([0, 2, 3, 5].contains(jsonDecode(response.body)['code'])){
         final device = await EncryptionService.createDeviceDetails();
         final response = await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});

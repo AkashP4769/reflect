@@ -50,6 +50,7 @@ class DefaultFirebaseOptions {
     projectId: 'reflect-0',
     authDomain: 'reflect-0.firebaseapp.com',
     storageBucket: 'reflect-0.appspot.com',
+    databaseURL: ''
   );
 
   static const FirebaseOptions android = FirebaseOptions(
