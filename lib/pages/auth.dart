@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
@@ -18,10 +19,27 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  late bool authPermission;
   String loginErrorMsg = '';
   String signupErrorMsg = '';
-  bool authPermission = FirebaseAuth.instance.currentUser == null ? false : true;
   bool backendVerified = FirebaseAuth.instance.currentUser == null ? false : true;
+  Box settingBox = Hive.box('settings');
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadAuthPermission();
+  }
+
+  void saveAuthPermission() async {
+    settingBox.put('authPermission', authPermission);
+  }
+
+  void loadAuthPermission() async {
+    authPermission = settingBox.get('authPermission', defaultValue: false);
+    setState(() {});
+  }
 
 
   void signInWithGoogle(Color loadingColor) async {
@@ -30,7 +48,10 @@ class _AuthPageState extends State<AuthPage> {
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
-    if([0, 1].contains(authResponse['code'])) authPermission = true;
+    if([0, 1].contains(authResponse['code'])){
+      authPermission = true;
+      saveAuthPermission();
+    }
 
     print("authPermission changed: $authPermission");
     backendVerified = true;
