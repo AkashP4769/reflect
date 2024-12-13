@@ -29,7 +29,7 @@ class EncryptionService {
     return '44444';
   }
 
-  static Future<Device> createDeviceDetails() async {
+  Future<Device> createDeviceDetails() async {
     String deviceName = '';
     String deviceType = '';
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -56,8 +56,12 @@ class EncryptionService {
       print('Error fetching device details: $e');
     }
 
+    final rsaKeyPairs = generateSaveAndReturnRSAKeys();
+    final symmetricKey = generateSymmetricKey();
+    print(base64Encode(symmetricKey));
 
-    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: 'q23421', encryptedKey: '124123');
+
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: rsaKeyPairs['publicKey']!, encryptedKey: '124123');
     //final device = Device(deviceId: "44444", deviceName: "IPhone 14", deviceType: "Android", publicKey: 'adfsads', encryptedKey: '');
     return device;
   }

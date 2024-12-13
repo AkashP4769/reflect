@@ -2,7 +2,7 @@ class Device{
   final String deviceId;
   final String deviceName;
   final String deviceType;
-  final String publicKey;
+  final Map<String, String> publicKey;
   final String encryptedKey;
 
   Device({required this.deviceId, required this.deviceName, required this.deviceType, required this.publicKey, required this.encryptedKey});
@@ -22,13 +22,13 @@ class Device{
       deviceId: map['deviceId'],
       deviceName: map['deviceName'],
       deviceType: map['deviceType'],
-      publicKey: map['publicKey'],
+      publicKey: Map<String, String>.from(map['publicKey']),
       encryptedKey: map['encryptedKey']
     );
   }
 
   @override
   String toString(){
-    return 'Device{deviceId: $deviceId, deviceName: $deviceName, deviceType: $deviceType, publicKey: $publicKey, encryptedKey: $encryptedKey}';
+    return 'Device{deviceId: $deviceId, deviceName: $deviceName, deviceType: $deviceType, publicKey: ${publicKey.toString()}, encryptedKey: $encryptedKey}';
   }
 }
