@@ -32,13 +32,13 @@ class _KeyComponentState extends State<KeyComponent> {
   }
 
   void encryptSymKey() async {
-    symmetricKey = encryptionService.encryptRSA(symmetricKey!, rsaKeys['publicKey']!['modulus']!, rsaKeys['publicKey']!['exponent']!);
+    symmetricKey = await encryptionService.encryptSymKey(rsaKeys['publicKey']!);
     toggleEncryption = !toggleEncryption;
     setState(() {});
   }
 
   void decryptSymKey() async {
-    symmetricKey = encryptionService.decryptRSA(symmetricKey!, rsaKeys['privateKey']!['modulus']!, rsaKeys['privateKey']!['exponent']!, rsaKeys['privateKey']!['p']!, rsaKeys['privateKey']!['q']!);
+    symmetricKey = await encryptionService.decryptSymKey(symmetricKey!);
     toggleEncryption = !toggleEncryption;
     setState(() {});
   }

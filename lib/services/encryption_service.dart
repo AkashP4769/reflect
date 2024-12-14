@@ -30,7 +30,7 @@ class EncryptionService {
     return '44444';
   }
 
-  Future<Device> createDeviceDetails() async {
+  Future<Device> createDeviceDetails(bool createSymKey) async {
     String deviceName = '';
     String deviceType = '';
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -58,11 +58,14 @@ class EncryptionService {
     }
 
     final rsaKeyPairs = generateSaveAndReturnRSAKeys();
-    final symmetricKey = generateSymmetricKey();
-    print(base64Encode(symmetricKey));
+    final encryptedSymKey;
+    if(createSymKey){
+      generateAndSaveSymmetricKey();
+      encryptedSymKey = await encryptSymKey(rsaKeyPairs['publicKey']!);
+    }
+    else encryptedSymKey = '';
 
-
-    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: rsaKeyPairs['publicKey']!, encryptedKey: '124123');
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: rsaKeyPairs['publicKey']!, encryptedKey: encryptedSymKey);
     //final device = Device(deviceId: "44444", deviceName: "IPhone 14", deviceType: "Android", publicKey: 'adfsads', encryptedKey: '');
     return device;
   }
@@ -78,6 +81,11 @@ class EncryptionService {
     const secureStorage = FlutterSecureStorage();
     final key = generateSymmetricKey();
     final keyString = base64Encode(key);
+    secureStorage.write(key: '${uid}#symmetricKey', value: keyString);
+  }
+
+  void saveSymmetricKey(String keyString){
+    const secureStorage = FlutterSecureStorage();
     secureStorage.write(key: '${uid}#symmetricKey', value: keyString);
   }
 
@@ -139,11 +147,12 @@ class EncryptionService {
     }
   }
 
-  Future<String> encryptSymKey() async {
+
+  //encrpt symmetric key using RSA
+  Future<String> encryptSymKey(Map<String, String> publicKey ) async {
     final key = getSymmetricKey();
-    final rsaKeys = await getRSAKeys();
-    final modulus = BigInt.parse(rsaKeys['publicKey']!['modulus']!);
-    final exponent = BigInt.parse(rsaKeys['publicKey']!['exponent']!);
+    final modulus = BigInt.parse(publicKey['modulus']!);
+    final exponent = BigInt.parse(publicKey['exponent']!);
     final message = await key;
 
     final rsaEngine = RSAEngine()
@@ -151,9 +160,10 @@ class EncryptionService {
     return base64Encode(rsaEngine.process(message!));
   }
 
-  Future<String> decryptRSA(String strCiphertext) async {
+  //decrypt symmetric key using RSA
+  Future<String> decryptSymKey(String strCiphertext) async {
     final rsaKeys = await getRSAKeys();
-    
+
     final modulus = BigInt.parse(rsaKeys['privateKey']!['modulus']!);
     final privateExponent = BigInt.parse(rsaKeys['privateKey']!['exponent']!);
     final p = BigInt.parse(rsaKeys['privateKey']!['p']!);

@@ -41,8 +41,8 @@ class _DeviceSettingState extends State<DeviceSetting> {
     //print(devices);
   }
 
-  void handleNewDevice(String deviceId, bool choice) async {
-    await userService.handleNewDevice(deviceId, choice);
+  void handleNewDevice(String deviceId, bool choice, Map<String, String> publicKey) async {
+    await userService.handleNewDevice(deviceId, choice, publicKey);
     getDevices();
   }
 
@@ -76,7 +76,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
                   contentPadding: EdgeInsets.zero,
                   title: Text('${devices[index].deviceName}', style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600)),
                   subtitle: Text('${devices[index].deviceType}', style: themeData.textTheme.bodySmall),
-                  trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : IconButton(icon: Icon(Icons.logout_outlined, color: themeData.colorScheme.error), onPressed: (){handleNewDevice(devices[index].deviceId, false);}),
+                  trailing: index == 0 ? IconButton(icon: Icon(Icons.star, color: themeData.colorScheme.primary), onPressed: null,) : IconButton(icon: Icon(Icons.logout_outlined, color: themeData.colorScheme.error), onPressed: (){handleNewDevice(devices[index].deviceId, false, devices[index].publicKey);}),
                 ),
               );
             },
@@ -106,8 +106,8 @@ class _DeviceSettingState extends State<DeviceSetting> {
                     width: 100,
                     child: Row(
                       children: [
-                        IconButton(icon: Icon(Icons.close, color: themeData.colorScheme.error), onPressed: (){handleNewDevice(newDevices[index].deviceId, false);}),
-                        IconButton(icon: Icon(Icons.check, color: themeData.colorScheme.primary, weight: 40, fill: 0.8,), onPressed: (){handleNewDevice(newDevices[index].deviceId, true);}),
+                        IconButton(icon: Icon(Icons.close, color: themeData.colorScheme.error), onPressed: (){handleNewDevice(newDevices[index].deviceId, false, newDevices[index].publicKey);}),
+                        IconButton(icon: Icon(Icons.check, color: themeData.colorScheme.primary, weight: 40, fill: 0.8,), onPressed: (){handleNewDevice(newDevices[index].deviceId, true, newDevices[index].publicKey);}),
                       ],
                     ),
                   ),
