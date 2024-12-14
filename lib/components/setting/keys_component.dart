@@ -16,6 +16,7 @@ class KeyComponent extends StatefulWidget {
 class _KeyComponentState extends State<KeyComponent> {
   Map<String, Map<String, String>> rsaKeys = {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
   String? symmetricKey;
+  bool toggleEncryption = false;
   final encryptionService = EncryptionService();
 
   void getKeys() async {
@@ -27,6 +28,18 @@ class _KeyComponentState extends State<KeyComponent> {
 
     rsaKeys = await encryptionService.getRSAKeys();
     //rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
+    setState(() {});
+  }
+
+  void encryptSymKey() async {
+    symmetricKey = encryptionService.encryptRSA(symmetricKey!, rsaKeys['publicKey']!['modulus']!, rsaKeys['publicKey']!['exponent']!);
+    toggleEncryption = !toggleEncryption;
+    setState(() {});
+  }
+
+  void decryptSymKey() async {
+    symmetricKey = encryptionService.decryptRSA(symmetricKey!, rsaKeys['privateKey']!['modulus']!, rsaKeys['privateKey']!['exponent']!, rsaKeys['privateKey']!['p']!, rsaKeys['privateKey']!['q']!);
+    toggleEncryption = !toggleEncryption;
     setState(() {});
   }
 
@@ -45,10 +58,11 @@ class _KeyComponentState extends State<KeyComponent> {
       child: Center(
         child: Column(
           children: [
-            ElevatedButton(onPressed: getKeys, child: Text("get keys")),
+            ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("get keys")),
             Text("Symmetric key: $symmetricKey"),
-            Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
-            Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),
+            //Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
+            //Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),
+
           ],
         ),
       ),

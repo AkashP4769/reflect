@@ -6,6 +6,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/key_generators/rsa_key_generator.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:pointycastle/random/fortuna_random.dart';
@@ -118,9 +119,9 @@ class EncryptionService {
     final publicKey = keyPair.publicKey;
     final privateKey = keyPair.privateKey;
     print("is this function ever getting called");
-    secureStorage.write(key: '${uid}#privateKey', value: jsonEncode({'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString()}));
+    secureStorage.write(key: '${uid}#privateKey', value: jsonEncode({'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString(), 'p':privateKey.p.toString(), 'q':privateKey.q.toString()}));
     secureStorage.write(key: '${uid}#publicKey', value: jsonEncode({'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}));
-    return {'privateKey': {'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString()}, 'publicKey': {'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}};
+    return {'privateKey': {'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString(), 'p':privateKey.p.toString(), 'q':privateKey.q.toString()}, 'publicKey': {'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}};
 
   }
 
@@ -134,8 +135,34 @@ class EncryptionService {
     else {
       final privateKey = jsonDecode(privateKeyString) as Map<String, dynamic>;
       final publicKey = jsonDecode(publicKeyString) as Map<String, dynamic>;
-      return {'privateKey': {'modulus': privateKey['modulus'], 'exponent': privateKey['exponent']}, 'publicKey': {'modulus': publicKey['modulus'], 'exponent': publicKey['exponent']}};
+      return {'privateKey': {'modulus': privateKey['modulus'], 'exponent': privateKey['exponent'], 'p':privateKey['p'], 'q':privateKey['q']}, 'publicKey': {'modulus': publicKey['modulus'], 'exponent': publicKey['exponent']}};
     }
+  }
+
+  Future<String> encryptSymKey() async {
+    final key = getSymmetricKey();
+    final rsaKeys = await getRSAKeys();
+    final modulus = BigInt.parse(rsaKeys['publicKey']!['modulus']!);
+    final exponent = BigInt.parse(rsaKeys['publicKey']!['exponent']!);
+    final message = await key;
+
+    final rsaEngine = RSAEngine()
+      ..init(true, PublicKeyParameter<RSAPublicKey>(RSAPublicKey(modulus, exponent)));
+    return base64Encode(rsaEngine.process(message!));
+  }
+
+  Future<String> decryptRSA(String strCiphertext) async {
+    final rsaKeys = await getRSAKeys();
+    
+    final modulus = BigInt.parse(rsaKeys['privateKey']!['modulus']!);
+    final privateExponent = BigInt.parse(rsaKeys['privateKey']!['exponent']!);
+    final p = BigInt.parse(rsaKeys['privateKey']!['p']!);
+    final q = BigInt.parse(rsaKeys['privateKey']!['q']!);
+    final ciphertext = Uint8List.fromList(base64Decode(strCiphertext));
+
+    final rsaEngine = RSAEngine()
+      ..init(false, PrivateKeyParameter<RSAPrivateKey>(RSAPrivateKey(modulus, privateExponent, p, q)));
+    return base64Encode(rsaEngine.process(ciphertext));
   }
 
   void encryptData(Map<String, dynamic> nestedMap, Uint8List keyBytes) {
