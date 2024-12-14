@@ -23,7 +23,8 @@ class UserService extends BackendServices {
       }
 
       else if(body['code'] == 4){
-        encryptionService.saveSymmetricKey(body['encryptedKey']);
+        String symKey = await encryptionService.decryptSymKey(body['encryptedKey']);
+        encryptionService.saveSymmetricKey(symKey);
       }
 
       if([0, 2, 3, 5].contains(body['code'])){
