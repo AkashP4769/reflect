@@ -25,7 +25,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
     // TODO: implement initState
     super.initState();
     getDevices();
-    EncryptionService().createDeviceDetails().then((value) => print(value.toString()));
+    //EncryptionService().createDeviceDetails().then((value) => print(value.toString()));
   }
 
   void getDevices() async {

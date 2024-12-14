@@ -25,7 +25,8 @@ class _KeyComponentState extends State<KeyComponent> {
     if(sk != null) symmetricKey = base64Encode(sk);
     else symmetricKey = "null";
 
-    rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
+    rsaKeys = await encryptionService.getRSAKeys();
+    //rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
     setState(() {});
   }
 

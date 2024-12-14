@@ -117,12 +117,26 @@ class EncryptionService {
     final keyPair = generateRSAKeyPair();
     final publicKey = keyPair.publicKey;
     final privateKey = keyPair.privateKey;
-    secureStorage.write(key: '${uid}#privateKey', value: {'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString()}.toString());
-    secureStorage.write(key: '${uid}#publicKey', value: {'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}.toString());
+    print("is this function ever getting called");
+    secureStorage.write(key: '${uid}#privateKey', value: jsonEncode({'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString()}));
+    secureStorage.write(key: '${uid}#publicKey', value: jsonEncode({'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}));
     return {'privateKey': {'modulus': privateKey.modulus.toString(), 'exponent': privateKey.exponent.toString()}, 'publicKey': {'modulus': publicKey.modulus.toString(), 'exponent': publicKey.exponent.toString()}};
+
   }
 
-  
+  Future<Map<String, Map<String, String>>> getRSAKeys() async {
+    const secureStorage = FlutterSecureStorage();
+    final privateKeyString = await secureStorage.read(key: '${uid}#privateKey');
+    final publicKeyString = await secureStorage.read(key: '${uid}#publicKey');
+    if( privateKeyString == null || publicKeyString == null){
+      return {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
+    }
+    else {
+      final privateKey = jsonDecode(privateKeyString) as Map<String, dynamic>;
+      final publicKey = jsonDecode(publicKeyString) as Map<String, dynamic>;
+      return {'privateKey': {'modulus': privateKey['modulus'], 'exponent': privateKey['exponent']}, 'publicKey': {'modulus': publicKey['modulus'], 'exponent': publicKey['exponent']}};
+    }
+  }
 
   void encryptData(Map<String, dynamic> nestedMap, Uint8List keyBytes) {
     final key = encrypt.Key(keyBytes);
