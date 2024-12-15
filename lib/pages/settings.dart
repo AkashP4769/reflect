@@ -65,7 +65,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 //const SizedBox(height: 20),
                 EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
                 const SizedBox(height: 20),
-                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting,),
+                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
                 const SizedBox(height: 20),
                 KeyComponent(themeData: themeData)
               ],

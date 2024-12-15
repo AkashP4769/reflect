@@ -10,7 +10,8 @@ class DeviceSetting extends StatefulWidget {
   final WidgetRef ref;
   final List<Device> devices;
   final void Function() refreshPage;
-  const DeviceSetting({super.key, required this.ref, required this.devices, required this.refreshPage});
+  final String encryptionMode;
+  const DeviceSetting({super.key, required this.ref, required this.devices, required this.refreshPage, required this.encryptionMode});
 
   @override
   State<DeviceSetting> createState() => _DeviceSettingState();
@@ -19,27 +20,9 @@ class DeviceSetting extends StatefulWidget {
 class _DeviceSettingState extends State<DeviceSetting> {
   final UserService userService = UserService();
   
-  //List<Device> devices = [];
-  //List<Device> newDevices = [];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getDevices();
-  }
-
-  void getDevices() async {
-    
-
-    if(mounted) setState(() {});
-    //print(devices);
-  }
-
   void handleNewDevice(String deviceId, bool choice, Map<String, String> publicKey) async {
     await userService.handleNewDevice(deviceId, choice, publicKey);
     widget.refreshPage();
-    getDevices();
   }
 
   @override
@@ -53,7 +36,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
     devices.clear();
     newDevices.clear();
     for(var device in _devices){
-      if(["", null].contains(device.encryptedKey)){newDevices.add(device); /*newDevices.add(device); newDevices.add(device);*/}
+      if(["", null].contains(device.encryptedKey) && widget.encryptionMode == 'encrypted'){newDevices.add(device); /*newDevices.add(device); newDevices.add(device);*/}
       else devices.add(device);
     }
 
