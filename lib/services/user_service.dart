@@ -69,6 +69,25 @@ class UserService extends BackendServices {
     }
   }
 
+  Future<String?> updateEncryptionMode(String encryptionMode) async {
+    try{
+      final response = await http.post(Uri.parse('$baseUrl/users/updateEncryptionMode'),
+        body: jsonEncode({
+          "uid": user!.uid,
+          "encryptionMode": encryptionMode
+        }), headers:  {'Content-Type': 'application/json'}
+      );
+
+      if(response.statusCode == 200){
+        return jsonDecode(response.body)['encryptionMode'];
+      }
+      return null;
+    } catch(e) {
+      print("error at updateEncryptionMode: $e");
+      return null;
+    }
+  }
+
 
 
   //add two numbers
