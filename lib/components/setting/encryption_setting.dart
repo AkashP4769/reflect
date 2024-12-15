@@ -22,6 +22,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     return SettingContainer(
       themeData: widget.themeData,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text("Encryption", style: widget.themeData.textTheme.titleMedium),
           Switch(

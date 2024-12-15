@@ -9,7 +9,8 @@ import 'package:reflect/services/user_service.dart';
 class DeviceSetting extends StatefulWidget {
   final WidgetRef ref;
   final List<Device> devices;
-  const DeviceSetting({super.key, required this.ref, required this.devices});
+  final void Function() refreshPage;
+  const DeviceSetting({super.key, required this.ref, required this.devices, required this.refreshPage});
 
   @override
   State<DeviceSetting> createState() => _DeviceSettingState();
@@ -18,18 +19,36 @@ class DeviceSetting extends StatefulWidget {
 class _DeviceSettingState extends State<DeviceSetting> {
   final UserService userService = UserService();
   
-  List<Device> devices = [];
-  List<Device> newDevices = [];
+  //List<Device> devices = [];
+  //List<Device> newDevices = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getDevices();
-    //EncryptionService().createDeviceDetails().then((value) => print(value.toString()));
   }
 
   void getDevices() async {
+    
+
+    if(mounted) setState(() {});
+    //print(devices);
+  }
+
+  void handleNewDevice(String deviceId, bool choice, Map<String, String> publicKey) async {
+    await userService.handleNewDevice(deviceId, choice, publicKey);
+    widget.refreshPage();
+    getDevices();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeData = widget.ref.watch(themeManagerProvider);
+
+    List<Device> devices = [];
+    List<Device> newDevices = [];
+    
     final _devices = widget.devices;
     devices.clear();
     newDevices.clear();
@@ -38,18 +57,6 @@ class _DeviceSettingState extends State<DeviceSetting> {
       else devices.add(device);
     }
 
-    if(mounted) setState(() {});
-    //print(devices);
-  }
-
-  void handleNewDevice(String deviceId, bool choice, Map<String, String> publicKey) async {
-    await userService.handleNewDevice(deviceId, choice, publicKey);
-    getDevices();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeData = widget.ref.watch(themeManagerProvider);
     return SettingContainer(
       //maxHeight: 400,
       themeData: themeData,

@@ -26,6 +26,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     userSetting = await userService.getUserSetting();
     if(mounted) setState(() {});
     print(userSetting.toString());
+    print("refreshing pge");
   }
 
   @override
@@ -63,11 +64,13 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
                 //const SizedBox(height: 20),
                 EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
-                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices]),
+                const SizedBox(height: 20),
+                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting,),
+                const SizedBox(height: 20),
                 KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.3.1" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.3.2" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),
