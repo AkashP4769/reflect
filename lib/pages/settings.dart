@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart';
 import 'package:reflect/components/setting/device_setting.dart';
+import 'package:reflect/components/setting/encryption_setting.dart';
 import 'package:reflect/components/setting/keys_component.dart';
 import 'package:reflect/components/setting/server_setting.dart';
 import 'package:reflect/main.dart';
@@ -20,7 +22,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   UserSetting? userSetting;
   UserService userService = UserService();
 
-  getUserSetting() async {
+  void getUserSetting() async {
     userSetting = await userService.getUserSetting();
     if(mounted) setState(() {});
     print(userSetting.toString());
@@ -60,6 +62,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
                 //const SizedBox(height: 20),
+                EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
                 DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices]),
                 KeyComponent(themeData: themeData)
               ],
