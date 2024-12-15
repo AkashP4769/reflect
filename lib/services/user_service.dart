@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:reflect/models/device.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/backend_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/encryption_service.dart';
@@ -71,7 +72,7 @@ class UserService extends BackendServices {
 
   Future<String?> updateEncryptionMode(String encryptionMode) async {
     try{
-      final response = await http.post(Uri.parse('$baseUrl/users/updateEncryptionMode'),
+      final response = await http.post(Uri.parse('$baseUrl/users/encryptionMode'),
         body: jsonEncode({
           "uid": user!.uid,
           "encryptionMode": encryptionMode
@@ -88,8 +89,16 @@ class UserService extends BackendServices {
     }
   }
 
-
-
-  //add two numbers
+  Future<UserSetting> getUserSetting() async {
+    try{
+      final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'));
+      print(jsonDecode(response.body));
+      final userSetting = UserSetting.fromMap(jsonDecode(response.body));
+      return userSetting;
+    } catch(e){
+      print("Error at getUserSetting(): $e");
+      return UserSetting(uid: '', name: '', email: '', primaryDevice: Device(deviceId: '', deviceName: '', deviceType: '', publicKey: {}, encryptedKey: ''), devices: [], encryptionMode: '');
+    }
+  }
   
 }

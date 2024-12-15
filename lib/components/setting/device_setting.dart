@@ -8,7 +8,8 @@ import 'package:reflect/services/user_service.dart';
 
 class DeviceSetting extends StatefulWidget {
   final WidgetRef ref;
-  const DeviceSetting({super.key, required this.ref});
+  final List<Device> devices;
+  const DeviceSetting({super.key, required this.ref, required this.devices});
 
   @override
   State<DeviceSetting> createState() => _DeviceSettingState();
@@ -29,7 +30,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
   }
 
   void getDevices() async {
-    final _devices = await userService.getUserDevice();
+    final _devices = widget.devices;
     devices.clear();
     newDevices.clear();
     for(var device in _devices){

@@ -6,6 +6,7 @@ import 'package:reflect/components/setting/keys_component.dart';
 import 'package:reflect/components/setting/server_setting.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/device.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/user_service.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -16,6 +17,22 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<SettingsPage> {
+  UserSetting? userSetting;
+  UserService userService = UserService();
+
+  getUserSetting() async {
+    userSetting = await userService.getUserSetting();
+    if(mounted) setState(() {});
+    print(userSetting.toString());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserSetting();
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
@@ -29,7 +46,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
         )
       ),
-      child: SingleChildScrollView(
+      child: (userSetting == null) ? CircularProgressIndicator() :  SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -43,7 +60,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
                 //const SizedBox(height: 20),
-                DeviceSetting(ref: ref),
+                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices]),
                 KeyComponent(themeData: themeData)
               ],
             ),
