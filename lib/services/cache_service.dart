@@ -203,5 +203,18 @@ class CacheService{
 
     await chapterBox.put(userId, {"chapters": cachedChapters});
   }
+
+  void importToCache(String uid, List<Map<String, dynamic>> chaptersData){
+    List<Map<String, dynamic>> chapters = [];
+    List<Map<String, dynamic>> entries = [];
+
+    for(var chapter in chaptersData){
+      entryBox.put(chapter['_id'], chapter['entries']);
+      chapter.remove("entries");
+      chapters.add(chapter);
+    }
+
+    chapterBox.put(uid, {"chapters": chapters});
+  }
   
 }

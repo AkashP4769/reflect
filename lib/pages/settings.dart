@@ -62,16 +62,18 @@ class _HomePageState extends ConsumerState<SettingsPage> {
               children: [
                 const SizedBox(height: 20),
                 Text('Settings', style: themeData.textTheme.titleLarge),
+
                 const SizedBox(height: 20),
-                ServerSetting(ref: ref,),
-                const SizedBox(height: 20),
-                //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
-                //const SizedBox(height: 20),
                 if(userSetting != null) EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
+                
                 const SizedBox(height: 20),
-                if(userSetting != null) DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
+                if(userSetting != null && userSetting!.encryptionMode != 'local') ServerSetting(ref: ref,),
+                
                 const SizedBox(height: 20),
-                if(userSetting != null) KeyComponent(themeData: themeData)
+                if(userSetting != null && userSetting!.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
+                
+                const SizedBox(height: 20),
+                if(userSetting != null && userSetting!.encryptionMode == 'encrypted') KeyComponent(themeData: themeData)
               ],
             ),
             Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.3.2" , style: themeData.textTheme.titleSmall))

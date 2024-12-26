@@ -58,7 +58,8 @@ class _KeyComponentState extends State<KeyComponent> {
       child: Center(
         child: Column(
           children: [
-            ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("get keys")),
+            ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("Encrypt/Decrypt", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
+            SizedBox(height: 20),
             Text("Symmetric key: $symmetricKey"),
             //Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
             //Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),

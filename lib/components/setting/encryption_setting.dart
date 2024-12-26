@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/setting/setting_container.dart';
+import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 class EncryptionSetting extends StatefulWidget {
@@ -22,6 +23,10 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     'Cloud Encrypted': 'encrypted',
     'Cloud Unencrypted': 'unencrypted'
   };
+
+  void importAll() async {
+    await ChapterService().importAll();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +66,12 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
                 widget.refreshPage();
               },
             ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(child: ElevatedButton(onPressed: importAll, child: Text("Import All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
+            ],
           )
         ],
       ),

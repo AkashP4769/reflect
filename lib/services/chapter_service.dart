@@ -80,4 +80,21 @@ class ChapterService extends BackendServices {
       return false;
     }
   }
+
+  Future<bool> importAll() async {
+    try{
+      final response = await http.get(Uri.parse('$baseUrl/chapters/import/?uid=${user!.uid}'));
+      if(response.statusCode == 200){
+        print("Importing chapters");
+        CacheService().importToCache(user!.uid, List<Map<String, dynamic>>.from(jsonDecode(response.body)['chapters']));
+        print("Chapters imported successfully");
+        return true;
+      }
+      print("Error importing chapters at server: ${response.body}");
+      return false;
+    } catch(e){
+      print("Error importing chapters: $e");
+      return false;
+    }
+  }
 }
