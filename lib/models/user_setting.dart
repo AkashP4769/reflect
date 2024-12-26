@@ -70,7 +70,7 @@ class UserSetting {
 
   @override
   String toString() {
-    return 'UserSetting(uid: $uid, name: $name, email: $email, primaryDevice: $primaryDevice, devices: $devices, encryptionMode: $encryptionMode)';
+    return 'UserSetting(uid: $uid, name: $name, email: $email, primaryDevice: $primaryDevice, encryptionMode: $encryptionMode, devices: $devices)';
   }
 
   @override

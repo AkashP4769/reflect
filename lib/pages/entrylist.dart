@@ -183,6 +183,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   Future<void> fetchEntries(bool explicit) async {
     await loadFromCache();
+    if(userSetting!.encryptionMode == 'local') return;
+
     final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, explicit);
 
     if(data == null){

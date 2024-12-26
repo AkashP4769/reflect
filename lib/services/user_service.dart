@@ -82,6 +82,10 @@ class UserService extends BackendServices {
       );
 
       if(response.statusCode == 200){
+        final userSetting = jsonDecode(settingBox.get('${user!.uid}#userSetting'));
+        print("new encryption mode: ${jsonDecode(response.body)['encryptionMode']}");
+        if(userSetting != null) userSetting['encryptionMode'] = encryptionMode;
+        settingBox.put('${user!.uid}#userSetting', jsonEncode(userSetting));
         return jsonDecode(response.body)['encryptionMode'];
       }
       return null;
