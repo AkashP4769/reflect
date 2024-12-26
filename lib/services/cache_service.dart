@@ -32,6 +32,20 @@ class CacheService{
     return null;
   }
 
+  Chapter? loadOneChapterFromCache(String chapterId){
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null) return null;
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+    for(var chapter in cachedChapters){
+      if(chapter['_id'] == chapterId){
+        return Chapter.fromMap(Map<String, dynamic>.from(chapter as Map));
+      }
+    }
+
+    return null;
+  }
+
   Future<void> addChaptersToCache(List<Map<String,dynamic>>? data) async {
     print("adding data to  cache");
     await chapterBox.put(userId, {"chapters": data});
@@ -94,6 +108,63 @@ class CacheService{
     await TimestampService().updateEntryTimestamp(chapterId);
   }
 
+  Future<bool> addOneEntryToCache(Map<String, dynamic> entry, String chapterId) async {
+    final cachedData = entryBox.get(chapterId);
+    entry['_id'] = mongo.ObjectId().oid;
+
+
+    if(cachedData == null){
+      await entryBox.put(chapterId, [entry]);
+      return true;
+    }
+
+    final List cachedEntries = cachedData as List;
+    cachedEntries.add(entry);
+    await entryBox.put(chapterId, cachedEntries);
+
+    final tagService = TagService();
+    final entryTags = tagService.parseTagFromEntryData([entry]);
+    final currentTags = tagService.getAllTags();
+    final tags = [...currentTags, ...entryTags].toSet().toList();
+    tagService.updateTags(tags);
+
+    //update entrycount 
+    updateChapterEntryCount(chapterId, 0, 1);
+
+    return true;
+  }
+
+  Future<bool> deleteOneEntryFromCache(String entryId, String chapterId) async {
+    final cachedData = entryBox.get(chapterId);
+    if(cachedData == null) return false;
+
+    final List cachedEntries = cachedData as List;
+    final updatedEntries = cachedEntries.where((entry) => entry['_id'] != entryId).toList();
+    await entryBox.put(chapterId, updatedEntries);
+
+    //update entrycount
+    updateChapterEntryCount(chapterId, 0, -1);
+
+    return true;
+  }
+
+  Future<bool> updateOneEntryInCache(String entryId, Map<String, dynamic> entry, String chapterId) async {
+    final cachedData = entryBox.get(chapterId);
+    if(cachedData == null) return false;
+
+    final List cachedEntries = cachedData as List;
+    int index = 0;
+    for (var i = 0; i < cachedEntries.length; i++) {
+      if(cachedEntries[i]['_id'] == entryId){
+        index = i;
+        break;
+      }
+    }
+    cachedEntries[index] = entry;
+    await entryBox.put(chapterId, cachedEntries);
+    return true;
+  }
+
   List<Entry>? loadEntriesFromCache(String chapterId)  {
     final cachedData = entryBox.get(chapterId);
     if(cachedData != null){
@@ -111,5 +182,21 @@ class CacheService{
     return null;
   }
 
+
+  Future<void> updateChapterEntryCount(String chapterId, int count, int incrementBy) async {
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null) return;
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+    int index = 0;
+    for (var i = 0; i < cachedChapters.length; i++) {
+      if(cachedChapters[i]['_id'] == chapterId){
+        index = i;
+        break;
+      }
+    }
+    cachedChapters[index]['entryCount'] += (count + incrementBy);
+    await chapterBox.put(userId, {"chapters": cachedChapters});
+  }
   
 }

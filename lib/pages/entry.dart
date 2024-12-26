@@ -11,8 +11,11 @@ import 'package:reflect/components/entry/tag_panel.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/models/tag.dart';
+import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
+import 'package:reflect/services/user_service.dart';
 
 
 class EntryPage extends ConsumerStatefulWidget {
@@ -43,6 +46,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late FocusNode contentFocusNode;
 
   EntryService entryService = EntryService();
+  CacheService cacheService = CacheService();
+  UserSetting userSetting = UserService().getUserSettingFromCache();
   List<Tag> entryTags = [];
 
   @override
@@ -120,7 +125,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void addEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
     final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite);
-    final result = await entryService.createEntry(entry.toMap());
+    final result;
+    
+    if(userSetting.encryptionMode == 'local') result = await cacheService.addOneEntryToCache(entry.toMap(), entry.chapterId!);
+    else result = await entryService.createEntry(entry.toMap());
+
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry added successfully')));
       Navigator.pop(context, 'entry_added');
@@ -133,7 +142,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void updateEntry() async {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
     final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite);
-    final result = await entryService.updateEntry(entry.toMap());
+    bool result;
+
+    if(userSetting.encryptionMode == 'local') result = await cacheService.updateOneEntryInCache(entry.id!, entry.toMap(), entry.chapterId!);
+    else result = await entryService.updateEntry(entry.toMap());
+
     if(result) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
       Navigator.pop(context, 'entry_updated');
@@ -156,7 +169,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           ),
           TextButton(
             onPressed: () async {
-              final result = await entryService.deleteEntry(widget.entry.chapterId!, widget.entry.id!);
+              bool result;
+              if(userSetting.encryptionMode == 'local') result = await cacheService.deleteOneEntryFromCache(widget.entry.id!, widget.entry.chapterId!);
+              else result = await entryService.deleteEntry(widget.entry.chapterId!, widget.entry.id!);
+
               if(result) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry deleted successfully')));
                 Navigator.pop(context);

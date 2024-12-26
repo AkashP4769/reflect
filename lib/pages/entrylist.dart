@@ -207,6 +207,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   Future<void> loadFromCache() async {
     final newEntries = cacheService.loadEntriesFromCache(chapter.id);
+    if(userSetting!.encryptionMode == 'local') setState(() {
+      final updatedChapter = cacheService.loadOneChapterFromCache(chapter.id);
+      if(updatedChapter != null) chapter = updatedChapter;
+    });
     if(newEntries != null){
       entries = newEntries;
       //print('load from cache ${newEntries.toString()}');

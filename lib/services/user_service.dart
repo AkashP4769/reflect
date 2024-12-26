@@ -108,7 +108,7 @@ class UserService extends BackendServices {
     }
   }
 
-  UserSetting? getUserSettingFromCache(){
+  UserSetting getUserSettingFromCache(){
     final userSetting = settingBox.get('${user!.uid}#userSetting');
     return UserSetting.fromMap(jsonDecode(userSetting));
   }
