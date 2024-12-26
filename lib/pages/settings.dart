@@ -23,7 +23,11 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   UserService userService = UserService();
 
   void getUserSetting() async {
-    userSetting = await userService.getUserSetting();
+    userSetting = await userService.getUserSettingFromCache();
+    if(userSetting == null || userSetting!.encryptionMode != 'local'){
+      userSetting = await userService.getUserSetting();
+    }
+
     if(mounted) setState(() {});
     print(userSetting.toString());
     print("refreshing pge");
@@ -49,7 +53,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
         )
       ),
-      child: (userSetting == null) ? CircularProgressIndicator() :  SingleChildScrollView(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -63,11 +67,11 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 //ElevatedButton(onPressed: getDevices, child: Text('Get Devices', style: themeData.textTheme.titleSmall)),
                 //const SizedBox(height: 20),
-                EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
+                if(userSetting != null) EncryptionSetting(themeData: themeData, encryptionMode: userSetting!.encryptionMode, refreshPage: getUserSetting),
                 const SizedBox(height: 20),
-                DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
+                if(userSetting != null) DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
                 const SizedBox(height: 20),
-                KeyComponent(themeData: themeData)
+                if(userSetting != null) KeyComponent(themeData: themeData)
               ],
             ),
             Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.3.2" , style: themeData.textTheme.titleSmall))

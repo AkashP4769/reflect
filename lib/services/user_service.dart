@@ -33,7 +33,9 @@ class UserService extends BackendServices {
         final device = await encryptionService.createDeviceDetails(createSymKey);
         await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});
       }
-      
+
+      await getUserSetting();
+
       return body;
     } catch (e) {
       print("Error at addUser(): $e");
@@ -91,14 +93,20 @@ class UserService extends BackendServices {
 
   Future<UserSetting> getUserSetting() async {
     try{
-      final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'));
+      final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'),);
       print(jsonDecode(response.body));
       final userSetting = UserSetting.fromMap(jsonDecode(response.body));
+      settingBox.put('${user!.uid}#userSetting', response.body);
       return userSetting;
     } catch(e){
       print("Error at getUserSetting(): $e");
       return UserSetting(uid: '', name: '', email: '', primaryDevice: Device(deviceId: '', deviceName: '', deviceType: '', publicKey: {}, encryptedKey: ''), devices: [], encryptionMode: '');
     }
+  }
+
+  UserSetting? getUserSettingFromCache(){
+    final userSetting = settingBox.get('${user!.uid}#userSetting');
+    return UserSetting.fromMap(jsonDecode(userSetting));
   }
   
 }

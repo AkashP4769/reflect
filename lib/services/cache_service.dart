@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
@@ -36,6 +38,23 @@ class CacheService{
     await TimestampService().updateChapterTimestamp();
   }
 
+  Future<bool> addOneChapterToCache(Map<String, dynamic> chapter) async {
+    chapter['_id'] = mongo.ObjectId().oid;
+    chapter['uid'] = userId;
+
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null){
+      await chapterBox.put(userId, {"chapters": [chapter]});
+      return true;
+    }
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+
+    cachedChapters.add(chapter);
+    await chapterBox.put(userId, {"chapters": cachedChapters});
+    return true;
+  } 
+
   Future<void> addEntryToCache(List<Map<String, dynamic>>? data, String chapterId) async {
     await entryBox.put(chapterId, data);
     final tagService = TagService();
@@ -64,4 +83,6 @@ class CacheService{
     }
     return null;
   }
+
+  
 }

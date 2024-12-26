@@ -48,7 +48,7 @@ class _AuthPageState extends State<AuthPage> {
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
-    if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] == 'unencrypted'){
+    if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] != 'encrypted'){
       authPermission = true;
       saveAuthPermission();
     }

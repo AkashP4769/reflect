@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-//import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/chapter_sort_setting.dart';
@@ -17,6 +16,7 @@ import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   final String? searchQuery;
@@ -36,6 +36,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final TimestampService timestampService = TimestampService();
   final CacheService cacheService = CacheService();
   final ConversionService conversionService = ConversionService();
+  final userSetting = UserService().getUserSettingFromCache();
 
   List<Chapter> chapters = [];
 
@@ -67,8 +68,13 @@ class _HomePageState extends ConsumerState<JournalPage> {
       "entryCount": 0,
       "createdAt": date.toIso8601String(),
     };
-    final bool status = await chapterService.createChapter(chapter);
+
+    bool status;
     SnackBar snackBar;
+
+    if(userSetting!.encryptionMode == 'local') status = await cacheService.addOneChapterToCache(chapter);
+    else status = await chapterService.createChapter(chapter);
+    
     if(status) {
       fetchChapters(true);
       toggleCreate();
@@ -88,7 +94,13 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> fetchChapters(bool explicit) async {
+    if(userSetting!.encryptionMode == 'local'){
+      loadChaptersFromCache();
+      return;
+    }
+
     final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
+
     if(data == null) return;
     else if (data.isNotEmpty) {
       cacheService.addChaptersToCache(data);

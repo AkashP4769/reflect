@@ -24,29 +24,14 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
   };
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SettingContainer(
       themeData: widget.themeData,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("Save Location", style: widget.themeData.textTheme.titleMedium),
-          /*Switch(
-            value: (widget.encryptionMode == 'unencrypted') ? false : true,
-            activeColor: widget.themeData.colorScheme.primary,
-            inactiveThumbColor: widget.themeData.colorScheme.secondary, 
-            onChanged: (bool value) async {
-              await userService.updateEncryptionMode(value ? 'encrypted' : 'unencrypted');
-              widget.refreshPage();
-            }
-          )*/
+          SizedBox(height: 20),
           Theme(
             data: widget.themeData,
             child: DropdownMenu<String?>(
