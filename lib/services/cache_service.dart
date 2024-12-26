@@ -53,7 +53,34 @@ class CacheService{
     cachedChapters.add(chapter);
     await chapterBox.put(userId, {"chapters": cachedChapters});
     return true;
-  } 
+  }
+
+  Future<bool> deleteChapterFromCache(String chapterId) async {
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null) return false;
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+    final updatedChapters = cachedChapters.where((chapter) => chapter['_id'] != chapterId).toList();
+    await chapterBox.put(userId, {"chapters": updatedChapters});
+    return true;
+  }
+
+  Future<bool> updateChapterInCache(String chapterId, Map<String, dynamic> chapter) async {
+    final cachedData = chapterBox.get(userId);
+    if(cachedData == null) return false;
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+    int index = 0;
+    for (var i = 0; i < cachedChapters.length; i++) {
+      if(cachedChapters[i]['_id'] == chapterId){
+        index = i;
+        break;
+      }
+    }
+    cachedChapters[index] = chapter;
+    await chapterBox.put(userId, {"chapters": cachedChapters});
+    return true;
+  }
 
   Future<void> addEntryToCache(List<Map<String, dynamic>>? data, String chapterId) async {
     await entryBox.put(chapterId, data);

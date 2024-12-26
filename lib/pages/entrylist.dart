@@ -20,6 +20,7 @@ import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 class EntryListPage extends ConsumerStatefulWidget {
   final Chapter? chapter;
@@ -67,6 +68,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   final conversionService = ConversionService();
   final cacheService = CacheService();
   final tagService = TagService();
+  final userSetting = UserService().getUserSettingFromCache();
 
   void updateHaveUpdated(bool value) => setState(() => haveUpdated = value);
 
@@ -106,6 +108,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     setState(() {});
   }
 
+
   void loadSortSetting() async {
     tags = tagService.getAllTags();
     selectedTags = List.generate(tags.length, (index) => false);
@@ -126,8 +129,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     setState(() {});
   }
 
+  //needs change
   void deleteChapter() async {
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -140,7 +143,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           ),
           TextButton(
             onPressed: () async {
-              final status = await ChapterService().deleteChapter(chapter.id);
+              bool status;
+              if(userSetting!.encryptionMode == 'local') status = await cacheService.deleteChapterFromCache(chapter.id);
+              else status = await chapterService.deleteChapter(chapter.id);
+
               if(status) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter deleted successfully')));
                 Navigator.pop(context, true); 
@@ -153,17 +159,23 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           ),
         ],
       )
-    );
-
-    
+    );    
   }
 
+  //needs change
   void updateChapter() async {
-    final newChapter = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate).toMap());
-    if(newChapter["_id"] != null) {
+    bool status;
+    if(userSetting!.encryptionMode == 'local'){
+      final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate);
+      status = await cacheService.updateChapterInCache(chapter.id, newChapter.toMap());
+      chapter = newChapter;
+    }
+    else status = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate).toMap());
+
+    if(status == true) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
-      fetchChaptersAndUpdate(true);
+      if(userSetting!.encryptionMode != 'local') fetchChaptersAndUpdate(true);
     }
     else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error updating chapter')));
   }
@@ -202,7 +214,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
 
   Future<void> fetchChaptersAndUpdate(bool explicit) async {
-    final List<Map<String, dynamic>>? data = await chapterService.getChapters(explicit);
+    final List<Map<String, dynamic>>? data =  await chapterService.getChapters(explicit);
+
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
       chapterBox.put(userId, {"chapters": data});

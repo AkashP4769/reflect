@@ -65,19 +65,19 @@ class ChapterService extends BackendServices {
     }
   }
 
-  Future<Map<String,dynamic>> updateChapter(String chapterId, Map<String, dynamic> chapter) async {
+  Future<bool> updateChapter(String chapterId, Map<String, dynamic> chapter) async {
     try{
       print("sending chapter $chapter");
       final response = await http.post(Uri.parse('$baseUrl/chapters/update/'), body: jsonEncode({"chapter":chapter}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200){
         print("Chapter updated successfully");
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return true;
       }
       print("Error updating chapter at server: ${response.body}");
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return true;
     } catch(e){
       print("Error updating chapter: $e");
-      return {"error":e};
+      return false;
     }
   }
 }
