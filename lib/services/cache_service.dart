@@ -76,6 +76,7 @@ class CacheService{
     final List cachedChapters = cachedData["chapters"] ?? [];
     final updatedChapters = cachedChapters.where((chapter) => chapter['_id'] != chapterId).toList();
     await chapterBox.put(userId, {"chapters": updatedChapters});
+    await entryBox.delete(chapterId);
     return true;
   }
 
@@ -113,15 +114,13 @@ class CacheService{
     entry['_id'] = mongo.ObjectId().oid;
 
 
-    if(cachedData == null){
-      await entryBox.put(chapterId, [entry]);
-      return true;
+    if(cachedData == null) await entryBox.put(chapterId, [entry]);
+    else{
+      final List cachedEntries = cachedData as List;
+      cachedEntries.add(entry);
+      await entryBox.put(chapterId, cachedEntries);
     }
-
-    final List cachedEntries = cachedData as List;
-    cachedEntries.add(entry);
-    await entryBox.put(chapterId, cachedEntries);
-
+    
     final tagService = TagService();
     final entryTags = tagService.parseTagFromEntryData([entry]);
     final currentTags = tagService.getAllTags();
@@ -129,6 +128,7 @@ class CacheService{
     tagService.updateTags(tags);
 
     //update entrycount 
+    print("updating entry count function");
     updateChapterEntryCount(chapterId, 0, 1);
 
     return true;
@@ -195,7 +195,12 @@ class CacheService{
         break;
       }
     }
-    cachedChapters[index]['entryCount'] += (count + incrementBy);
+    int entryCount = cachedChapters[index]['entryCount'];
+    entryCount += incrementBy;
+    cachedChapters[index]['entryCount'] = entryCount;
+
+    print("updating entry count to $entryCount");
+
     await chapterBox.put(userId, {"chapters": cachedChapters});
   }
   
