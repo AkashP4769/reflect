@@ -97,4 +97,20 @@ class ChapterService extends BackendServices {
       return false;
     }
   }
+
+  Future<bool> exportAll() async {
+    try{
+      print("Exporting chapters");
+      final response = await http.post(Uri.parse('$baseUrl/chapters/export/'), body: jsonEncode({"chapters":CacheService().exportFromCache(user!.uid), "uid": {user!.uid}}), headers: {'Content-Type': 'application/json'});
+      if(response.statusCode == 200){
+        print("Exporting chapters");
+        return true;
+      }
+      print("Error exporting chapters at server: ${response.body}");
+      return false;
+    } catch(e){
+      print("Error exporting chapters: $e");
+      return false;
+    }
+  }
 }

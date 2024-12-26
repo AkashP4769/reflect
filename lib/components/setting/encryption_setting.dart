@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/setting/setting_container.dart';
+import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/user_service.dart';
 
@@ -26,6 +27,11 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
 
   void importAll() async {
     await ChapterService().importAll();
+  }
+
+  void exportAll() async {
+    print("hello");
+    await ChapterService().exportAll();
   }
 
   @override
@@ -71,6 +77,8 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
           Row(
             children: [
               Expanded(child: ElevatedButton(onPressed: importAll, child: Text("Import All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
+              SizedBox(width: 20),
+              Expanded(child: ElevatedButton(onPressed: exportAll, child: Text("Export All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
             ],
           )
         ],
