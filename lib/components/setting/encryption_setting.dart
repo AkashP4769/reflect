@@ -16,6 +16,19 @@ class EncryptionSetting extends StatefulWidget {
 
 class _EncryptionSettingState extends State<EncryptionSetting> {
   final UserService userService = UserService();
+  late String selectedSave;
+  final servers = {
+    'Local': 'local',
+    'Cloud Encrypted': 'encrypted',
+    'Cloud Unencrypted': 'unencrypted'
+  };
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +37,8 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Encryption", style: widget.themeData.textTheme.titleMedium),
-          Switch(
+          Text("Save Location", style: widget.themeData.textTheme.titleMedium),
+          /*Switch(
             value: (widget.encryptionMode == 'unencrypted') ? false : true,
             activeColor: widget.themeData.colorScheme.primary,
             inactiveThumbColor: widget.themeData.colorScheme.secondary, 
@@ -33,7 +46,37 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
               await userService.updateEncryptionMode(value ? 'encrypted' : 'unencrypted');
               widget.refreshPage();
             }
-        )
+          )*/
+          Theme(
+            data: widget.themeData,
+            child: DropdownMenu<String?>(
+              label: Text('Save Location', style: widget.themeData.textTheme.titleSmall),
+              initialSelection: widget.encryptionMode,
+              menuStyle: MenuStyle(
+                backgroundColor: WidgetStateProperty.all(widget.themeData.colorScheme.surface),
+              ),
+              textStyle: widget.themeData.textTheme.bodyMedium,
+              
+              dropdownMenuEntries: [
+                DropdownMenuEntry(
+                  value: servers['Local'],
+                  label:  'Local',
+                ),
+                DropdownMenuEntry(
+                  value: servers['Cloud Encrypted'],
+                  label:  'Cloud Encrypted'
+                ),
+                DropdownMenuEntry(
+                  value: servers['Cloud Unencrypted'],
+                  label:  'Cloud Unencrypted'
+                ),
+              ],
+              onSelected: (String? value) async {
+                await userService.updateEncryptionMode(value!);
+                widget.refreshPage();
+              },
+            ),
+          )
         ],
       ),
     );
