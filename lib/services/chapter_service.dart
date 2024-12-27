@@ -101,7 +101,8 @@ class ChapterService extends BackendServices {
   Future<bool> exportAll() async {
     try{
       print("Exporting chapters");
-      final response = await http.post(Uri.parse('$baseUrl/chapters/export/'), body: jsonEncode({"chapters":CacheService().exportFromCache(user!.uid), "uid": {user!.uid}}), headers: {'Content-Type': 'application/json'});
+      //Error: This expression has type 'void' and can't be used.
+      final response = await http.post(Uri.parse('$baseUrl/chapters/export/'), body: jsonEncode({"chapters":CacheService().exportFromCache(user!.uid), "uid": user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200){
         print("Exporting chapters");
         return true;

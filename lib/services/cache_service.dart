@@ -217,13 +217,14 @@ class CacheService{
     chapterBox.put(uid, {"chapters": chapters});
   }
 
-  void exportFromCache(String uid){
+  List<Map<String, dynamic>> exportFromCache(String uid){
     final cachedData = chapterBox.get(uid);
-    if(cachedData == null) return;
+    if(cachedData == null) return [];
 
     final List cachedChapters = cachedData["chapters"] ?? [];
     List<Map<String, dynamic>> chaptersData = [];
-    for(var chapter in cachedChapters){
+    for(var _chapter in cachedChapters){
+      final chapter = Map<String, dynamic>.from(_chapter as Map);
       final chapterId = chapter['_id'];
       final entries = entryBox.get(chapterId);
       chapter['entries'] = entries;
@@ -231,6 +232,8 @@ class CacheService{
     }
 
     print(chaptersData);
+    return chaptersData;
   }
+  
   
 }
