@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/setting/setting_container.dart';
@@ -25,26 +27,104 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     'Cloud Unencrypted': 'unencrypted'
   };
 
-  void importAll() async {
-    final status = await ChapterService().importAll();
-    if(status) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Imported successfully")));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Import failed")));
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedSave = widget.encryptionMode;
+  }
+
+  void changeServer(String value) async {
+    final result = await showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        print("Selected server2: $value");
+        return AlertDialog(
+          title: Text("Change server"),
+          content: Text(value == 'local' ? "This will change savepoint to your device" : "This will enable realtime sync with cloud"),
+          actions: [
+            TextButton(onPressed: (){Navigator.pop(context, false);}, child: Text("Cancel")),
+            TextButton(onPressed: () async {
+              
+              Navigator.pop(context, true);
+            }, child: Text("Proceed")),
+          ],
+        );
+      }
+    );
+
+    if(result == true) {
+      selectedSave = value;
+      await userService.updateEncryptionMode(value!);
+      widget.refreshPage();
     }
+  }
+
+  void importAll() async {
+    showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Row(
+            children: [
+              Text("Import All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
+              SizedBox(width: 10,),
+              Icon(Icons.download_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+            ],
+          ),
+          content: Text("This will replace your local entries with cloud. Are you sure you want to proceed?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+            TextButton(onPressed: () async {
+              final status = await ChapterService().importAll();
+              if(status) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Imported successfully")));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Import failed")));
+              }
+              Navigator.pop(context);
+            }, child: Text("Proceed")),
+          ],
+        );
+      }
+    );
   }
 
   void exportAll() async {
-    final status = await ChapterService().exportAll();
-    if(status) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Exported successfully")));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Export failed")));
-    }
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Text("Export All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
+              SizedBox(width: 10,),
+              Icon(Icons.upload_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+            ],
+          ),
+          content: Text("This will replace your local entries to the cloud. Are you sure you want to proceed?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+            TextButton(onPressed: () async {
+              final status = await ChapterService().exportAll();
+              if(status) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Exported successfully")));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Export failed")));
+              }
+              Navigator.pop(context);
+            }, child: Text("Proceed")),
+          ],
+        );
+      }
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
+    print("Encryption mode: ${widget.encryptionMode}");
+    final initialValue = widget.encryptionMode;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,12 +141,12 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
                 data: widget.themeData,
                 child: DropdownMenu<String?>(
                   label: Text('Save Location', style: widget.themeData.textTheme.titleSmall),
-                  initialSelection: widget.encryptionMode,
+                  initialSelection: selectedSave,
                   menuStyle: MenuStyle(
                     backgroundColor: WidgetStateProperty.all(widget.themeData.colorScheme.surface),
                   ),
                   textStyle: widget.themeData.textTheme.bodyMedium,
-                  
+          
                   dropdownMenuEntries: [
                     DropdownMenuEntry(
                       value: servers['Local'],
@@ -83,11 +163,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
                     ),
                   ],
                   onSelected: (String? value) async {
-                    //show dialog box to confirm
-                    
-
-                    await userService.updateEncryptionMode(value!);
-                    widget.refreshPage();
+                    changeServer(value!);
                   },
                 ),
               ),
@@ -105,7 +181,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
             children: [
               Text("• Import/Export Data", style: widget.themeData.textTheme.titleMedium),
               SizedBox(height: 10),
-              Text("Import will save your local entries to the cloud. Export will save your cloud entries to your local device.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
+              Text("Export will replace your local entries to the cloud. Import will copy your cloud entries to your local device.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
               SizedBox(height: 20),
               Row(
                 children: [

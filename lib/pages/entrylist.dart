@@ -94,7 +94,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   void toggleEdit() => setState(() => isEditing = !isEditing);
-  void toggleSortSetting() => setState(() => isSortSettingVisible = !isSortSettingVisible);
+  void toggleSortSetting() => setState(() {
+    isSortSettingVisible = !isSortSettingVisible;
+    Navigator.pop(context);
+  });
+
   void toggleGroupedEntries() => setState(() {
     isGroupedEntries = !isGroupedEntries;
     conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);

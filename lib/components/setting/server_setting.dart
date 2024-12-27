@@ -64,8 +64,8 @@ class _ServerSettingState extends State<ServerSetting> {
                   label:  'AWS'
                 ),
               ],
-              onSelected: (String? value) {
-                settingBox.put('baseUrl', value);
+              onSelected: (String? value) async {
+                await settingBox.put('baseUrl', value);
               },
             ),
           )
