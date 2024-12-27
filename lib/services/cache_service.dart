@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:reflect/models/entry.dart';
+import 'package:reflect/models/tag.dart';
 import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
@@ -207,12 +208,21 @@ class CacheService{
   void importToCache(String uid, List<Map<String, dynamic>> chaptersData){
     List<Map<String, dynamic>> chapters = [];
     List<Map<String, dynamic>> entries = [];
+    List<Tag> tags = [];
+    TagService tagService = TagService();
 
     for(var chapter in chaptersData){
       entryBox.put(chapter['_id'], chapter['entries']);
+      tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
+
       chapter.remove("entries");
       chapters.add(chapter);
+  
     }
+
+    tags = tags.toSet().toList();
+    //print("tags ${tags.toString()}");
+    tagService.updateTags(tags);
 
     chapterBox.put(uid, {"chapters": chapters});
   }

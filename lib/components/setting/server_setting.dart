@@ -38,7 +38,7 @@ class _ServerSettingState extends State<ServerSetting> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Server', style: themeData.textTheme.titleMedium),
+          Text('• Server', style: themeData.textTheme.titleMedium),
           const SizedBox(height: 20),
           Theme(
             data: themeData,

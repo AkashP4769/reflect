@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
 import 'package:reflect/components/setting/device_setting.dart';
-import 'package:reflect/components/setting/encryption_setting.dart';
+import 'package:reflect/components/setting/save_setting.dart';
 import 'package:reflect/components/setting/keys_component.dart';
 import 'package:reflect/components/setting/server_setting.dart';
 import 'package:reflect/main.dart';
@@ -29,7 +29,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     }
 
     if(mounted) setState(() {});
-    print(userSetting.toString());
+    //print(userSetting.toString());
     print("refreshing pge");
   }
 
@@ -76,7 +76,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 if(userSetting != null && userSetting!.encryptionMode == 'encrypted') KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.3.2" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.0" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

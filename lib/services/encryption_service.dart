@@ -150,6 +150,8 @@ class EncryptionService {
 
   //encrpt symmetric key using RSA
   Future<String> encryptSymKey(Map<String, String> publicKey ) async {
+    if(publicKey['modulus'] == 'null' || publicKey['exponent'] == 'null') return 'null';
+
     final key = getSymmetricKey();
     final modulus = BigInt.parse(publicKey['modulus']!);
     final exponent = BigInt.parse(publicKey['exponent']!);

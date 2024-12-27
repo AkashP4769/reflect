@@ -46,7 +46,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Align(alignment: Alignment.centerLeft, child: Text("Devices", style: themeData.textTheme.titleMedium)),
+          Align(alignment: Alignment.centerLeft, child: Text("• Devices", style: themeData.textTheme.titleMedium)),
           ListView.builder(
             shrinkWrap: true,
             clipBehavior: Clip.none,
@@ -73,7 +73,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
             },
           ),
           if(newDevices.isNotEmpty) const SizedBox(height: 20),
-          if(newDevices.isNotEmpty) Align(alignment: Alignment.centerLeft, child: Text("New Devices Login", style: themeData.textTheme.titleMedium)),
+          if(newDevices.isNotEmpty) Align(alignment: Alignment.centerLeft, child: Text("• New Devices Login", style: themeData.textTheme.titleMedium)),
           if(newDevices.isNotEmpty) ListView.builder(
             shrinkWrap: true,
             clipBehavior: Clip.none,
