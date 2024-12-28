@@ -19,9 +19,9 @@ class AuthService{
       print("signed in on google");
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
 
-      //final authResponse = await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
-      //return authResponse;
-      return {"code": 0, "message": "Success"};
+      final authResponse = await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
+      return authResponse;
+      //return {"code": 0, "message": "Success"};
     }
     catch(e){
       print("Error at signInWithGoogle(): $e");
