@@ -32,8 +32,8 @@ class _AuthPageState extends State<AuthPage> {
     loadAuthPermission();
   }
 
-  void saveAuthPermission() async {
-    settingBox.put('authPermission', authPermission);
+  void saveAuthPermission(bool authP) async {
+    settingBox.put('authPermission', authP);
   }
 
   void loadAuthPermission() async {
@@ -50,7 +50,7 @@ class _AuthPageState extends State<AuthPage> {
     final authResponse = await AuthService.signInWithGoogle();
     if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] != 'encrypted'){
       authPermission = true;
-      saveAuthPermission();
+      saveAuthPermission(true);
     }
 
     print("authPermission changed: $authPermission");

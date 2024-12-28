@@ -10,6 +10,7 @@ import 'package:reflect/components/journal/chapter_sort_setting.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/pages/entrylist.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   final TimestampService timestampService = TimestampService();
   final CacheService cacheService = CacheService();
   final ConversionService conversionService = ConversionService();
-  final userSetting = UserService().getUserSettingFromCache();
+  UserSetting userSetting = UserService().getUserSettingFromCache();
 
   List<Chapter> chapters = [];
 
@@ -114,6 +115,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     loadChaptersFromCache();
     fetchChapters(false);
   }

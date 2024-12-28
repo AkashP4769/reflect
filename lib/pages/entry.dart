@@ -47,7 +47,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   EntryService entryService = EntryService();
   CacheService cacheService = CacheService();
-  UserSetting userSetting = UserService().getUserSettingFromCache();
+  late UserSetting userSetting;
   List<Tag> entryTags = [];
 
   @override
@@ -59,6 +59,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     contentFocusNode = FocusNode();
     //panelController = SlidingUpPanelController();
     scrollController = ScrollController();
+
+    getUserSetting();
 
     if(widget.entry.tags != null){
       for(var tag in widget.entry.tags!) {
@@ -107,6 +109,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         setState(() {});
       }
     });
+  }
+
+  void getUserSetting() async {
+    UserSetting? _userSetting = await UserService().getUserSettingFromCache();
+    if(_userSetting == null) _userSetting = await UserService().getUserSetting();
+    userSetting = _userSetting;
+    if(mounted) setState(() {});
   }
 
   void _scrollToBottom() {
