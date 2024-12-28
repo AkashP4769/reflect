@@ -2,6 +2,7 @@ import 'dart:convert'; // For JSON serialization/deserialization
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:conduit_password_hash/pbkdf2.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -57,7 +58,7 @@ class EncryptionService {
       print('Error fetching device details: $e');
     }
 
-    final rsaKeyPairs = generateSaveAndReturnRSAKeys();
+    /*final rsaKeyPairs = generateSaveAndReturnRSAKeys();
     final encryptedSymKey;
     if(createSymKey){
       generateAndSaveSymmetricKey();
@@ -65,21 +66,35 @@ class EncryptionService {
     }
     else encryptedSymKey = '';
 
-    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: rsaKeyPairs['publicKey']!, encryptedKey: encryptedSymKey);
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: rsaKeyPairs['publicKey']!, encryptedKey: encryptedSymKey);*/
     //final device = Device(deviceId: "44444", deviceName: "IPhone 14", deviceType: "Android", publicKey: 'adfsads', encryptedKey: '');
+
+    Device device = Device(deviceId: await getDeviceID(), deviceName: deviceName, deviceType: deviceType, publicKey: {}, encryptedKey: '');
     return device;
   }
 
-  static Uint8List generateSymmetricKey() {
+  String generateSalt() {
+    final random = Random.secure();
+    return base64Encode(List<int>.generate(32, (_) => random.nextInt(256)));
+  }
+
+  Uint8List generateSymmetricKey(String password) {
+    final String salt = generateSalt();
+    final pbkdf2 = PBKDF2();
+    final key = pbkdf2.generateKey(password, salt, 10000, 32); // 256-bit key
+    return Uint8List.fromList(key);
+  }
+
+  /*static Uint8List generateSymmetricKey() {
     final random = Random.secure();
     // Generate a list of 32 random bytes (256-bit key)
     final keyBytes = List<int>.generate(32, (_) => random.nextInt(256));
     return Uint8List.fromList(keyBytes);
-  }
+  }*/
 
-  void generateAndSaveSymmetricKey(){
+  void generateAndSaveSymmetricKey(String password){
     const secureStorage = FlutterSecureStorage();
-    final key = generateSymmetricKey();
+    final key = generateSymmetricKey(password);
     final keyString = base64Encode(key);
     secureStorage.write(key: '${uid}#symmetricKey', value: keyString);
   }
@@ -177,36 +192,70 @@ class EncryptionService {
     return base64Encode(rsaEngine.process(ciphertext));
   }
 
-  void encryptData(Map<String, dynamic> nestedMap, Uint8List keyBytes) {
+  String encryptNestedData(Map<String, dynamic> nestedMap, Uint8List keyBytes) {
     final key = encrypt.Key(keyBytes);
-    final iv = encrypt.IV.fromLength(16);
+    final iv = encrypt.IV.fromSecureRandom(16); // Generate a random IV
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
     // Convert the nested map to a JSON string
     final jsonString = jsonEncode(nestedMap);
-
     // Encrypt the JSON string
     final encryptedData = encrypter.encrypt(jsonString, iv: iv);
-    print(encryptedData.base64); // Store this encrypted data in the backend
+
+    // Combine the IV and ciphertext (Base64 encoded)
+    final combined = base64.encode(iv.bytes + encryptedData.bytes);
+    return combined; // Return the combined IV and ciphertext
+  }
+
+  String encryptData(String data, Uint8List keyBytes) {
+    final key = encrypt.Key(keyBytes);
+    final iv = encrypt.IV.fromSecureRandom(16); // Generate a random IV
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    // Encrypt the data
+    final encryptedData = encrypter.encrypt(data, iv: iv);
+
+    // Combine the IV and ciphertext (Base64 encoded)
+    final combined = base64.encode(iv.bytes + encryptedData.bytes);
+    return combined; // Return the combined IV and ciphertext
   }
 
   // Decryption Function
-  void decryptData(String encryptedData, Uint8List keyBytes) {
+  Map<String, dynamic> decryptNestedData(String encryptedData, Uint8List keyBytes) {
     final key = encrypt.Key(keyBytes);
-    final iv = encrypt.IV.fromLength(16);
+
+    final combined = base64.decode(encryptedData);
+    final iv = encrypt.IV(combined.sublist(0, 16));
+    final ciphertext = combined.sublist(16);
+    
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
     // Decrypt the encrypted string
-    final decryptedData = encrypter.decrypt64(encryptedData, iv: iv);
+    final decryptedData = encrypter.decrypt64(base64Encode(ciphertext), iv: iv);
 
     // Convert the decrypted string back into a nested map
     final nestedMap = jsonDecode(decryptedData) as Map<String, dynamic>;
-    print(nestedMap); // Display the nested map to the user
+    return nestedMap; // Display the nested map to the user
   }
 
-  /*Uint8List deriveKey(String password, String salt) {
-    final pbkdf2 = new PBKDF2();
-    final key = pbkdf2.generateKey(password, salt, 10000, 32); // 256-bit key
-    return Uint8List.fromList(key);
-  }*/
+  String decryptData(String encryptedData, Uint8List keyBytes) {
+    final key = encrypt.Key(keyBytes);
+    // Decode the combined data
+    final combined = base64.decode(encryptedData);
+
+    // Extract the IV and ciphertext
+    final iv = encrypt.IV(combined.sublist(0, 16));
+    final ciphertext = combined.sublist(16);
+
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    // Decrypt the ciphertext
+    final decryptedData = encrypter.decrypt(
+      encrypt.Encrypted(ciphertext),
+      iv: iv,
+    );
+
+    return decryptedData; // Return the decrypted string
+  }
+
 }

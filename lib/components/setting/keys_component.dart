@@ -14,18 +14,30 @@ class KeyComponent extends StatefulWidget {
 }
 
 class _KeyComponentState extends State<KeyComponent> {
-  Map<String, Map<String, String>> rsaKeys = {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
-  String? symmetricKey;
-  bool toggleEncryption = false;
+  //Map<String, Map<String, String>> rsaKeys = {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
+  Uint8List symmetricKey = Uint8List(0);
+  String data = "my name is omawea";
+  Map<String, dynamic> nestedData = {
+    'name': 'omawea',
+    'age': 20,
+    'address': {
+      'street': '1234',
+      'city': 'lagos',
+      'state': 'lagos'
+    }
+  };
+  String nestedEnc = 'null';
+
+  bool toggleEncryption = true;
+  bool toggleNestedEnc = true;
   final encryptionService = EncryptionService();
 
-  void getKeys() async {
+  /*void getKeys() async {
     //encryptionService.generateAndSaveSymmetricKey();
     final sk = await encryptionService.getSymmetricKey();
     //get string from Uint8List
     if(sk != null) symmetricKey = base64Encode(sk);
     else symmetricKey = "null";
-
     rsaKeys = await encryptionService.getRSAKeys();
     //rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
     setState(() {});
@@ -41,16 +53,44 @@ class _KeyComponentState extends State<KeyComponent> {
     symmetricKey = await encryptionService.decryptSymKey(symmetricKey!);
     toggleEncryption = !toggleEncryption;
     setState(() {});
+  }*/
+
+  void getKeys() async {
+    symmetricKey = encryptionService.generateSymmetricKey("abcd");
+    setState(() {});
+  }
+
+  void encryptData() async {
+    data = await encryptionService.encryptData(data, symmetricKey);
+    toggleEncryption = !toggleEncryption;
+    setState(() {});
+  }
+
+  void decryptData() async {
+    data = await encryptionService.decryptData(data, symmetricKey);
+    toggleEncryption = !toggleEncryption;
+    setState(() {});
+  }
+
+  void encryptNestedData() {
+    nestedEnc = encryptionService.encryptNestedData(nestedData, symmetricKey);
+    nestedData = {};
+    toggleNestedEnc = !toggleNestedEnc;
+    setState(() {});
+  }
+
+  void decryptNestedData() {
+    nestedData = encryptionService.decryptNestedData(nestedEnc, symmetricKey);
+    toggleNestedEnc = !toggleNestedEnc;
+    setState(() {});
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getKeys();
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return SettingContainer(
@@ -58,11 +98,21 @@ class _KeyComponentState extends State<KeyComponent> {
       child: Center(
         child: Column(
           children: [
-            ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("Encrypt/Decrypt", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
+            ElevatedButton(onPressed: getKeys, child: Text("Generate Symmetric Key", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
+            //ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("Encrypt/Decrypt", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
             SizedBox(height: 20),
-            Text("Symmetric key: $symmetricKey"),
+            Text("Symmetric key: ${base64Encode(symmetricKey)}"),
             //Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
             //Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),
+
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: toggleEncryption == true ? encryptData : decryptData, child: Text("Encrypt/Decrypt Data", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
+            Text(data),
+
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: toggleNestedEnc == true ? encryptNestedData : decryptNestedData, child: Text("Encrypt/Decrypt Nested Data", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
+            Text(jsonEncode(nestedData)),
+            Text(nestedEnc),
 
           ],
         ),

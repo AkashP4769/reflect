@@ -19,14 +19,14 @@ class UserService extends BackendServices {
 
       final body = jsonDecode(response.body);
 
-      if(body['code'] == 0){
-        encryptionService.generateAndSaveSymmetricKey();
+      /*if(body['code'] == 0){
+        //encryptionService.generateAndSaveSymmetricKey();
       }
 
       else if(body['code'] == 4){
         String symKey = await encryptionService.decryptSymKey(body['encryptedKey']);
         encryptionService.saveSymmetricKey(symKey);
-      }
+      }*/
 
       if([0, 2, 3, 5].contains(body['code'])){
         final createSymKey = body['code'] == 0 ? true : false;

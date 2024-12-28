@@ -73,7 +73,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 if(userSetting != null && userSetting!.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting!.primaryDevice, ...userSetting!.devices], refreshPage: getUserSetting, encryptionMode: userSetting!.encryptionMode),
                 
                 const SizedBox(height: 20),
-                if(userSetting != null && userSetting!.encryptionMode == 'encrypted') KeyComponent(themeData: themeData)
+                if(userSetting != null /*&& userSetting!.encryptionMode == 'encrypted'*/) KeyComponent(themeData: themeData)
               ],
             ),
             Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.0" , style: themeData.textTheme.titleSmall))
