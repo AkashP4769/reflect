@@ -22,41 +22,48 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
   final UserService userService = UserService();
   late String selectedSave;
   final servers = {
-    'Local': 'local',
-    'Cloud Encrypted': 'encrypted',
-    'Cloud Unencrypted': 'unencrypted'
+    'local': 'Local',
+    'encrypted': 'Cloud Encrypted',
+    'unencrypted': 'Cloud Unencrypted'
   };
+
+  late TextEditingController controller;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     selectedSave = widget.encryptionMode;
+    controller = TextEditingController(text: widget.encryptionMode);
   }
 
-  void changeServer(String value) async {
-    final result = await showDialog(
-      context: context, 
-      builder: (BuildContext context){
-        print("Selected server2: $value");
+  Future<void> _showConfirmationDialog(String newValue) async {
+    final bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Change server"),
-          content: Text(value == 'local' ? "This will change savepoint to your device" : "This will enable realtime sync with cloud"),
-          actions: [
-            TextButton(onPressed: (){Navigator.pop(context, false);}, child: Text("Cancel")),
-            TextButton(onPressed: () async {
-              
-              Navigator.pop(context, true);
-            }, child: Text("Proceed")),
+          title: const Text('Confirm Selection'),
+          content: Text('Are you sure you want to select "${servers[newValue]}"?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirm'),
+            ),
           ],
         );
-      }
+      },
     );
 
-    if(result == true) {
-      selectedSave = value;
-      await userService.updateEncryptionMode(value!);
+    if (result == true) {
+      await userService.updateEncryptionMode(newValue);
       widget.refreshPage();
+      selectedSave = newValue;
+      setState(() {});
     }
   }
 
@@ -136,39 +143,29 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
               Text("• Save Location", style: widget.themeData.textTheme.titleMedium),
               SizedBox(height: 10),
               Text("Local doesnt require internet connection.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Theme(
                 data: widget.themeData,
-                child: DropdownMenu<String?>(
-                  label: Text('Save Location', style: widget.themeData.textTheme.titleSmall),
-                  initialSelection: selectedSave,
-                  menuStyle: MenuStyle(
-                    backgroundColor: WidgetStateProperty.all(widget.themeData.colorScheme.surface),
-                  ),
-                  textStyle: widget.themeData.textTheme.bodyMedium,
-          
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                      value: servers['Local'],
-                      label:  'Local',
-                    ),
-                    DropdownMenuEntry(
-                      value: servers['Cloud Unencrypted'],
-                      label:  'Cloud Unencrypted'
-                    ),
-                    DropdownMenuEntry(
-                      enabled: false,
-                      value: servers['Cloud Encrypted'],
-                      label:  'Cloud Encrypted (coming soon)'
-                    ),
-                  ],
-                  onSelected: (String? value) async {
-                    changeServer(value!);
+                child: DropdownButtonFormField<String>(
+                  value: selectedSave,
+                  style: widget.themeData.textTheme.bodyMedium,
+                  items: servers.entries.map((server) {
+                    return DropdownMenuItem<String>(
+                      value: server.key,
+                      child: Text(server.value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      _showConfirmationDialog(newValue);
+                    }
                   },
-                ),
+                )
+            
               ),
               SizedBox(height: 10),
               if(widget.encryptionMode == 'local') Text("It's recommended to import/export before changing save location to cloud.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: Colors.redAccent.withOpacity(0.8))),
+              //Theme(data: widget.themeData, child: DropdownWithConfirmation())
             ],
           )
         ),
@@ -195,6 +192,64 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
         ),
         
       ],
+    );
+  }
+}
+
+class DropdownWithConfirmation extends StatefulWidget {
+  const DropdownWithConfirmation({super.key});
+
+  @override
+  State<DropdownWithConfirmation> createState() => _DropdownWithConfirmationState();
+}
+
+class _DropdownWithConfirmationState extends State<DropdownWithConfirmation> {
+  String? currentValue = 'Option 1';
+  final List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  Future<void> _showConfirmationDialog(String newValue) async {
+    final bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Selection'),
+          content: Text('Are you sure you want to select "$newValue"?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      setState(() {
+        currentValue = newValue;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: currentValue,
+      items: options.map((String option) {
+        return DropdownMenuItem<String>(
+          value: option,
+          child: Text(option),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          _showConfirmationDialog(newValue);
+        }
+      },
     );
   }
 }

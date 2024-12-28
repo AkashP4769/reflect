@@ -42,29 +42,17 @@ class _ServerSettingState extends State<ServerSetting> {
           const SizedBox(height: 20),
           Theme(
             data: themeData,
-            child: DropdownMenu<String?>(
-              label: Text('Server', style: themeData.textTheme.titleSmall),
-              initialSelection: selectedServer,
-              menuStyle: MenuStyle(
-                backgroundColor: WidgetStateProperty.all(themeData.colorScheme.surface),
-              ),
-              textStyle: themeData.textTheme.bodyMedium,
+            child: DropdownButtonFormField<String?>(
+              value: selectedServer,
+              style: themeData.textTheme.bodyMedium,
               
-              dropdownMenuEntries: [
-                DropdownMenuEntry(
-                  value: servers['Localhost'],
-                  label:  'Localhost',
-                ),
-                DropdownMenuEntry(
-                  value: servers['Vercel'],
-                  label:  'Vercel'
-                ),
-                DropdownMenuEntry(
-                  value: servers['AWS'],
-                  label:  'AWS'
-                ),
-              ],
-              onSelected: (String? value) async {
+              items: servers.entries.map((server) {
+                return DropdownMenuItem<String>(
+                  value: server.value,
+                  child: Text(server.key),
+                );
+              }).toList(),
+              onChanged: (String? value) async {
                 await settingBox.put('baseUrl', value);
               },
             ),
