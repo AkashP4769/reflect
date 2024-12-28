@@ -13,7 +13,7 @@ class ConversionService {
   Future<Map<String, dynamic>?> getChapterSort() async {
     final sortSetting = await sortBox.get(user!.uid + "#chapter");
     if(sortSetting != null) return Map<String, dynamic>.from(sortSetting);
-    return null;
+    return {'sortMethod': 'alpha', 'isAscending': true};
   }
 
   List<Chapter> sortChapters(List<Chapter> chapters, String sortMethod, bool isAscending){

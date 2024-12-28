@@ -32,28 +32,6 @@ class _KeyComponentState extends State<KeyComponent> {
   bool toggleNestedEnc = true;
   final encryptionService = EncryptionService();
 
-  /*void getKeys() async {
-    //encryptionService.generateAndSaveSymmetricKey();
-    final sk = await encryptionService.getSymmetricKey();
-    //get string from Uint8List
-    if(sk != null) symmetricKey = base64Encode(sk);
-    else symmetricKey = "null";
-    rsaKeys = await encryptionService.getRSAKeys();
-    //rsaKeys = encryptionService.generateSaveAndReturnRSAKeys();
-    setState(() {});
-  }
-
-  void encryptSymKey() async {
-    symmetricKey = await encryptionService.encryptSymKey(rsaKeys['publicKey']!);
-    toggleEncryption = !toggleEncryption;
-    setState(() {});
-  }
-
-  void decryptSymKey() async {
-    symmetricKey = await encryptionService.decryptSymKey(symmetricKey!);
-    toggleEncryption = !toggleEncryption;
-    setState(() {});
-  }*/
 
   void getKeys() async {
     symmetricKey = encryptionService.generateSymmetricKey("abcd");
@@ -81,6 +59,7 @@ class _KeyComponentState extends State<KeyComponent> {
 
   void decryptNestedData() {
     nestedData = encryptionService.decryptNestedData(nestedEnc, symmetricKey);
+    nestedEnc = 'null';
     toggleNestedEnc = !toggleNestedEnc;
     setState(() {});
   }

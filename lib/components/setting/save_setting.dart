@@ -23,8 +23,8 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
   late String selectedSave;
   final servers = {
     'local': 'Local',
+    'unencrypted': 'Cloud',
     'encrypted': 'Cloud Encrypted',
-    'unencrypted': 'Cloud Unencrypted'
   };
 
   late TextEditingController controller;
@@ -142,7 +142,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
             children: [
               Text("• Save Location", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
               SizedBox(height: 10),
-              Text("Local doesnt require internet connection.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
+              Text("Cloud syncs your entries realtime\nLocal doesnt require internet connection.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
               SizedBox(height: 10),
               Theme(
                 data: widget.themeData,

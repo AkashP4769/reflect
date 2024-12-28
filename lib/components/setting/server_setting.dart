@@ -16,7 +16,7 @@ class _ServerSettingState extends State<ServerSetting> {
   final settingBox = Hive.box('settings');
   late String selectedServer;
   final servers = {
-    'Localhost': 'http://192.168.29.226:3000/api',
+    'Localhost': /*'http://192.168.29.226:3000/api'*/ 'http://192.168.18.239:3000/api',
     'Vercel': 'https://reflect-server.vercel.app/api',
     'AWS': 'http://13.233.167.195:3000/api'
   };
@@ -25,7 +25,7 @@ class _ServerSettingState extends State<ServerSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    final String server = settingBox.get('baseUrl', defaultValue: 'http://13.233.167.195:3000/api');
+    final String server = settingBox.get('baseUrl', defaultValue: /*'http://13.233.167.195:3000/api'*/ 'http://192.168.18.239:3000/api');
     selectedServer = server;
   }
 

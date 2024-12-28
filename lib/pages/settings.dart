@@ -76,7 +76,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 if(userSetting != null /*&& userSetting!.encryptionMode == 'encrypted'*/) KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.0" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.1.11" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

@@ -94,8 +94,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
   }
 
   Future<void> fetchChapters(bool explicit) async {
+    loadChaptersFromCache();
     if(userSetting!.encryptionMode == 'local'){
-      loadChaptersFromCache();
       return;
     }
 
@@ -122,6 +122,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     final themeData = ref.watch(themeManagerProvider);
     final _chapters = chapters;
     return RefreshIndicator(
