@@ -46,7 +46,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Align(alignment: Alignment.centerLeft, child: Text("• Devices", style: themeData.textTheme.titleMedium)),
+          Align(alignment: Alignment.centerLeft, child: Text("• Devices", style: themeData.textTheme.titleMedium!.copyWith(color:themeData.colorScheme.primary))),
           ListView.builder(
             shrinkWrap: true,
             clipBehavior: Clip.none,

@@ -140,7 +140,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("• Save Location", style: widget.themeData.textTheme.titleMedium),
+              Text("• Save Location", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
               SizedBox(height: 10),
               Text("Local doesnt require internet connection.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
               SizedBox(height: 10),
@@ -176,7 +176,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("• Import/Export Data", style: widget.themeData.textTheme.titleMedium),
+              Text("• Import/Export Data", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
               SizedBox(height: 10),
               Text("Export will replace your local entries to the cloud. Import will copy your cloud entries to your local device.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
               SizedBox(height: 20),

@@ -38,8 +38,8 @@ class _ServerSettingState extends State<ServerSetting> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('• Server', style: themeData.textTheme.titleMedium),
-          const SizedBox(height: 20),
+          Text('• Server', style: themeData.textTheme.titleMedium!.copyWith(color: themeData.colorScheme.primary)),
+          const SizedBox(height: 10),
           Theme(
             data: themeData,
             child: DropdownButtonFormField<String?>(
