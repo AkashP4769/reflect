@@ -19,11 +19,10 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<SettingsPage> {
-  UserSetting? userSetting;
   UserService userService = UserService();
+  UserSetting userSetting = UserService().getUserSettingFromCache();
 
   void getUserSetting() async {
-    userSetting = await userService.getUserSettingFromCache();
     if(userSetting == null || userSetting!.encryptionMode != 'local'){
       userSetting = await userService.getUserSetting();
     }
@@ -76,7 +75,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 if(userSetting != null /*&& userSetting!.encryptionMode == 'encrypted'*/) KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.2.12" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.4.3.13" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

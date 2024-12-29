@@ -25,8 +25,13 @@ class _ServerSettingState extends State<ServerSetting> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getServer();
+  }
+
+  void getServer(){
     final String server = settingBox.get('baseUrl', defaultValue: 'http://13.233.167.195:3000/api' /*'http://192.168.18.239:3000/api'*/);
     selectedServer = server;
+    setState(() {});
   }
 
   @override

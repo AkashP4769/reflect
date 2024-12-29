@@ -86,6 +86,7 @@ class ChapterService extends BackendServices {
       final response = await http.get(Uri.parse('$baseUrl/chapters/import/?uid=${user!.uid}'));
       if(response.statusCode == 200){
         print("Importing chapters");
+        print(jsonDecode(response.body)['chapters']);
         CacheService().importToCache(user!.uid, List<Map<String, dynamic>>.from(jsonDecode(response.body)['chapters']));
         print("Chapters imported successfully");
         return true;

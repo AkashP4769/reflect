@@ -213,7 +213,7 @@ class CacheService{
 
     for(var chapter in chaptersData){
       entryBox.put(chapter['_id'], chapter['entries']);
-      tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
+      if(chapter['entries'] != null && (chapter['entries'] as List).isNotEmpty) tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
 
       chapter.remove("entries");
       chapters.add(chapter);
