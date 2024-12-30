@@ -18,12 +18,12 @@ class TagService {
     return tagList;
   }
 
-  void updateTags(List<Tag> tags){
+  Future<void> updateTags(List<Tag> tags) async {
     List<Map<String, dynamic>> taglist = [];
     for (var tag in tags) {
       taglist.add(tag.toMap());
     }
-    tagbox.put(user!.uid, taglist);
+    await tagbox.put(user!.uid, taglist);
   }
 
   List<Tag> parseTagFromEntryData(List<Map<String, dynamic>> entryData){
@@ -39,11 +39,11 @@ class TagService {
     return tagData;
   }
 
-  void updateTagFromEntryData(List<Tag> tags){
+  Future<void> updateTagFromEntryData(List<Tag> tags) async {
     List<Map<String, dynamic>> taglist = [];
     for (var tag in tags) {
       taglist.add(tag.toMap());
     }
-    tagbox.put(user!.uid, taglist);
+    await tagbox.put(user!.uid, taglist);
   }
 }

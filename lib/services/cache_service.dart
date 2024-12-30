@@ -205,14 +205,14 @@ class CacheService{
     await chapterBox.put(userId, {"chapters": cachedChapters});
   }
 
-  void importToCache(String uid, List<Map<String, dynamic>> chaptersData){
+  Future<void> importToCache(String uid, List<Map<String, dynamic>> chaptersData) async {
     List<Map<String, dynamic>> chapters = [];
     List<Map<String, dynamic>> entries = [];
     List<Tag> tags = [];
     TagService tagService = TagService();
 
     for(var chapter in chaptersData){
-      entryBox.put(chapter['_id'], chapter['entries']);
+      await entryBox.put(chapter['_id'], chapter['entries']);
       if(chapter['entries'] != null && (chapter['entries'] as List).isNotEmpty) tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
 
       chapter.remove("entries");
@@ -241,7 +241,7 @@ class CacheService{
       chaptersData.add(chapter);
     }
 
-    print(chaptersData);
+    //print(chaptersData);
     return chaptersData;
   }
   

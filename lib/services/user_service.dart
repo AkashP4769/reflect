@@ -18,8 +18,7 @@ class UserService extends BackendServices {
       }), headers: {'Content-Type': 'application/json'});
 
       final body = jsonDecode(response.body);
-      await getUserSetting();
-
+      
       /*if(body['code'] == 0){
         //encryptionService.generateAndSaveSymmetricKey();
       }
@@ -35,7 +34,7 @@ class UserService extends BackendServices {
         await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});
       }
 
-      
+      await getUserSetting();
 
       return body;
     } catch (e) {

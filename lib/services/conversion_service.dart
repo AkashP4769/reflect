@@ -6,8 +6,8 @@ class ConversionService {
   final LazyBox sortBox = Hive.lazyBox('sorts');
   final User? user = FirebaseAuth.instance.currentUser;
 
-  void saveChapterSort(String sortMethod, bool isAscending){
-    sortBox.put(user!.uid + "#chapter", {'sortMethod': sortMethod, 'isAscending': isAscending});
+  void saveChapterSort(String sortMethod, bool isAscending) async {
+    await sortBox.put(user!.uid + "#chapter", {'sortMethod': sortMethod, 'isAscending': isAscending});
   }
 
   Future<Map<String, dynamic>?> getChapterSort() async {
@@ -33,8 +33,8 @@ class ConversionService {
     return chapters;
   }
 
-  void saveEntrySort(String sortMethod, bool isAscending, bool isGroupedEntries){
-    sortBox.put(user!.uid + "#entry", {'sortMethod': sortMethod, 'isAscending': isAscending, 'isGroupedEntries': isGroupedEntries});
+  void saveEntrySort(String sortMethod, bool isAscending, bool isGroupedEntries) async {
+    await sortBox.put(user!.uid + "#entry", {'sortMethod': sortMethod, 'isAscending': isAscending, 'isGroupedEntries': isGroupedEntries});
   }
 
   Future<Map<String, dynamic>?> getEntrySort() async {
