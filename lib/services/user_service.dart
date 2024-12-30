@@ -100,11 +100,14 @@ class UserService extends BackendServices {
 
   Future<UserSetting> getUserSetting() async {
     try{
+      UserSetting? oldSetting = UserSetting.fromMap(jsonDecode(settingBox.get('${user!.uid}#userSetting')));
       final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'),);
       print(jsonDecode(response.body));
-      final userSetting = UserSetting.fromMap(jsonDecode(response.body));
-      print("fetched userSetting: ${userSetting.encryptionMode}");
-      await settingBox.put('${user!.uid}#userSetting', response.body);
+      
+      final UserSetting userSetting = UserSetting.fromMap(jsonDecode(response.body));
+      if(oldSetting == null) userSetting.encryptionMode = 'unencrypted';
+
+      await settingBox.put('${user!.uid}#userSetting', jsonEncode(userSetting.toMap()));
       return userSetting;
     } catch(e){
       print("Error at getUserSetting(): $e");

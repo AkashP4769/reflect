@@ -11,7 +11,7 @@ class UserSetting {
   final String email;
   final Device primaryDevice;
   final List<Device> devices;
-  final String encryptionMode;
+  String encryptionMode;
 
   UserSetting({
     required this.uid,
