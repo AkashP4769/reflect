@@ -75,6 +75,7 @@ class UserService extends BackendServices {
 
   Future<String?> updateEncryptionMode(String encryptionMode) async {
     try{
+      print("setting encryption mode to: $encryptionMode");
       final response = await http.post(Uri.parse('$baseUrl/users/encryptionMode'),
         body: jsonEncode({
           "uid": user!.uid,
@@ -84,9 +85,11 @@ class UserService extends BackendServices {
 
       if(response.statusCode == 200){
         final userSetting = jsonDecode(settingBox.get('${user!.uid}#userSetting'));
-        print("new encryption mode: ${jsonDecode(response.body)['encryptionMode']}");
+        print("new encryption mode: ${jsonDecode(response.body)}");
+
         if(userSetting != null) userSetting['encryptionMode'] = encryptionMode;
-        settingBox.put('${user!.uid}#userSetting', jsonEncode(userSetting));
+
+        await settingBox.put('${user!.uid}#userSetting', jsonEncode(userSetting));
         return jsonDecode(response.body)['encryptionMode'];
       }
       return null;
@@ -101,6 +104,7 @@ class UserService extends BackendServices {
       final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'),);
       print(jsonDecode(response.body));
       final userSetting = UserSetting.fromMap(jsonDecode(response.body));
+      print("fetched userSetting: ${userSetting.encryptionMode}");
       await settingBox.put('${user!.uid}#userSetting', response.body);
       return userSetting;
     } catch(e){

@@ -9,7 +9,7 @@ import 'package:reflect/services/user_service.dart';
 class DeviceSetting extends StatefulWidget {
   final WidgetRef ref;
   final List<Device> devices;
-  final void Function() refreshPage;
+  final void Function(bool explicit) refreshPage;
   final String encryptionMode;
   const DeviceSetting({super.key, required this.ref, required this.devices, required this.refreshPage, required this.encryptionMode});
 
@@ -22,7 +22,7 @@ class _DeviceSettingState extends State<DeviceSetting> {
   
   void handleNewDevice(String deviceId, bool choice, Map<String, String> publicKey) async {
     await userService.handleNewDevice(deviceId, choice, publicKey);
-    widget.refreshPage();
+    widget.refreshPage(true);
   }
 
   @override

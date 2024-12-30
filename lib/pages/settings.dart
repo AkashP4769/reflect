@@ -22,8 +22,8 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   UserService userService = UserService();
   UserSetting userSetting = UserService().getUserSettingFromCache();
 
-  void getUserSetting() async {
-    if(userSetting == null || userSetting!.encryptionMode != 'local'){
+  void getUserSetting(bool explicit) async {
+    if(userSetting == null || userSetting!.encryptionMode != 'local' || explicit){
       userSetting = await userService.getUserSetting();
     }
 
@@ -36,7 +36,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserSetting();
+    getUserSetting(false);
   }
 
   @override

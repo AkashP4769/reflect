@@ -10,7 +10,7 @@ import 'package:reflect/services/user_service.dart';
 class EncryptionSetting extends StatefulWidget {
   final ThemeData themeData;
   final String encryptionMode;
-  final void Function() refreshPage;
+  final void Function(bool explicit) refreshPage;
   const EncryptionSetting({super.key, required this.themeData, required this.encryptionMode, required this.refreshPage});
 
 
@@ -61,7 +61,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
 
     if (result == true) {
       await userService.updateEncryptionMode(newValue);
-      widget.refreshPage();
+      widget.refreshPage(true);
       selectedSave = newValue;
       setState(() {});
     }
