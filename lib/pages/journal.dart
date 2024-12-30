@@ -279,6 +279,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     titleController.clear();
     descriptionController.clear();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -387,6 +388,14 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     super.initState();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
+
+    titleController.addListener((){
+      setState(() {});
+    });
+
+    descriptionController.addListener((){
+      setState(() {});
+    });
   }
 
   @override
