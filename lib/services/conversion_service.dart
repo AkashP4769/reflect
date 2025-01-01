@@ -3,7 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/models/chapter.dart';
 
 class ConversionService {
-  final LazyBox sortBox = Hive.lazyBox('sorts');
+  final Box sortBox = Hive.box('sorts');
   final User? user = FirebaseAuth.instance.currentUser;
 
   void saveChapterSort(String sortMethod, bool isAscending) async {

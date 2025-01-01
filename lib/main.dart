@@ -30,7 +30,7 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox('timestamps');
   await Hive.openBox('tags');
-  await Hive.openLazyBox('sorts');
+  await Hive.openBox('sorts');
 
 
   //final timestampBox = Hive.box('timestamps');
