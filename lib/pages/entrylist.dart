@@ -101,6 +101,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
   void toggleGroupedEntries() => setState(() {
     isGroupedEntries = !isGroupedEntries;
+    print("saving grouped $isGroupedEntries");
     conversionService.saveEntrySort(sortMethod, isAscending, isGroupedEntries);
   });
 
@@ -123,6 +124,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       isAscending = sortSetting['isAscending'];
       isGroupedEntries = sortSetting['isGroupedEntries'];
     }
+    setState(() {});
     print('load Sorting $sortMethod $isAscending $isGroupedEntries');
   }
 
