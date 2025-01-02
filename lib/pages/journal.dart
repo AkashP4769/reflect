@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/chapter_sort_setting.dart';
@@ -18,6 +22,7 @@ import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 import 'package:reflect/services/user_service.dart';
+import 'package:flip_card/flip_card.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   final String? searchQuery;
@@ -270,14 +275,50 @@ class NewChapter extends ConsumerStatefulWidget {
 class _NewChapterState extends ConsumerState<NewChapter> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
-  final String randomImage = ImageService().getRandomImage();
+  late TextEditingController imageUrlController;
+
+  final FlipCardController controller = FlipCardController();
+  bool flipDirection = false;
+  String imageUrl = ImageService().getRandomImage();
+
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool isImageUrl = true;
 
   
   void _addChapter() {
     if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
-    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [randomImage], DateTime.now());
+    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [imageUrl], DateTime.now());
     titleController.clear();
     descriptionController.clear();
+  }
+
+  //void toggleFlipDirection() => setState(() => flipDirection = !flipDirection);
+
+  void getRandomImage() => setState(() => imageUrl = ImageService().getRandomImage());
+
+  void onEditImage() async {
+    await _pickImage(ImageSource.gallery);
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+
+      if (pickedFile != null) {
+          _image = File(pickedFile.path);
+          isImageUrl = false;
+      } else {
+        print('No image selected.');
+        isImageUrl = true;
+      }
+      setState(() {});
+
+    } catch (e) {
+      print('Error picking image: $e');
+      isImageUrl = true;
+      setState(() {});
+    }
   }
   
 
@@ -300,53 +341,98 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                   const ImageStack(height: 450, width: 320, offset: Offset(3, 0), rotation: -7,),
                   const ImageStack(height: 450, width: 320, offset: Offset(0, 7), rotation: 7,),
                   ImageStack(height: 450, width: 320, 
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 20),
-                          height: 300,
-                          width: 300,
-                          color: Colors.white,
-                          child: CachedNetworkImage(imageUrl: randomImage, fit: BoxFit.cover,),
-                        ),
-                        TextField(
-                          controller: titleController,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                            labelStyle: TextStyle(color: Colors.white),
-                            label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            border: InputBorder.none,
-                            alignLabelWithHint: true
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            height: 300,
+                            width: 300,
+                            color: Colors.white,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if(isImageUrl) CachedNetworkImage(imageUrl: imageUrl, fit: BoxFit.cover,),
+                                if(_image != null) Image.file(_image!, fit: BoxFit.cover),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        onPressed: getRandomImage,
+                                        icon: Icon(Icons.shuffle, color: themeData.colorScheme.tertiary, shadows: [Shadow(color: Colors.grey)],),
+                                      ),
+                                      IconButton(
+                                        onPressed: onEditImage,
+                                        icon: Icon(Icons.edit, color: themeData.colorScheme.tertiary, shadows: [Shadow(color: Colors.grey)],),
+                                      ),
+                                    ]
+                                  )
+                                ),
+                                if(flipDirection) Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: TextField(
+                                    controller: imageUrlController,
+                                    textAlign: TextAlign.center,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    maxLines: 1,
+                                    style: const TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
+                                    decoration: const InputDecoration(
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                      //labelStyle: TextStyle(color: Colors.white, fontSize: 12),
+                                      //label: Center(child: Text("Enter image URL", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
+                                      hintText: "Enter image URL",
+                                      hintStyle: TextStyle(color: Colors.white, fontSize: 12),
+                                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      alignLabelWithHint: true
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        TextField(
-                          controller: descriptionController,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical.center,
-                          maxLines: 3,
-                          style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                            labelStyle: TextStyle(color: Colors.white, fontSize: 12),
-                            label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            alignLabelWithHint: true
+                          TextField(
+                            controller: titleController,
+                            textAlign: TextAlign.center,
+                            textAlignVertical: TextAlignVertical.center,
+                            style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                              labelStyle: TextStyle(color: Colors.white),
+                              label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              border: InputBorder.none,
+                              alignLabelWithHint: true
+                            ),
                           ),
-                        ),
-                      ],
+                          TextField(
+                            controller: descriptionController,
+                            textAlign: TextAlign.center,
+                            textAlignVertical: TextAlignVertical.center,
+                            maxLines: 3,
+                            style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                              labelStyle: TextStyle(color: Colors.white, fontSize: 12),
+                              label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              alignLabelWithHint: true
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    
                 ],
               ),
               const SizedBox(height: 60,),
@@ -388,6 +474,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     super.initState();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
+    imageUrlController = TextEditingController();
 
     titleController.addListener((){
       setState(() {});
@@ -396,12 +483,18 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     descriptionController.addListener((){
       setState(() {});
     });
+
+    imageUrlController.addListener((){
+      imageUrl = imageUrlController.text;
+      setState(() {});
+    });
   }
 
   @override
   void dispose(){
     titleController.dispose();
     descriptionController.dispose();
+    imageUrlController.dispose();
     super.dispose();
   }
 }
