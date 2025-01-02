@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:icon_decoration/icon_decoration.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
@@ -279,23 +280,26 @@ class _NewChapterState extends ConsumerState<NewChapter> {
 
   final FlipCardController controller = FlipCardController();
   bool flipDirection = false;
-  String imageUrl = ImageService().getRandomImage();
+  String? imageUrl = ImageService().getRandomImage();
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
-  bool isImageUrl = true;
+  String imageType = 'url';
 
   
   void _addChapter() {
     if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
-    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), [imageUrl], DateTime.now());
+    widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), imageUrl != null ? [imageUrl!] : null, DateTime.now());
     titleController.clear();
     descriptionController.clear();
   }
 
   //void toggleFlipDirection() => setState(() => flipDirection = !flipDirection);
 
-  void getRandomImage() => setState(() => imageUrl = ImageService().getRandomImage());
+  void getRandomImage() => setState((){
+    imageUrl = ImageService().getRandomImage();
+    imageType = 'url';
+  });
 
   void onEditImage() async {
     await _pickImage(ImageSource.gallery);
@@ -307,18 +311,24 @@ class _NewChapterState extends ConsumerState<NewChapter> {
 
       if (pickedFile != null) {
           _image = File(pickedFile.path);
-          isImageUrl = false;
+          imageType = 'file';
       } else {
         print('No image selected.');
-        isImageUrl = true;
       }
       setState(() {});
 
     } catch (e) {
       print('Error picking image: $e');
-      isImageUrl = true;
+      imageType = 'null';
       setState(() {});
     }
+  }
+
+  void removeSelectedPhoto(){
+    _image = null;
+    imageType = 'null';
+    imageUrl = null;
+    setState(() {});
   }
   
 
@@ -348,24 +358,28 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                             margin: const EdgeInsets.only(top: 20),
                             height: 300,
                             width: 300,
-                            color: Colors.white,
+                            color:  Colors.white,
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                if(isImageUrl) CachedNetworkImage(imageUrl: imageUrl, fit: BoxFit.cover,),
-                                if(_image != null) Image.file(_image!, fit: BoxFit.cover),
+                                if(imageType == 'url' && imageUrl != null) CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover,),
+                                if(imageType =='file' && _image != null) Image.file(_image!, fit: BoxFit.cover),
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
+                                        onPressed: removeSelectedPhoto, 
+                                        icon: DecoratedIcon(icon: Icon(Icons.close, color: themeData.colorScheme.tertiary,), decoration: IconDecoration(border: IconBorder(width: 2)),),
+                                      ),
+                                      IconButton(
                                         onPressed: getRandomImage,
-                                        icon: Icon(Icons.shuffle, color: themeData.colorScheme.tertiary, shadows: [Shadow(color: Colors.grey)],),
+                                        icon: DecoratedIcon(icon: Icon(Icons.shuffle, color: themeData.colorScheme.tertiary), decoration: IconDecoration(border: IconBorder(width: 2)),),
                                       ),
                                       IconButton(
                                         onPressed: onEditImage,
-                                        icon: Icon(Icons.edit, color: themeData.colorScheme.tertiary, shadows: [Shadow(color: Colors.grey)],),
+                                        icon: DecoratedIcon(icon: Icon(Icons.edit, color: themeData.colorScheme.tertiary), decoration: IconDecoration(border: IconBorder(width: 2)),),
                                       ),
                                     ]
                                   )
