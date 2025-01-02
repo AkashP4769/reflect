@@ -35,7 +35,6 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   pointycastle: ^3.9.1
   mongo_dart: ^0.10.3
-  flip_card: ^0.7.0
   image_picker: ^1.1.2
   icon_decoration: ^2.1.0
 

@@ -85,9 +85,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
     if(status) {
       fetchChapters(true);
       toggleCreate();
-      snackBar = SnackBar(content: Text("Chapter created successfully"));
+      snackBar = const SnackBar(content: Text("Chapter created successfully"));
     }
-    else snackBar = SnackBar(content: Text("Error creating chapter"));
+    else snackBar = const SnackBar(content: Text("Error creating chapter"));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
@@ -389,41 +389,19 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                                     children: [
                                       IconButton(
                                         onPressed: removeSelectedPhoto, 
-                                        icon: DecoratedIcon(icon: Icon(Icons.close, color: themeData.colorScheme.tertiary,), decoration: IconDecoration(border: IconBorder(width: 2)),),
+                                        icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
                                       ),
                                       IconButton(
                                         onPressed: getRandomImage,
-                                        icon: DecoratedIcon(icon: Icon(Icons.shuffle, color: themeData.colorScheme.tertiary), decoration: IconDecoration(border: IconBorder(width: 2)),),
+                                        icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
                                       ),
                                       IconButton(
                                         onPressed: onEditImage,
-                                        icon: DecoratedIcon(icon: Icon(Icons.edit, color: themeData.colorScheme.tertiary), decoration: IconDecoration(border: IconBorder(width: 2)),),
+                                        icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
                                       ),
                                     ]
                                   )
                                 ),
-                                if(flipDirection) Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: TextField(
-                                    controller: imageUrlController,
-                                    textAlign: TextAlign.center,
-                                    textAlignVertical: TextAlignVertical.center,
-                                    maxLines: 1,
-                                    style: const TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
-                                    decoration: const InputDecoration(
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                                      //labelStyle: TextStyle(color: Colors.white, fontSize: 12),
-                                      //label: Center(child: Text("Enter image URL", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
-                                      hintText: "Enter image URL",
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 12),
-                                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      alignLabelWithHint: true
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           ),
@@ -492,9 +470,6 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                       child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                     ),
                   ),
-                  Expanded(
-                    child: IconButton(onPressed: uploadImage, icon: Icon(Icons.upload_file, color: themeData.colorScheme.primary,),),
-                  )
                 ],
               )
             ],
