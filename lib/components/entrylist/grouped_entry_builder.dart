@@ -34,7 +34,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   Widget build(BuildContext context) {
     Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     print(_groupedEntries.keys.toString());
-    final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => monthValue[a.key.split(' ')[0]]!.compareTo(monthValue[b.key.split(' ')[0]]!)));
+    final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
