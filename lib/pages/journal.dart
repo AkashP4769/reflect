@@ -287,8 +287,17 @@ class _NewChapterState extends ConsumerState<NewChapter> {
   String imageType = 'url';
 
   
-  void _addChapter() {
+  void _addChapter() async {
     if(titleController.text.isEmpty || descriptionController.text.isEmpty) return;
+
+    String? newImageUrl;
+    if(imageType == 'file'){
+      newImageUrl = await ImageService().uploadImage(_image!);
+      if(newImageUrl == null) return;
+      imageUrl = newImageUrl;
+      setState(() {});
+    }
+
     widget.addChapter(titleController.text.trim(), descriptionController.text.trim(), imageUrl != null ? [imageUrl!] : null, DateTime.now());
     titleController.clear();
     descriptionController.clear();
@@ -329,6 +338,15 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     imageType = 'null';
     imageUrl = null;
     setState(() {});
+  }
+
+  void uploadImage() async {
+    if(imageType == 'file' && _image != null){
+      String? newUrl = await ImageService().uploadImage(_image!);
+      if(newUrl != null) {
+        print("new Image url: "+ newUrl);
+    }
+  }
   }
   
 
@@ -473,6 +491,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                       onPressed: (titleController.text.isEmpty || descriptionController.text.isEmpty) ? null : _addChapter,
                       child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                     ),
+                  ),
+                  Expanded(
+                    child: IconButton(onPressed: uploadImage, icon: Icon(Icons.upload_file, color: themeData.colorScheme.primary,),),
                   )
                 ],
               )

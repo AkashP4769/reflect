@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:reflect/services/backend_services.dart';
+import 'package:http/http.dart' as http;
 
 class ImageService extends BackendServices{
   final List<String> possibleImages = [
@@ -44,5 +48,24 @@ class ImageService extends BackendServices{
 
   String getRandomImage(){
     return possibleImages[DateTime.now().microsecond % possibleImages.length];
+  }
+
+  Future<String?> uploadImage(File image) async {
+    final uri = Uri.parse(baseUrl + '/images/upload'); // Replace with your Node.js endpoint
+    final request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath('image', image.path, filename: image.path.split('/').last));
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        print('Upload successful: $responseData');
+        return jsonDecode(responseData)['imageUrl'];
+      } else {
+        print('Failed to upload: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error uploading file: $e');
+    }
   }
 }
