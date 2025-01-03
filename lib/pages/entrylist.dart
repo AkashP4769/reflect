@@ -175,15 +175,17 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   //needs change
-  void updateChapter() async {
+  void updateChapter(List<String> newImageUrl) async {
     bool status;
 
+    await ImageService().deleteImages(chapter.imageUrl ?? []);
+
     if(userSetting!.encryptionMode == 'local'){
-      final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: chapter.imageUrl);
+      final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: newImageUrl);
       status = await cacheService.updateChapterInCache(chapter.id, newChapter.toMap());
       chapter = newChapter;
     }
-    else status = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: chapter.imageUrl).toMap());
+    else status = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: newImageUrl).toMap());
 
     if(status == true) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter updated successfully')));
@@ -235,7 +237,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   Future<void> fetchChaptersAndUpdate(bool explicit) async {
     final List<Map<String, dynamic>>? data =  await chapterService.getChapters(explicit);
 
-    if(data == null) print('load from cache');
+    if(data == null) print('do nothing');
     else if(data.isNotEmpty) {
       chapterBox.put(userId, {"chapters": data});
 
@@ -332,8 +334,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
               
                   const SizedBox(height: 20),
-                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr,),
-                  if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
+                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter),
+                  //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
                   if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
 

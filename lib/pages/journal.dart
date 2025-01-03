@@ -345,7 +345,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
       if(newUrl != null) {
         print("new Image url: "+ newUrl);
     }
-  }
+    }
   }
   
 

@@ -18,7 +18,7 @@ class ChapterHeader extends StatefulWidget {
   final DateTime date;
   final Function()? showDatePickerr;
   final Function() toggleEdit;
-  final Function() updateChapter;
+  final Function(List<String> imageUrl) updateChapter;
   ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.titleController, required this.descriptionController, required this.date, required this.showDatePickerr, required this.toggleEdit, required this.updateChapter});
 
   @override
@@ -28,11 +28,13 @@ class ChapterHeader extends StatefulWidget {
 class _ChapterHeaderState extends State<ChapterHeader> {
   File? _image;
   late Chapter chapter;
+  List<String> imageUrl = [];
 
   @override
   void initState() {
     super.initState();
     chapter = widget.chapter;
+    imageUrl = chapter.imageUrl ?? [];
   }
 
   final ImagePicker _picker = ImagePicker();
@@ -40,23 +42,28 @@ class _ChapterHeaderState extends State<ChapterHeader> {
   String imageType = 'url';
 
   Future<void> updateChapter() async {
-    uploadImage();
-    widget.updateChapter();
+    List<String> newImageUrl = await uploadImage();
+    widget.updateChapter(newImageUrl);
     widget.toggleEdit();
   }
 
-  Future<void> uploadImage() async {
-    String? newImageUrl;
+  Future<List<String>> uploadImage() async {
+    String? newImageUrl = null;
     if(imageType == 'file'){
       newImageUrl = await ImageService().uploadImage(_image!);
-      if(newImageUrl == null) return;
-      widget.chapter.imageUrl = [newImageUrl];
-      setState(() {});
+      if(newImageUrl == null) return [];
+      imageUrl = [newImageUrl];
+      if(mounted) setState(() {});
     }
+    else if(imageType == 'url'){
+      newImageUrl = imageUrl[0];
+    }
+    return newImageUrl == null ? [] : [newImageUrl];
+
   }
 
-  void getRandomImage() => setState(() async {
-    chapter.imageUrl = [await ImageService().getRandomImage()];
+  void getRandomImage() => setState((){
+    imageUrl = [ImageService().getRandomImage()];
     imageType = 'url';
   });
 
@@ -88,7 +95,7 @@ class _ChapterHeaderState extends State<ChapterHeader> {
   void removeSelectedPhoto(){
     _image = null;
     imageType = 'null';
-    chapter.imageUrl = null;
+    imageUrl = [];
     setState(() {});
   }
 
@@ -109,7 +116,28 @@ class _ChapterHeaderState extends State<ChapterHeader> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if((chapter.imageUrl != null && chapter.imageUrl!.isNotEmpty) || (imageType =='file' && _image != null)) Container(
+          if(widget.isEditing && !(imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && _image != null)) Align(
+            alignment: Alignment.topRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: removeSelectedPhoto, 
+                  icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                ),
+                IconButton(
+                  onPressed: getRandomImage,
+                  icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                ),
+                IconButton(
+                  onPressed: onEditImage,
+                  icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                ),
+              ]
+            )
+          ),
+
+          if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && _image != null)) Container(
             height: 200,
             decoration: BoxDecoration(
               boxShadow: [
@@ -126,10 +154,10 @@ class _ChapterHeaderState extends State<ChapterHeader> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  if(imageType == 'url' && chapter.imageUrl != null) CachedNetworkImage(imageUrl: chapter.imageUrl![0] ?? "", width: double.infinity, height: 200, fit: BoxFit.cover),
+                  if(imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover),
                   if(imageType =='file' && _image != null) Image.file(_image!, fit: BoxFit.cover, height: 200,),
                 
-                  Align(
+                  if(widget.isEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && _image != null))) Align(
                     alignment: Alignment.topRight,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -219,7 +247,7 @@ class _ChapterHeaderState extends State<ChapterHeader> {
           ),
           Divider(color: widget.themeData.colorScheme.onPrimary, thickness: 1, height: 30),
 
-          Padding(
+          if(widget.isEditing) Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
@@ -241,9 +269,7 @@ class _ChapterHeaderState extends State<ChapterHeader> {
                     style: ElevatedButton.styleFrom(
                       elevation: 10,
                     ),
-                    onPressed: (){
-                      
-                    },
+                    onPressed: updateChapter,
                     child: Text("Save", style: widget.themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                   ),
                 )
