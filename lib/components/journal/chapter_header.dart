@@ -17,7 +17,9 @@ class ChapterHeader extends StatefulWidget {
   final TextEditingController descriptionController;
   final DateTime date;
   final Function()? showDatePickerr;
-  ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.titleController, required this.descriptionController, required this.date, required this.showDatePickerr});
+  final Function() toggleEdit;
+  final Function() updateChapter;
+  ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.titleController, required this.descriptionController, required this.date, required this.showDatePickerr, required this.toggleEdit, required this.updateChapter});
 
   @override
   State<ChapterHeader> createState() => _ChapterHeaderState();
@@ -37,15 +39,21 @@ class _ChapterHeaderState extends State<ChapterHeader> {
 
   String imageType = 'url';
 
-  /*Future<void> uploadImage() async {
+  Future<void> updateChapter() async {
+    uploadImage();
+    widget.updateChapter();
+    widget.toggleEdit();
+  }
+
+  Future<void> uploadImage() async {
     String? newImageUrl;
     if(imageType == 'file'){
       newImageUrl = await ImageService().uploadImage(_image!);
       if(newImageUrl == null) return;
       widget.chapter.imageUrl = [newImageUrl];
-      //setState(() {});
+      setState(() {});
     }
-  }*/
+  }
 
   void getRandomImage() => setState(() async {
     chapter.imageUrl = [await ImageService().getRandomImage()];
@@ -211,6 +219,37 @@ class _ChapterHeaderState extends State<ChapterHeader> {
           ),
           Divider(color: widget.themeData.colorScheme.onPrimary, thickness: 1, height: 30),
 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: widget.toggleEdit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.themeData.colorScheme.surface,
+                      elevation: 10
+                    ),
+                    child: Icon(Icons.close, color: widget.themeData.colorScheme.onPrimary,)
+                  ),
+                ),
+                const SizedBox(width: 20,),
+                Expanded(
+                  flex: 4,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 10,
+                    ),
+                    onPressed: (){
+                      
+                    },
+                    child: Text("Save", style: widget.themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
+                  ),
+                )
+              ],
+            ),
+          )
         ],
       ),
     );
