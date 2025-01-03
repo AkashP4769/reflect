@@ -11,7 +11,7 @@ class Chapter {
   final String uid;
   final String title;
   final String description;
-  final List<String>? imageUrl;
+  List<String>? imageUrl;
   final DateTime createdAt;
   int entryCount;
 

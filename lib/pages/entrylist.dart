@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:reflect/components/entrylist/editing_chapter_header.dart';
 import 'package:reflect/components/entrylist/entry_sort_setting.dart';
 import 'package:reflect/components/entrylist/entrylist_appbar.dart';
@@ -174,12 +177,13 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   //needs change
   void updateChapter() async {
     bool status;
+
     if(userSetting!.encryptionMode == 'local'){
-      final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate);
+      final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: chapter.imageUrl);
       status = await cacheService.updateChapterInCache(chapter.id, newChapter.toMap());
       chapter = newChapter;
     }
-    else status = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate).toMap());
+    else status = await chapterService.updateChapter(chapter.id, chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: chapter.imageUrl).toMap());
 
     if(status == true) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter updated successfully')));
