@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -23,7 +22,6 @@ import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 import 'package:reflect/services/user_service.dart';
-import 'package:flip_card/flip_card.dart';
 
 class JournalPage extends ConsumerStatefulWidget {
   final String? searchQuery;
@@ -278,7 +276,6 @@ class _NewChapterState extends ConsumerState<NewChapter> {
   late TextEditingController descriptionController;
   late TextEditingController imageUrlController;
 
-  final FlipCardController controller = FlipCardController();
   bool flipDirection = false;
   String? imageUrl = ImageService().getRandomImage();
 
@@ -328,6 +325,8 @@ class _NewChapterState extends ConsumerState<NewChapter> {
 
     } catch (e) {
       print('Error picking image: $e');
+      SnackBar snackBar = const SnackBar(content: Text("Error picking image"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       imageType = 'null';
       setState(() {});
     }

@@ -18,6 +18,7 @@ import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/conversion_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
+import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 import 'package:reflect/services/user_service.dart';
@@ -150,6 +151,8 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           TextButton(
             onPressed: () async {
               bool status;
+              await ImageService().deleteImages(widget.chapter!.imageUrl ?? []);
+
               if(userSetting!.encryptionMode == 'local') status = await cacheService.deleteChapterFromCache(chapter.id);
               else status = await chapterService.deleteChapter(chapter.id);
 
@@ -165,7 +168,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           ),
         ],
       )
-    );    
+    );
   }
 
   //needs change

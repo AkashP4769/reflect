@@ -68,4 +68,20 @@ class ImageService extends BackendServices{
       print('Error uploading file: $e');
     }
   }
+
+  Future<void> deleteImages(List<String> imageUrl) async {
+    try{
+      if(imageUrl.isEmpty) return;
+      final uri = Uri.parse(baseUrl + '/images/delete'); // Replace with your Node.js endpoint
+      final response = await http.post(uri, body: jsonEncode({'imageUrl': imageUrl}), headers: {'Content-Type': 'application/json'});
+
+      if (response.statusCode == 200) {
+        print('Images deleted');
+      } else {
+        print('Failed to delete images: ${response.body}');
+      }
+    } catch (e) {
+      print('Error deleting images: $e');
+    }
+  }
 }
