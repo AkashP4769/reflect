@@ -184,6 +184,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     bool status;
 
     final List<String> newImageUrl = await uploadImage();
+    await ImageService().deleteImages(chapter.imageUrl ?? []);
     imageType = 'url';
 
     if(userSetting!.encryptionMode == 'local'){

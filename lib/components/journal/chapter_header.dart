@@ -38,7 +38,7 @@ class ChapterHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if(isEditing && !(imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Align(
+          if(isEditing && !((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null))) Align(
             alignment: Alignment.topRight,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -49,7 +49,7 @@ class ChapterHeader extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onEditImage,
-                  icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                  icon: const DecoratedIcon(icon: Icon(Icons.add_photo_alternate_outlined, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
                 ),
               ]
             )
