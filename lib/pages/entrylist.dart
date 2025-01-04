@@ -60,6 +60,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   String sortMethod = 'time';
   bool isAscending = false;
 
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
+  String imageType = 'url';
+  late List<String> imageUrl = widget.chapter!.imageUrl ?? [];
+
 
   final chapterService = ChapterService();
   final chapterBox = Hive.box("chapters");
@@ -175,10 +180,11 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   }
 
   //needs change
-  void updateChapter(List<String> newImageUrl) async {
+  void updateChapter() async {
     bool status;
 
-    await ImageService().deleteImages(chapter.imageUrl ?? []);
+    final List<String> newImageUrl = await uploadImage();
+    imageType = 'url';
 
     if(userSetting!.encryptionMode == 'local'){
       final Chapter newChapter = chapter.copyWith(title: titleController.text.trim(), description: descriptionController.text.trim(), createdAt: chapterDate, imageUrl: newImageUrl);
@@ -237,7 +243,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   Future<void> fetchChaptersAndUpdate(bool explicit) async {
     final List<Map<String, dynamic>>? data =  await chapterService.getChapters(explicit);
 
-    if(data == null) print('do nothing');
+    if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
       chapterBox.put(userId, {"chapters": data});
 
@@ -278,6 +284,86 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
       }
     });
   } 
+
+  Future<void> changeDate() async {
+    return showDatePicker(
+      context: context,
+      initialDate: chapterDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    ).then((selectedDate){
+      if (selectedDate != null) {
+        showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(chapterDate),
+        ).then((selectedTime) {
+          if (selectedTime != null) {
+            DateTime selectedDateTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute,
+            );
+            setState(() {
+              chapterDate = selectedDateTime;
+            }); 
+          }
+        });
+      }
+    });
+  }
+
+  Future<List<String>> uploadImage() async {
+    String? newImageUrl = null;
+    if(imageType == 'file'){
+      newImageUrl = await ImageService().uploadImage(_image!);
+      if(newImageUrl == null) return [];
+      imageUrl = [newImageUrl];
+      setState(() {});
+    }
+    else if(imageType == 'url'){
+      newImageUrl = imageUrl[0];
+    }
+    return newImageUrl == null ? [] : [newImageUrl];
+  }
+
+  void getRandomImage() => setState((){
+    imageUrl = [ImageService().getRandomImage()];
+    imageType = 'url';
+  });
+
+  void onEditImage() async {
+    await _pickImage(ImageSource.gallery);
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+
+      if (pickedFile != null) {
+          _image = File(pickedFile.path);
+          imageType = 'file';
+      } else {
+        print('No image selected.');
+      }
+      setState(() {});
+
+    } catch (e) {
+      print('Error picking image: $e');
+      SnackBar snackBar = const SnackBar(content: Text("Error picking image"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      imageType = 'null';
+      setState(() {});
+    }
+  }
+
+  void removeSelectedPhoto(){
+    _image = null;
+    imageType = 'null';
+    imageUrl = [];
+    setState(() {});
+  }
 
 
   @override
@@ -334,7 +420,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
               
                   const SizedBox(height: 20),
-                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter),
+                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
                   //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   
                   if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
