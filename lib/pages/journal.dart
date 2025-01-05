@@ -386,7 +386,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      IconButton(
+                                      if(imageType != 'null') IconButton(
                                         onPressed: removeSelectedPhoto, 
                                         icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
                                       ),
@@ -396,7 +396,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                                       ),
                                       IconButton(
                                         onPressed: onEditImage,
-                                        icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                        icon: DecoratedIcon(icon: Icon(imageType == 'null' ? Icons.add_photo_alternate_outlined : Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
                                       ),
                                     ]
                                   )
