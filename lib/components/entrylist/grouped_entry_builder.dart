@@ -53,20 +53,17 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Row(
-                children: [
-                  Text(date, style: widget.themeData.textTheme.bodyMedium?.copyWith(color: widget.themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                  Container(
-                    //color: Colors.green,
-                    child: GestureDetector(
-                      onTap: (){
-                        widget.visibleMap[index] = !widget.visibleMap[index];
-                        setState(() {});
-                      },
-                      child: Icon(widget.visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: widget.themeData.colorScheme.onPrimary,)
-                    ),
-                  )
-                ],
+              child: GestureDetector(
+                onTap: (){
+                  widget.visibleMap[index] = !widget.visibleMap[index];
+                  setState(() {});
+                },
+                child: Row(
+                  children: [
+                    Text(date, style: widget.themeData.textTheme.bodyMedium?.copyWith(color: widget.themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                    Icon(widget.visibleMap[index] ? Icons.arrow_drop_down : Icons.arrow_right, color: widget.themeData.colorScheme.onPrimary,),
+                  ],
+                ),
               ),
             ),
             if(widget.visibleMap[index]) ListView.builder(
