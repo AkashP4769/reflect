@@ -100,9 +100,10 @@ class UserService extends BackendServices {
 
   Future<UserSetting> getUserSetting() async {
     try{
-      UserSetting? oldSetting = UserSetting.fromMap(jsonDecode(settingBox.get('${user!.uid}#userSetting')));
+      final String? oldSettingData = settingBox.get('${user!.uid}#userSetting');
+      UserSetting? oldSetting = oldSettingData != null ? UserSetting.fromMap(jsonDecode(oldSettingData)) : null;
       final response = await http.get(Uri.parse('$baseUrl/users/settings/${user!.uid}'),);
-      print(jsonDecode(response.body));
+      //print(jsonDecode("respnse body: " + response.body));
       
       final UserSetting userSetting = UserSetting.fromMap(jsonDecode(response.body));
       if(oldSetting == null) userSetting.encryptionMode = 'unencrypted';
@@ -122,6 +123,10 @@ class UserService extends BackendServices {
       return UserSetting(uid: user!.uid, name: user!.displayName ?? 'Reflexy', email: "unkown", primaryDevice: primaryDevice, devices: [], encryptionMode: 'unencrypted');
     }
     return UserSetting.fromMap(jsonDecode(userSetting));
+  }
+
+  bool everEncrypted(){
+    return false;
   }
   
 }
