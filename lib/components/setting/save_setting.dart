@@ -40,11 +40,10 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
   }
 
   Future<void> _showConfirmationDialog(String newValue) async {
-    /*print("New value: $newValue");
     if(newValue == 'encrypted' && !userService.everEncrypted()) {
-      getPasswordDialog();
+      await getPasswordDialog();
       return;
-    }*/
+    }
 
     final bool? result = await showDialog<bool>(
       context: context,
@@ -74,7 +73,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     }
   }
 
-  void getPasswordDialog() async {
+  Future<void> getPasswordDialog() async {
     final TextEditingController _passwordController = TextEditingController();
     final TextEditingController _confirmPasswordController = TextEditingController();
 
@@ -99,52 +98,69 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
       return true;
     }
 
-    void onSubmit(){
-      if(validatePassword()){
-        print("Password: ${_passwordController.text}");
-        Navigator.pop(context);
-      }
-      else {
-        setState(() {});
-      }
-    }
-
     final res = await showDialog<bool>(
       context: context, 
       builder: (BuildContext context){
-        return AlertDialog(
-          title: Text("Create a password for your encrypted data", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("This password has to be used next time if you were to login in new device", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    border: OutlineInputBorder()
+        return StatefulBuilder(
+          
+          builder: (context, setState){
+
+            void onSubmit(){
+              if(validatePassword()){
+                print("Password: ${_passwordController.text}");
+                Navigator.pop(context);
+              }
+              else {
+                print("Error: $errorText" + "setstate page");
+                setState(() {});
+              }
+            }
+            
+            return AlertDialog(
+            title: Text("Create a password to encrypted your data", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("This password has to be used next time if you were to login in new device", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8))),
+                  SizedBox(height: 15),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: OutlineInputBorder()
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    labelText: "Confirm Password",
-                    border: OutlineInputBorder()
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: "Confirm Password",
+                      border: OutlineInputBorder()
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Text("Warning: If you forget this password, you won't be able to recover your entries.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: Colors.redAccent.withOpacity(0.8))),
-              ],
+                  SizedBox(height: 10),
+                  if(errorText.isNotEmpty) Row(
+                    children: [
+                      Icon(Icons.error, color: Colors.redAccent.withOpacity(0.8), size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(errorText, style: widget.themeData.textTheme.bodyMedium!.copyWith(color: Colors.redAccent.withOpacity(0.8)))),
+                    ],
+                  ),
+                  if(errorText.isNotEmpty) SizedBox(height: 10),
+                  if(errorText.isNotEmpty) Divider(color: widget.themeData.colorScheme.onPrimary),
+                  if(errorText.isNotEmpty) SizedBox(height: 10),
+                  Text("Warning: If you forget this password, you won't be able to recover your entries.", style: widget.themeData.textTheme.bodyMedium!.copyWith(color: Colors.redAccent.withOpacity(0.8))),
+                ],
+              ),
             ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel")),
-            TextButton(onPressed: onSubmit, child: Text("Proceed")),
-          ],
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel")),
+              TextButton(onPressed: () => onSubmit(), child: Text("Proceed")),
+            ],
+            );
+          }
         );
       }
     );

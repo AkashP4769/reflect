@@ -120,7 +120,7 @@ class UserService extends BackendServices {
     final userSetting = settingBox.get('${user!.uid}#userSetting');
     if(userSetting == null) {
       final Device primaryDevice = Device(deviceId: '', deviceName: '', deviceType: '', publicKey: {}, encryptedKey: '');
-      return UserSetting(uid: user!.uid, name: user!.displayName ?? 'Reflexy', email: "unkown", primaryDevice: primaryDevice, devices: [], encryptionMode: 'unencrypted');
+      return UserSetting(uid: user!.uid, name: user!.displayName ?? 'Reflexy', email: "unknown", primaryDevice: primaryDevice, devices: [], encryptionMode: 'unencrypted');
     }
     return UserSetting.fromMap(jsonDecode(userSetting));
   }
