@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:reflect/components/setting/setting_container.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 class EncryptionSetting extends StatefulWidget {
@@ -41,7 +43,11 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
 
   Future<void> _showConfirmationDialog(String newValue) async {
     if(newValue == 'encrypted' && !userService.everEncrypted()) {
-      await getPasswordDialog();
+      final String? _password = await getPasswordDialog();
+      if(_password != null){
+        String symkey = base64Encode(EncryptionService().generateSymmetricKey(_password));
+        print("Symkey: $symkey");
+      }
       return;
     }
 
@@ -73,7 +79,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     }
   }
 
-  Future<void> getPasswordDialog() async {
+  Future<String?> getPasswordDialog() async {
     final TextEditingController _passwordController = TextEditingController();
     final TextEditingController _confirmPasswordController = TextEditingController();
 
@@ -102,13 +108,11 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
       context: context, 
       builder: (BuildContext context){
         return StatefulBuilder(
-          
           builder: (context, setState){
-
             void onSubmit(){
               if(validatePassword()){
                 print("Password: ${_passwordController.text}");
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               }
               else {
                 print("Error: $errorText" + "setstate page");
@@ -163,8 +167,12 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
           }
         );
       }
+      
     );
-
+    
+    if(res ?? false){
+      return _passwordController.text;
+    }
   }
 
   void importAll() async {

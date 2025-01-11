@@ -73,13 +73,14 @@ class EncryptionService {
     return device;
   }
 
-  String generateSalt() {
+  List<int> generateSalt() {
     final random = Random.secure();
-    return base64Encode(List<int>.generate(32, (_) => random.nextInt(256)));
+    return List<int>.generate(32, (_) => random.nextInt(256));
   }
 
   Uint8List generateSymmetricKey(String password) {
-    final String salt = generateSalt();
+    final uintSalt = generateSalt();
+    final String salt = base64Encode(uintSalt);
     final pbkdf2 = PBKDF2();
     final key = pbkdf2.generateKey(password, salt, 10000, 32); // 256-bit key
     return Uint8List.fromList(key);
