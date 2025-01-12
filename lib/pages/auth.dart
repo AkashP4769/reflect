@@ -10,6 +10,7 @@ import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/pages/waiting.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:reflect/services/encryption_service.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -44,14 +45,22 @@ class _AuthPageState extends State<AuthPage> {
 
   void signInWithGoogle(Color loadingColor) async {
     showLoading(context, loadingColor);
-    authPermission = false;
+    authPermission = true;
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
-    if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] != 'encrypted'){
+    if(authResponse['encryptionMode'] == 'encrypted'){
+      final encryptionService = EncryptionService();
+      final symKey = await encryptionService.getSymmetricKey();
+      
+      if(symKey == null) authPermission = false;
+      else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
+    }
+
+    /*if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] != 'encrypted'){
       authPermission = true;
       saveAuthPermission(true);
-    }
+    }*/
 
     print("authPermission changed: $authPermission");
     backendVerified = true;

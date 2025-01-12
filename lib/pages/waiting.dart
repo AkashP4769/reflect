@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reflect/main.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 class WaitingPage extends ConsumerStatefulWidget {
   const WaitingPage({super.key});
@@ -12,6 +14,30 @@ class WaitingPage extends ConsumerStatefulWidget {
 }
 
 class _WaitingPageState extends ConsumerState<WaitingPage> {
+  late UserSetting userSetting;
+  late TextEditingController passwordController;
+  String errorMsg = '';
+
+  void getUserSetting() async {
+    userSetting = await UserService().getUserSetting();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserSetting();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
