@@ -11,6 +11,8 @@ class UserSetting {
   final String email;
   final Device primaryDevice;
   final List<Device> devices;
+  final String? salt;
+  final String? keyValidator;
   String encryptionMode;
 
   UserSetting({
@@ -20,6 +22,8 @@ class UserSetting {
     required this.primaryDevice,
     required this.devices,
     required this.encryptionMode,
+    this.salt,
+    this.keyValidator,
   });
 
   
@@ -31,6 +35,8 @@ class UserSetting {
     Device? primaryDevice,
     List<Device>? devices,
     String? encryptionMode,
+    String? salt,
+    String? keyValidator,
   }) {
     return UserSetting(
       uid: uid ?? this.uid,
@@ -39,6 +45,8 @@ class UserSetting {
       primaryDevice: primaryDevice ?? this.primaryDevice,
       devices: devices ?? this.devices,
       encryptionMode: encryptionMode ?? this.encryptionMode,
+      salt: salt ?? this.salt,
+      keyValidator: keyValidator ?? this.keyValidator,
     );
   }
 
@@ -50,6 +58,8 @@ class UserSetting {
       'primaryDevice': primaryDevice.toMap(),
       'devices': devices.map((x) => x.toMap()).toList(),
       'encryptionMode': encryptionMode,
+      'salt': salt,
+      'keyValidator': keyValidator,
     };
   }
 
@@ -61,6 +71,8 @@ class UserSetting {
       primaryDevice: Device.fromMap(map['primaryDevice'] as Map<String,dynamic>),
       devices: List<Device>.from((map['devices'] as List).map((x) => Device.fromMap(x as Map<String,dynamic>))),
       encryptionMode: map['encryptionMode'] as String,
+      salt: map['salt'] as String?,
+      keyValidator: map['keyValidator'] as String?,
     );
   }
 
@@ -70,7 +82,7 @@ class UserSetting {
 
   @override
   String toString() {
-    return 'UserSetting(uid: $uid, name: $name, email: $email, primaryDevice: $primaryDevice, encryptionMode: $encryptionMode, devices: $devices)';
+    return 'UserSetting(uid: $uid, name: $name, email: $email, primaryDevice: $primaryDevice, encryptionMode: $encryptionMode, salt: $salt, keyValidator: $keyValidator, devices: $devices)';
   }
 
   @override
@@ -83,7 +95,9 @@ class UserSetting {
       other.email == email &&
       other.primaryDevice == primaryDevice &&
       listEquals(other.devices, devices) &&
-      other.encryptionMode == encryptionMode;
+      other.encryptionMode == encryptionMode &&
+      other.salt == salt &&
+      other.keyValidator == keyValidator;
   }
 
   @override
@@ -93,6 +107,8 @@ class UserSetting {
       email.hashCode ^
       primaryDevice.hashCode ^
       devices.hashCode ^
-      encryptionMode.hashCode;
+      encryptionMode.hashCode ^
+      salt.hashCode ^
+      keyValidator.hashCode;
   }
 }

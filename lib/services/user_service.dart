@@ -20,15 +20,6 @@ class UserService extends BackendServices {
 
       final body = jsonDecode(response.body);
       
-      /*if(body['code'] == 0){
-        //encryptionService.generateAndSaveSymmetricKey();
-      }
-
-      else if(body['code'] == 4){
-        String symKey = await encryptionService.decryptSymKey(body['encryptedKey']);
-        encryptionService.saveSymmetricKey(symKey);
-      }*/
-
       if([0, 2, 3, 5].contains(body['code'])){
         final createSymKey = body['code'] == 0 ? true : false;
         final device = await encryptionService.createDeviceDetails(createSymKey);
@@ -126,8 +117,9 @@ class UserService extends BackendServices {
     return UserSetting.fromMap(jsonDecode(userSetting));
   }
 
-  bool everEncrypted(){
-    return false;
+  Future<bool> everEncrypted() async {
+    final userSetting = await getUserSetting();
+    return userSetting.salt != null;
   }
 
   Future<void> generateKeyAndUploadSalt(String password) async {
@@ -136,8 +128,9 @@ class UserService extends BackendServices {
     final keyValidator = encryptionService.encryptData('11111', keyPair['key'] as Uint8List);
 
     try{
-      final response = await http.post(Uri.parse('$baseUrl/users/salt'), body: jsonEncode({
+      final response = await http.post(Uri.parse('$baseUrl/users/encryptionMode'), body: jsonEncode({
         'uid': user!.uid,
+        'encryptionMode': 'encrypted',
         'salt': base64Encode(keyPair['salt'] as Uint8List),
         'keyValidator': keyValidator
       }), headers: {'Content-Type': 'application/json'});

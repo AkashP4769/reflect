@@ -42,11 +42,10 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
   }
 
   Future<void> _showConfirmationDialog(String newValue) async {
-    if(newValue == 'encrypted' && !userService.everEncrypted()) {
+    if(newValue == 'encrypted' && !await userService.everEncrypted()) {
       final String? _password = await getPasswordDialog();
       if(_password != null){
-        String symkey = base64Encode(EncryptionService().generateSymmetricKey(_password));
-        print("Symkey: $symkey");
+        await userService.generateKeyAndUploadSalt(_password);
       }
       return;
     }

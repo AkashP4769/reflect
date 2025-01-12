@@ -34,7 +34,8 @@ class _KeyComponentState extends State<KeyComponent> {
 
 
   void getKeys() async {
-    symmetricKey = encryptionService.generateSymmetricKey("abcd");
+    final keyPair = encryptionService.generateSymmetricKey("abcd");
+    symmetricKey = keyPair['key']!;
     setState(() {});
   }
 
