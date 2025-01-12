@@ -34,14 +34,20 @@ class _WaitingPageState extends ConsumerState<WaitingPage> {
       return;
     }
     
-    if(EncryptionService().validateSymmetricKey(password, userSetting.salt ?? '', userSetting.keyValidator ?? '')){
-      isValid = true;
-      setState(() {});
-    }
-    else{
-      errorMsg = 'Invalid password';
-      setState(() {});
-    }
+    try{
+        if(EncryptionService().validateSymmetricKey(password, userSetting.salt ?? '', userSetting.keyValidator ?? '')){
+          isValid = true;
+          errorMsg = '';
+          setState(() {});
+        }
+        else{
+          errorMsg = 'Invalid password';
+          setState(() {});
+        }
+      } catch(e){
+        errorMsg = 'Invalid password';
+        setState(() {});
+      }
   }
 
   @override
@@ -76,12 +82,11 @@ class _WaitingPageState extends ConsumerState<WaitingPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(isValid ? "Password Validated" :'Enter your password', style: themeData.textTheme.titleLarge, textAlign: TextAlign.center,),
+              Text(isValid ? "Password Validated" :'Enter your password', style: themeData.textTheme.titleLarge!.copyWith(color: themeData.colorScheme.primary), textAlign: TextAlign.center,),
               const SizedBox(height: 20,),
               if(!isValid) const Text('This password refers to the one you created while you enabled encryption', textAlign: TextAlign.center,),
               if(!isValid) const SizedBox(height: 20,),
               if(!isValid) SignUpPassField(text: "Password", controller: passwordController, themeData: themeData,),
-              const SizedBox(height: 20,),
               if(errorMsg != '') Row(
                 children: [
                   Icon(Icons.error, color: Colors.redAccent, size: 16,),
@@ -89,6 +94,7 @@ class _WaitingPageState extends ConsumerState<WaitingPage> {
                   Text(errorMsg, style: TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
                 ],
               ),
+              const SizedBox(height: 20,),
               if(!isValid) Row(
                 children: [
                   Expanded(

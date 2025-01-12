@@ -23,7 +23,7 @@ class _AuthPageState extends State<AuthPage> {
   late bool authPermission;
   String loginErrorMsg = '';
   String signupErrorMsg = '';
-  bool backendVerified = FirebaseAuth.instance.currentUser == null ? false : true;
+  late bool backendVerified = false;
   Box settingBox = Hive.box('settings');
 
   @override
@@ -39,6 +39,7 @@ class _AuthPageState extends State<AuthPage> {
 
   void loadAuthPermission() async {
     authPermission = settingBox.get('authPermission', defaultValue: false);
+    backendVerified = (FirebaseAuth.instance.currentUser == null ? false : true) && (await EncryptionService().getSymmetricKey() != null);
     setState(() {});
   }
 
@@ -52,7 +53,7 @@ class _AuthPageState extends State<AuthPage> {
     if(authResponse['encryptionMode'] == 'encrypted'){
       final encryptionService = EncryptionService();
       final symKey = await encryptionService.getSymmetricKey();
-      
+
       if(symKey == null) authPermission = false;
       else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
     }

@@ -4,6 +4,9 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/setting/setting_container.dart';
+import 'package:reflect/components/signup/signup_passfield.dart';
+import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/encryption_service.dart';
@@ -41,13 +44,22 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     super.dispose();
   }
 
-  Future<void> _showConfirmationDialog(String newValue) async {
-    if(newValue == 'encrypted' && !await userService.everEncrypted()) {
-      final String? _password = await getPasswordDialog();
-      if(_password != null){
-        await userService.generateKeyAndUploadSalt(_password);
+  Future<void> _showConfirmationDialog(String newValue, ThemeData themeData) async {
+    final symKey = await EncryptionService().getSymmetricKey();
+    if(newValue == 'encrypted' && symKey == null) {
+      final bool everEncrypted = await userService.everEncrypted();
+      if(everEncrypted) {
+        await _showValidatePasswordDialog(themeData, userService.getUserSettingFromCache());
+        return;
       }
-      return;
+      else {
+        //create new password
+        final String? _password = await getPasswordDialog();
+        if(_password != null){
+          await userService.generateKeyAndUploadSalt(_password);
+        }
+        return;
+      }
     }
 
     final bool? result = await showDialog<bool>(
@@ -76,6 +88,113 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
       selectedSave = newValue;
       setState(() {});
     }
+  }
+
+  Future<void> _showValidatePasswordDialog(ThemeData themeData, UserSetting userSetting) async {
+    
+    await showDialog<bool>(
+      context: context, 
+      builder: (BuildContext context){
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState){
+            final TextEditingController passwordController = TextEditingController();
+            bool isValid = false;
+            String errorMsg = '';
+
+            void validate(){
+              final password = passwordController.text;
+              if(password.isEmpty){
+                errorMsg = 'Password cannot be empty';
+                setState(() {});
+                return;
+              }
+              
+              try{
+                if(EncryptionService().validateSymmetricKey(password, userSetting.salt ?? '', userSetting.keyValidator ?? '')){
+                  isValid = true;
+                  errorMsg = '';
+                  setState(() {});
+                }
+                else{
+                  errorMsg = 'Invalid password';
+                  setState(() {});
+                }
+              } catch(e){
+                errorMsg = 'Invalid password';
+                setState(() {});
+              }
+            }
+            return AlertDialog(
+              //title: Text("Enter your password", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary)),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(isValid ? "Password Validated" :'Enter your password', style: themeData.textTheme.titleLarge!.copyWith(color: themeData.colorScheme.primary), textAlign: TextAlign.center,),
+                    const SizedBox(height: 20,),
+                    if(!isValid) const Text('This password refers to the one you created while you enabled encryption', textAlign: TextAlign.center,),
+                    if(!isValid) const SizedBox(height: 20,),
+                    if(!isValid) SignUpPassField(text: "Password", controller: passwordController, themeData: themeData,),
+                    
+                    if(errorMsg != '') Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.redAccent, size: 16,),
+                        const SizedBox(width: 5,),
+                        Text(errorMsg, style: TextStyle(color: Colors.redAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),)
+                      ],
+                    ),
+                    const SizedBox(height: 20,),
+                    if(!isValid) Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(themeData.colorScheme.tertiary),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }, 
+                            child: Text('Go back', style: themeData.textTheme.bodyMedium,),
+                          ),
+                        ),
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: validate, 
+                            child: Text('Validate', style: themeData.textTheme.bodyMedium,),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if(isValid) Row(
+                      children: [
+                        const Icon(Icons.check, color: Colors.green, size: 28,),
+                        const SizedBox(width: 5,),
+                        Expanded(child: Text("Your password is validated. You can now re-login", style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
+                      ],
+                    ),
+                    if(isValid) const SizedBox(height: 20,),
+                    if(isValid) ElevatedButton(
+                      onPressed: () {
+                        AuthService.signOut();
+                      },
+                      child: Text('Re-login', style: themeData.textTheme.bodyMedium,),
+                    ),
+                  ],
+                ),
+              ),
+              /*actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel")),
+                TextButton(onPressed: () => Navigator.pop(context, true), child: Text("Proceed")),
+              ],*/
+            );
+          }
+        );
+      }
+    );
   }
 
   Future<String?> getPasswordDialog() async {
@@ -265,7 +384,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       print("New value: $newValue");
-                      _showConfirmationDialog(newValue);
+                      _showConfirmationDialog(newValue, widget.themeData);
                     }
                   },
                 )
