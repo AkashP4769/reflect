@@ -93,6 +93,17 @@ class EncryptionService {
     return Uint8List.fromList(keyBytes);
   }*/
 
+  bool validateSymmetricKey(String password, String salt, String keyValidator) {
+    final pbkdf2 = PBKDF2();
+    final key = pbkdf2.generateKey(password, salt, 10000, 32);
+    final decryptedValidator = decryptData(keyValidator, Uint8List.fromList(key));
+    if(decryptedValidator == '11111'){
+      saveSymmetricKey(base64Encode(Uint8List.fromList(key)));
+      return true;
+    }
+    return false;
+  }
+
   Map<String, Uint8List> generateAndSaveSymmetricKey(String password){
     const secureStorage = FlutterSecureStorage();
     final keyPair = generateSymmetricKey(password);
