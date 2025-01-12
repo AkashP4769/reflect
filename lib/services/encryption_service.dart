@@ -78,12 +78,12 @@ class EncryptionService {
     return List<int>.generate(32, (_) => random.nextInt(256));
   }
 
-  Uint8List generateSymmetricKey(String password) {
+  Map<String, Uint8List> generateSymmetricKey(String password) {
     final uintSalt = generateSalt();
     final String salt = base64Encode(uintSalt);
     final pbkdf2 = PBKDF2();
     final key = pbkdf2.generateKey(password, salt, 10000, 32); // 256-bit key
-    return Uint8List.fromList(key);
+    return {'key': Uint8List.fromList(key), 'salt': Uint8List.fromList(uintSalt)};
   }
 
   /*static Uint8List generateSymmetricKey() {
@@ -93,11 +93,12 @@ class EncryptionService {
     return Uint8List.fromList(keyBytes);
   }*/
 
-  void generateAndSaveSymmetricKey(String password){
+  Map<String, Uint8List> generateAndSaveSymmetricKey(String password){
     const secureStorage = FlutterSecureStorage();
-    final key = generateSymmetricKey(password);
-    final keyString = base64Encode(key);
+    final keyPair = generateSymmetricKey(password);
+    final keyString = base64Encode(keyPair['key'] as Uint8List);
     secureStorage.write(key: '${uid}#symmetricKey', value: keyString);
+    return keyPair;
   }
 
   void saveSymmetricKey(String keyString){

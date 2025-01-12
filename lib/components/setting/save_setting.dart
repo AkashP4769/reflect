@@ -166,8 +166,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
             );
           }
         );
-      }
-      
+      } 
     );
     
     if(res ?? false){
@@ -263,6 +262,7 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
                       child: Text(server.value),
                     );
                   }).toList(),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       print("New value: $newValue");

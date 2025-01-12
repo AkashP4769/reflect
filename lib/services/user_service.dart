@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:reflect/models/device.dart';
 import 'package:reflect/models/user_setting.dart';
@@ -128,5 +129,26 @@ class UserService extends BackendServices {
   bool everEncrypted(){
     return false;
   }
+
+  Future<void> generateKeyAndUploadSalt(String password) async {
+    final encryptionService = EncryptionService();
+    final keyPair = encryptionService.generateSymmetricKey(password);
+    final keyValidator = encryptionService.encryptData('11111', keyPair['key'] as Uint8List);
+
+    try{
+      final response = await http.post(Uri.parse('$baseUrl/users/salt'), body: jsonEncode({
+        'uid': user!.uid,
+        'salt': base64Encode(keyPair['salt'] as Uint8List),
+        'keyValidator': keyValidator
+      }), headers: {'Content-Type': 'application/json'});
+
+      if(response.statusCode == 200){
+        encryptionService.saveSymmetricKey(base64Encode(keyPair['key'] as Uint8List));
+      }
+
+    } catch(e){
+      print("Error at generateKeyAndUploadSalt(): $e");
+    }
+  } 
   
 }
