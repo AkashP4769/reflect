@@ -23,7 +23,19 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     Achievement(title: "Taggy", description: "Create 10 tags", icon: Icons.tag, color: Colors.lightBlueAccent),
     Achievement(title: "Tag Master", description: "Create 50 tags", icon: Icons.tag, color: Colors.lightBlueAccent),
 
-    Achievement(title: "Favorites Fanatic", description: "Favorite 25 of your own entries", icon: Icons.favorite_rounded, color: Colors.redAccent),
+    Achievement(title: "Favorites Fanatic", description: "Favorite 25 of your own entries", icon: Icons.favorite_outline, color: Colors.pinkAccent),
+    Achievement(title: "Favorites Master", description: "Favorite 50 of your own entries", icon: Icons.favorite_rounded, color: Colors.pinkAccent),
+
+    Achievement(title: "The Collector", description: "Create 100 entries", icon: Icons.collections, color: Colors.greenAccent),
+    Achievement(title: "The Chronicler", description: "Create 500 entries", icon: Icons.collections, color: Colors.greenAccent),
+
+    //Upload your first image achievement
+    Achievement(title: "Picture Perfect", description: "Upload your first image", icon: Icons.image, color: Colors.blueAccent),
+    Achievement(title: "Photographer", description: "Upload 10 images", icon: Icons.image, color: Colors.blueAccent),
+
+    Achievement(title: "Short and sweet", description: "Write an entry with fewer than 50 words.", icon: Icons.text_fields, color: Colors.purpleAccent),
+    Achievement(title: "Long-winded", description: "Write an entry with more than 1000 words.", icon: Icons.text_fields, color: Colors.purpleAccent),
+
   ];
 
 
