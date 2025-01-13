@@ -6,9 +6,11 @@ import 'package:reflect/components/setting/device_setting.dart';
 import 'package:reflect/components/setting/save_setting.dart';
 import 'package:reflect/components/setting/keys_component.dart';
 import 'package:reflect/components/setting/server_setting.dart';
+import 'package:reflect/components/setting/setting_container.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/device.dart';
 import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -63,6 +65,27 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 Text('Settings', style: themeData.textTheme.titleLarge),
 
                 const SizedBox(height: 20),
+                SettingContainer(
+                  themeData: themeData,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("• Your Account", style: themeData.textTheme.titleMedium!.copyWith(color:themeData.colorScheme.primary)),
+                      const SizedBox(height: 10),
+                      Text("Name: ${userSetting.name}", style: themeData.textTheme.bodyMedium),
+                      Text("Email: ${userSetting.email}", style: themeData.textTheme.bodyMedium),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          AuthService.signOut();
+                        },
+                        child: Text('Logout', style: themeData.textTheme.bodyMedium,),
+                      ),
+                    ],
+                  ), 
+                ),
+
+                const SizedBox(height: 20),
                 EncryptionSetting(themeData: themeData, encryptionMode: userSetting.encryptionMode, refreshPage: getUserSetting),
                 
                 const SizedBox(height: 20),
@@ -75,7 +98,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.5.1.16" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.5.2.17" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

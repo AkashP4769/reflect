@@ -6,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/common/loading.dart';
+import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/pages/waiting.dart';
 import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/services/encryption_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -39,7 +41,14 @@ class _AuthPageState extends State<AuthPage> {
 
   void loadAuthPermission() async {
     authPermission = settingBox.get('authPermission', defaultValue: false);
-    backendVerified = (FirebaseAuth.instance.currentUser == null ? false : true) && (await EncryptionService().getSymmetricKey() != null);
+    final UserSetting userSetting = await UserService().getUserSettingFromCache();
+    bool flag = true;
+
+    if(userSetting.encryptionMode == 'encrypted'){
+      if(await EncryptionService().getSymmetricKey() == null) flag = false;
+    }
+
+    backendVerified = (FirebaseAuth.instance.currentUser == null ? false : true) && flag;
     setState(() {});
   }
 

@@ -21,7 +21,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   PageController _pageController = PageController(initialPage: 0);
   late TextEditingController searchController;
 
-  List<String> titles = ["Welcome, User", "Journal", "Your favourites", "Settings"];
+  List<String> titles = [/*"Welcome, User",*/ "Journal", /*"Your favourites",*/ "Settings"];
   String searchQuery = '';
   
   @override
@@ -44,13 +44,17 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     super.dispose();
   }
 
+  void goToJournalPage(){
+    _pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     List<Widget> pages = <Widget>[
-      const HomePage(), 
+      HomePage(goToJournalPage: goToJournalPage,), 
       JournalPage(searchQuery: searchQuery,), 
-      const FavPage(), 
+      //const FavPage(), 
       const SettingsPage()
     ];
 
@@ -103,7 +107,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           color: themeData.colorScheme.onPrimary,
           activeColor: themeData.colorScheme.primary,
           backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff1E1E1E) : Colors.white,
-          
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           tabBackgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : Colors.white,
           tabs: [
             GButton(
@@ -126,7 +130,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               iconActiveColor: themeData.colorScheme.surfaceContainer,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
-            GButton(
+            /*GButton(
               icon: Icons.favorite,
               text: 'Likes',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
@@ -135,7 +139,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               iconColor: themeData.colorScheme.surfaceContainerHighest,
               iconActiveColor: themeData.colorScheme.surfaceContainer,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
-            ),
+            ),*/
             GButton(
               icon: Icons.settings,
               text: 'Settings',
