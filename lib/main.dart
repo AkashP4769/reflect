@@ -43,7 +43,7 @@ void main() async {
   //final chapterbox = Hive.box('chapters');
   //chapterbox.clear();
 
-  await FlutterSecureStorage().deleteAll();
+  //await FlutterSecureStorage().deleteAll();
 
   runApp(const ProviderScope(child: MainApp()));
 }

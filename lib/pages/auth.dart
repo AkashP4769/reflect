@@ -59,7 +59,9 @@ class _AuthPageState extends State<AuthPage> {
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
+
     if(authResponse['encryptionMode'] == 'encrypted'){
+      print("encrypted");
       final encryptionService = EncryptionService();
       final symKey = await encryptionService.getSymmetricKey();
 
@@ -72,6 +74,7 @@ class _AuthPageState extends State<AuthPage> {
       saveAuthPermission(true);
     }*/
 
+    saveAuthPermission(authPermission);
     print("authPermission changed: $authPermission");
     backendVerified = true;
     setState(() {});
@@ -103,6 +106,7 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("authPermission: $authPermission, backendVerified: $backendVerified");
     return Scaffold(
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),

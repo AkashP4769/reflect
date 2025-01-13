@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:reflect/main.dart';
-import 'package:reflect/pages/favourites.dart';
+import 'package:reflect/pages/achievement.dart';
 import 'package:reflect/pages/home.dart';
 import 'package:reflect/pages/journal.dart';
 import 'package:reflect/pages/settings.dart';
@@ -54,7 +54,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     List<Widget> pages = <Widget>[
       HomePage(goToJournalPage: goToJournalPage,), 
       JournalPage(searchQuery: searchQuery,), 
-      //const FavPage(), 
+      const AchievementPage(), 
       const SettingsPage()
     ];
 
@@ -130,16 +130,16 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               iconActiveColor: themeData.colorScheme.surfaceContainer,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
-            /*GButton(
-              icon: Icons.favorite,
-              text: 'Likes',
+            GButton(
+              icon: Icons.star,
+              text: 'Progress',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               textColor: themeData.colorScheme.surfaceContainer,
               iconColor: themeData.colorScheme.surfaceContainerHighest,
               iconActiveColor: themeData.colorScheme.surfaceContainer,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
-            ),*/
+            ),
             GButton(
               icon: Icons.settings,
               text: 'Settings',
