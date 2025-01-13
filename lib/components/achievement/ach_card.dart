@@ -10,7 +10,7 @@ class AchievementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 85,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
@@ -33,7 +33,7 @@ class AchievementCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(achievement.title, style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 15), textAlign: TextAlign.center,),
+              Text(achievement.title, style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 16), textAlign: TextAlign.center,),
               Text(achievement.description, style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.6), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
             ],
           ),

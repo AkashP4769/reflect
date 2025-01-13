@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/achievement/ach_card.dart';
@@ -38,6 +40,8 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
   ];
 
+  bool showMoreAchievement = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -66,16 +70,29 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
               }
             )*/
+            Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
             ListView.builder(
               shrinkWrap: true,
               clipBehavior: Clip.none,
-
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: achievements.length,
+              itemCount: showMoreAchievement ? achievements.length : min(3, achievements.length),
               itemBuilder: (BuildContext context, int index){
                 return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
               }
-            )
+            ),
+            SizedBox(height: 10,),
+            InkWell(
+              onTap: (){
+                setState(() {
+                  showMoreAchievement = !showMoreAchievement;
+                });
+              },
+              
+              child: Text(showMoreAchievement ? "Show Less" : "Show More", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.primary, fontSize: 16), textAlign: TextAlign.center,),
+            ),
+            SizedBox(height: 20,),
+
+            Align(child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
           ],
         ),
       ),
