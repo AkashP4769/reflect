@@ -76,7 +76,10 @@ class _HomePageState extends ConsumerState<HomePage> {
             scrollDirection: Axis.vertical,
             itemCount: min(2, chapters.length),
             itemBuilder: (BuildContext context, int index){
-              return ChapterCard(chapter: chapters[index], themeData: themeData);
+              return GestureDetector(
+                onTap: () => widget.goToJournalPage(),
+                child: ChapterCard(chapter: chapters[index], themeData: themeData)
+              );
             }
           ),
           SizedBox(height: 10,),
@@ -90,7 +93,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               Text(" for more chapters", style: themeData.textTheme.bodyMedium,),
             ],
-          )
+          ),
+
+          SizedBox(height: 30,),
+          Text("How are you feeling today?", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
 
         ],
       ),
