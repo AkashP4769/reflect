@@ -14,8 +14,16 @@ class AchievementPage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<AchievementPage> {
   List<Achievement> achievements = [
-    Achievement(title: "First Impressions", description: "Create your very first journal entry", icon: Icons.star, color: Colors.yellowAccent),
+    Achievement(title: "First Impressions", description: "Create your very first journal entry", icon: Icons.star, color: Colors.orangeAccent),
     Achievement(title: "Epic Chronicler", description: "Write 100,000 words in total.", icon: Icons.history_edu, color: Colors.white),
+    //Achievement(title: "Master Chronicler", description: "Write 500,000 words in total.", icon: Icons.history_edu, color: Colors.white),
+    Achievement(title: "New Journey", description: "Create your first chapter", icon: Icons.history_edu, color: Colors.white),
+    Achievement(title: "Saga Creator", description: "Create 10 chapters", icon: Icons.history_edu, color: Colors.white),
+
+    Achievement(title: "Taggy", description: "Create 10 tags", icon: Icons.tag, color: Colors.lightBlueAccent),
+    Achievement(title: "Tag Master", description: "Create 50 tags", icon: Icons.tag, color: Colors.lightBlueAccent),
+
+    Achievement(title: "Favorites Fanatic", description: "Favorite 25 of your own entries", icon: Icons.favorite_rounded, color: Colors.redAccent),
   ];
 
 
@@ -31,21 +39,23 @@ class _HomePageState extends ConsumerState<AchievementPage> {
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
         )
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text("Achievements", style: themeData.textTheme.titleLarge,),
-          SizedBox(height: 20,),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: achievements.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10),
-            itemBuilder: (BuildContext context, int index){
-              return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
-            }
-          )
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text("Achievements", style: themeData.textTheme.titleLarge,),
+            SizedBox(height: 20,),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: achievements.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16),
+              itemBuilder: (BuildContext context, int index){
+                return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
+              }
+            )
+          ],
+        ),
       ),
     );
   }}

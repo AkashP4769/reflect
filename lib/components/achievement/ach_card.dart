@@ -25,12 +25,12 @@ class AchievementCard extends StatelessWidget {
         ]
       ),
       child: Column(
-
         children: [
-          Icon(achievement.icon, color: achieved ? achievement.color : Colors.grey,),
+          Expanded(child: Icon(achievement.icon, color: achieved ? achievement.color : Colors.grey, size: 58,)),
           SizedBox(height: 10,),
-          Text(achievement.title, style: TextStyle(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500),),
-          Text(achievement.description, style: TextStyle(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w500),),
+          Text(achievement.title, style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 15), textAlign: TextAlign.center,),
+          SizedBox(height: 5,),
+          Text(achievement.description, style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.6), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
         ],
       ),
     );
