@@ -56,14 +56,20 @@ class _HomePageState extends ConsumerState<HomePage> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.secondaryContainer]
         )
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning!" : datetime.hour < 18 ? "Good Afternoon!" : "Good Evening!"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 26, fontWeight: FontWeight.w600),),
+          Row(
+            children: [
+              Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning" : datetime.hour < 18 ? "Good Afternoon" : "Good Evening"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 26, fontWeight: FontWeight.w600),),
+              SizedBox(width: 10,),
+              Icon((datetime.hour < 12 && datetime.hour > 6 ? Icons.wb_sunny : datetime.hour < 18 ? Icons.brightness_5 : Icons.brightness_3), color: datetime.hour < 6 && datetime.hour > 18 ? Colors.white : themeData.colorScheme.primary, size: 30,),
+            ],
+          ),
           SizedBox(height: 10,),
           Text(quotes[datetime.day % quotes.length], style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16),),
           SizedBox(height: 30,),
@@ -89,7 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               Text("Go to ", style: themeData.textTheme.bodyMedium,),
               InkWell(
                 onTap: () => widget.goToJournalPage(),
-                child: Text("Journal", style: themeData.textTheme.bodyMedium!.copyWith( color: themeData.colorScheme.primary),),
+                child: Text("Journal", style: themeData.textTheme.bodyMedium!.copyWith( color: themeData.colorScheme.primary, fontWeight: FontWeight.w600),),
               ),
               Text(" for more chapters", style: themeData.textTheme.bodyMedium,),
             ],
