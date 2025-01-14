@@ -55,12 +55,12 @@ class _AchievementCardState extends State<AchievementCard> with SingleTickerProv
                   colors: [
                     widget.achievement.color.withOpacity(0.5),
                     widget.achievement.color.withOpacity(0.8),
-                    widget.achievement.color.withOpacity(0.2),
+                    widget.achievement.color.withOpacity(0.5),
                   ],
                   stops: [
-                      (0.0), // Dynamically calculated stops
+                      (-0.3), // Dynamically calculated stops
                       (value),
-                      (1),
+                      (1.3),
                     ],
                 )
               : null,
