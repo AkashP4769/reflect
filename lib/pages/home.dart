@@ -78,6 +78,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             SizedBox(height: 30,),
         
             Text("The chapters of your life", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
+            //cook some philosophical description for me
+            //Text("Each chapter is a collection of your thoughts, feelings and experiences. You can add entries to each chapter to document your journey.", style: themeData.textTheme.bodyMedium,),
+            
             SizedBox(height: 10,),
             ListView.builder(
               shrinkWrap: true,
@@ -105,7 +108,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
         
             SizedBox(height: 30,),
-            Text("How are you feeling today?", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
+            //Text("How are you feeling today?", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
         
           ],
         ),
