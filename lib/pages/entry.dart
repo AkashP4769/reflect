@@ -120,7 +120,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
+      final currentOffset = quillController.selection.base.offset;
+      print("currentOffset: $currentOffset | length: ${quillController.document.length}");
+      if (scrollController.hasClients && currentOffset > quillController.document.length - 200) {
         print("scrolling");
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
