@@ -44,9 +44,22 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     Achievement(title: "Long-winded", description: "Write an entry with more than 1000 words.", icon: Icons.circle, color: Colors.purpleAccent),
   ];
 
+  List<String> statistics = [
+    "Entries Written",
+    "Chapters Created",
+    "Tags forged",
+    "Favorited entries",
+    "Images Uploaded",
+    "Shortest Entry",
+    "Longest Entry",
+    "Total Words Written"
+  ];
+  List<int> statisticsValue = [0, 0, 0, 0, 0, 0, 0, 0];
+
   List<bool> achievementStatus = List.generate(13, (index) => false);
 
   bool showMoreAchievement = false;
+
 
   @override
   void initState() {
@@ -128,6 +141,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     if(totalImages >= 10) tenImages = true; //11
 
     achievementStatus = [firstEntry, hundredEntries, fiveHundredEntries, firstChapter, tenChapter, tenTags, fiftyTags, twentyFiveFav, fiftyFav, firstImage, tenImages, shortEntry, longEntry];
+    statisticsValue = [totalEntries, totalChapters, totalTags, totalFavs, totalImages, shortestLength, longestLength, totalWords];
 
     print("Achievement Status: $achievementStatus");
     print("Total Entries: $totalEntries, Total Chapters: $totalChapters, Total Tags: $totalTags, Total Favs: $totalFavs, Total Images: $totalImages, Shortest: $shortestLength, Longest: $longestLength, Total Words: $totalWords");
@@ -138,6 +152,15 @@ class _HomePageState extends ConsumerState<AchievementPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    List<Achievement> completedAchievements = [];
+    List<Achievement> lockedAchievements = [];
+    for(int i = 0; i < achievements.length; i++){
+      if(achievementStatus[i]) completedAchievements.add(achievements[i]);
+      else lockedAchievements.add(achievements[i]);
+    }
+
+    List<Achievement> finalAchievements = [...completedAchievements, ...lockedAchievements];
+
     return Container(
       padding: EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
@@ -167,11 +190,12 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               shrinkWrap: true,
               clipBehavior: Clip.none,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: showMoreAchievement ? achievements.length : min(3, achievements.length),
+              itemCount: showMoreAchievement ? finalAchievements.length : min(3, finalAchievements.length),
               itemBuilder: (BuildContext context, int index){
-                return AchievementCard(achievement: achievements[index], achieved: achievementStatus[index], themeData: themeData);
+                return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
               }
             ),
+
             SizedBox(height: 10,),
             InkWell(
               onTap: (){
