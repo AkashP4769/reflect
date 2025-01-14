@@ -5,6 +5,8 @@ import 'package:reflect/models/device.dart';
 import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/backend_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:reflect/services/cache_service.dart';
+import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/encryption_service.dart';
 
 class UserService extends BackendServices {
@@ -27,6 +29,9 @@ class UserService extends BackendServices {
       }
 
       await getUserSetting();
+      //import all if chapter doesnt exist
+      final chapters = CacheService().loadChaptersFromCache();
+      if(chapters == null) ChapterService().importAll();
 
       return body;
     } catch (e) {
