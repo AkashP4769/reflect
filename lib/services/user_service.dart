@@ -28,10 +28,10 @@ class UserService extends BackendServices {
         await http.post(Uri.parse('$baseUrl/users/updateDevice'), body: jsonEncode({'uid':uid, "device":device.toMap()}), headers: {'Content-Type': 'application/json'});
       }
 
-      await getUserSetting();
+      final userSetting = await getUserSetting();
       //import all if chapter doesnt exist
       final chapters = CacheService().loadChaptersFromCache();
-      if(chapters == null) ChapterService().importAll();
+      if(chapters == null && userSetting.encryptionMode != 'local') ChapterService().importAll();
 
       return body;
     } catch (e) {
