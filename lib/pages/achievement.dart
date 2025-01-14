@@ -52,7 +52,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     "Images Uploaded",
     "Shortest Entry",
     "Longest Entry",
-    "Total Words Written"
+    "Words Written"
   ];
   List<int> statisticsValue = [0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -209,6 +209,40 @@ class _HomePageState extends ConsumerState<AchievementPage> {
             SizedBox(height: 20,),
 
             Align(child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
+            SizedBox(height: 10,),
+            
+            //display stats in grid of 2 columns
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: statistics.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0),
+              itemBuilder: (BuildContext context, int index){
+                return Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                  color: themeData.colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5)
+                    )
+                  ]
+                ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.left,),
+                      SizedBox(height: 10,),
+                      Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,)),
+                    ],
+                  ),
+                );
+              }
+            )
           ],
         )
       ),
