@@ -310,9 +310,9 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
             TextButton(onPressed: () async {
               final status = await ChapterService().importAll();
               if(status) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Imported successfully")));
+                if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Imported successfully")));
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Import failed")));
+                if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Import failed")));
               }
               Navigator.pop(context);
             }, child: Text("Proceed")),

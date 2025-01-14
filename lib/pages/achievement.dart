@@ -107,14 +107,18 @@ class _HomePageState extends ConsumerState<AchievementPage> {
         totalImages += List.from(chapter['imageUrl'] ?? []).length;
 
         for(var entry in List<Map<dynamic, dynamic>>.from(chapter['entries'] ?? [])){
-          if(entry['isFav'] ?? false) totalFavs++;
+          if(entry['favourite'] ?? false) totalFavs++;
           /*if(entry['images'] != null && (entry['images'] as List).isNotEmpty){
             firstImage = true;
             totalImages += (entry['images'] as List).length;
           }*/
           if(entry['content'] != null){
-            final delta = quill.Document.fromJson(entry['content']);
-            final text = delta.toPlainText().split(" ");
+            String text;
+            if(entry['content'] == null || (entry['content'] as List).isEmpty) text = '';
+            else {
+              final delta = quill.Document.fromJson(entry['content']);
+              text = delta.toPlainText();
+            }
 
             shortestLength = shortestLength == 0 ? text.length : min(shortestLength, text.length);
             longestLength = max(longestLength, text.length);
