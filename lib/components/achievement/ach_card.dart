@@ -21,8 +21,8 @@ class AchievementCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
+            achievement.color.withOpacity(0.5),
             achievement.color.withOpacity(0.2),
-            achievement.color.withOpacity(0.1),
           ]
         ) : null,
         boxShadow: [
@@ -41,8 +41,8 @@ class AchievementCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(achievement.title, style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 16), textAlign: TextAlign.center,),
-              Text(achievement.description, style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.6), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
+              Text(achievement.title, style: themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w700, fontSize: 16), textAlign: TextAlign.center,),
+              Text(achievement.description, style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
             ],
           ),
           Icon(achievement.icon, color: achieved ? achievement.color : Colors.grey, size: 32,),

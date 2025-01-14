@@ -37,7 +37,6 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
     Achievement(title: "Short and sweet", description: "Write an entry with fewer than 50 words.", icon: Icons.fiber_manual_record, color: Colors.purpleAccent),
     Achievement(title: "Long-winded", description: "Write an entry with more than 1000 words.", icon: Icons.circle, color: Colors.purpleAccent),
-
   ];
 
   bool showMoreAchievement = false;
@@ -77,7 +76,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: showMoreAchievement ? achievements.length : min(3, achievements.length),
               itemBuilder: (BuildContext context, int index){
-                return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
+                return AchievementCard(achievement: achievements[index], achieved: index % 2 == 0 ? true : false, themeData: themeData);
               }
             ),
             SizedBox(height: 10,),
