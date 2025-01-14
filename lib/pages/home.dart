@@ -64,9 +64,11 @@ class _HomePageState extends ConsumerState<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Align(child: Text("Reflect", style: themeData.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600, fontSize: 28),), alignment: Alignment.center,),
+            SizedBox(height: 30,),
             Row(
               children: [
-                Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning" : datetime.hour < 18 ? "Good Afternoon" : "Good Evening"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 26, fontWeight: FontWeight.w600),),
+                Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning" : datetime.hour < 18 ? "Good Afternoon" : "Good Evening"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),),
                 SizedBox(width: 10,),
                 Icon((datetime.hour < 12 && datetime.hour > 6 ? Icons.wb_sunny : datetime.hour < 18 ? Icons.brightness_5 : Icons.brightness_3), color: datetime.hour < 6 && datetime.hour > 18 ? Colors.white : themeData.colorScheme.primary, size: 30,),
               ],

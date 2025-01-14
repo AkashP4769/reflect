@@ -17,6 +17,14 @@ class AchievementCard extends StatelessWidget {
         color: themeData.colorScheme.secondary,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: achieved ? achievement.color : Colors.black.withOpacity(0.1), width: 1),
+        gradient:achieved ? LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            achievement.color.withOpacity(0.2),
+            achievement.color.withOpacity(0.1),
+          ]
+        ) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),

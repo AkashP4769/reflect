@@ -94,7 +94,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
             Align(child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
           ],
-        ),
+        )
       ),
     );
   }}
