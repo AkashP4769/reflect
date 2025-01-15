@@ -22,7 +22,7 @@ class Device{
       deviceId: map['deviceId'],
       deviceName: map['deviceName'],
       deviceType: map['deviceType'],
-      publicKey: Map<String, String>.from(map['publicKey']),
+      publicKey: Map<String, String>.from(map['publicKey'] ?? {}),
       encryptedKey: map['encryptedKey']
     );
   }
