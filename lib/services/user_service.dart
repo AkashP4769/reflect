@@ -31,7 +31,7 @@ class UserService extends BackendServices {
       final userSetting = await getUserSetting();
       //import all if chapter doesnt exist
       final chapters = CacheService().loadChaptersFromCache();
-      if(chapters == null && userSetting.encryptionMode != 'local') ChapterService().importAll();
+      if(chapters == null && userSetting.encryptionMode != 'local') await ChapterService().importAll();
 
       return body;
     } catch (e) {

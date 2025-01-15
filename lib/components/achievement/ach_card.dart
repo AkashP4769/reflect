@@ -37,58 +37,91 @@ class _AchievementCardState extends State<AchievementCard> with SingleTickerProv
       animation: _controller,
       builder: (context, child) {
         final value = _controller.value; // Current animation value (0.0 to 1.0)
-        return Container(
-          height: 85,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: widget.achieved ? null : Colors.black.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: widget.achieved ? widget.achievement.color : Colors.black.withOpacity(0.1),
-              width: 1,
-            ),
-            gradient: widget.achieved
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    widget.achievement.color.withOpacity(0.5),
-                    widget.achievement.color.withOpacity(0.8),
-                    widget.achievement.color.withOpacity(0.5),
-                  ],
-                  stops: [
-                      (-0.3), // Dynamically calculated stops
-                      (value),
-                      (1.3),
-                    ],
-                )
-              : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 5)
-            )
-          ]
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Stack(
+
           children: [
-            
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              height: 85,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                //color: widget.achieved ? null : Colors.black.withOpacity(0.1),
+                color: widget.themeData.brightness == Brightness.dark ? Colors.black.withOpacity(0.1) : Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: widget.achieved ? widget.achievement.color : Colors.black.withOpacity(0.1),
+                  width: 1,
+                ),
+              )
+            ),
+            Container(
+              height: 85,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                //color: widget.achieved ? null : Colors.black.withOpacity(0.1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: widget.achieved ? widget.achievement.color : Colors.black.withOpacity(0.1),
+                  width: 1,
+                ),
+                gradient: widget.achieved
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        widget.achievement.color.withOpacity(0.5),
+                        widget.achievement.color.withOpacity(0.8),
+                        widget.achievement.color.withOpacity(0.5),
+                      ],
+                      stops: [
+                          (-0.3), // Dynamically calculated stops
+                          (value),
+                          (1.3),
+                        ],
+                    )
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.grey.withOpacity(0.5),
+                        Colors.grey.withOpacity(0.8),
+                        Colors.grey.withOpacity(0.5),
+                      ],
+                      stops: [
+                          (-0.3), // Dynamically calculated stops
+                          (value),
+                          (1.3),
+                        ],
+                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5)
+                )
+              ]
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.achievement.title, style: widget.themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w700, fontSize: 16), textAlign: TextAlign.center,),
-                Text(widget.achievement.description, style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
+                
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.achievement.title, style: widget.themeData.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w700, fontSize: 16), textAlign: TextAlign.center,),
+                    Text(widget.achievement.description, style: widget.themeData.textTheme.bodyMedium!.copyWith(color: widget.themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 12), textAlign: TextAlign.center,),
+                  ],
+                ),
+                Icon(widget.achievement.icon, color: widget.achieved ? widget.achievement.color : Colors.black38, size: 32,),
+                
               ],
             ),
-            Icon(widget.achievement.icon, color: widget.achieved ? widget.achievement.color : Colors.grey, size: 32,),
-            
+                  ),
           ],
-        ),
-      );
+        );
 
       }
     );
