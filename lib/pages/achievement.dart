@@ -166,7 +166,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     List<Achievement> finalAchievements = [...completedAchievements, ...lockedAchievements];
 
     return Container(
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -179,7 +179,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text("Achievements", style: themeData.textTheme.titleLarge,),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             /*GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -189,10 +189,14 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
               }
             )*/
-            Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
+            ),
             ListView.builder(
               shrinkWrap: true,
               clipBehavior: Clip.none,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               physics: const NeverScrollableScrollPhysics(),
               itemCount: showMoreAchievement ? finalAchievements.length : min(3, finalAchievements.length),
               itemBuilder: (BuildContext context, int index){
@@ -200,7 +204,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               }
             ),
 
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
             InkWell(
               onTap: (){
                 setState(() {
@@ -210,22 +214,27 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               
               child: Text(showMoreAchievement ? "Show Less" : "Show More", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.primary, fontSize: 16), textAlign: TextAlign.center,),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
 
-            Align(child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
-            SizedBox(height: 10,),
+            Align(child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
+            ), alignment: Alignment.centerLeft,),
+            const SizedBox(height: 10,),
             
             //display stats in grid of 2 columns
             GridView.builder(
               shrinkWrap: true,
+              clipBehavior: Clip.none,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: statistics.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0),
               itemBuilder: (BuildContext context, int index){
                 return Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                  color: themeData.colorScheme.secondary,
+                  color: themeData.colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
@@ -240,13 +249,14 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.left,),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,)),
                     ],
                   ),
                 );
               }
-            )
+            ),
+            const SizedBox(height: 20,),
           ],
         )
       ),
