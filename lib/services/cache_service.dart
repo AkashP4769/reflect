@@ -213,7 +213,13 @@ class CacheService{
     TagService tagService = TagService();
 
     for(var chapter in chaptersData){
-      await entryBox.put(chapter['_id'], chapter['entries']);
+      if(chapter["encrypted"]){
+        await entryBox.put(chapter['_id'], await EncryptionService().decryptEntriesOfChapter(chapter['entries'] as List<Map<String, dynamic>>));
+      }
+      else{
+        await entryBox.put(chapter['_id'], chapter['entries']);
+      }
+
       if(chapter['entries'] != null && (chapter['entries'] as List).isNotEmpty) tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
 
       chapter.remove("entries");
@@ -238,6 +244,8 @@ class CacheService{
     for(var _chapter in cachedChapters){
       final chapter = Map<String, dynamic>.from(_chapter as Map);
       final chapterId = chapter['_id'];
+      chapter['encrypted'] = encrypted;
+
       final entries = entryBox.get(chapterId);
 
       if(encrypted){
@@ -247,25 +255,6 @@ class CacheService{
       else{
         chapter['entries'] = entries;
       }
-      
-      chaptersData.add(chapter);
-    }
-
-    //print(chaptersData);
-    return chaptersData;
-  }
-  
-  Future<List<Map<String, dynamic>>> exportFromCacheEncrypted(String uid) async {
-    final cachedData = chapterBox.get(uid);
-    if(cachedData == null) return [];
-
-    final List cachedChapters = cachedData["chapters"] ?? [];
-    List<Map<String, dynamic>> chaptersData = [];
-    final encryptionService = EncryptionService();
-
-    for(var _chapter in cachedChapters){
-      final chapter = Map<String, dynamic>.from(_chapter as Map);
-      final chapterId = chapter['_id'];
       
       chaptersData.add(chapter);
     }

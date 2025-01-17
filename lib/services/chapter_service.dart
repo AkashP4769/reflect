@@ -1,10 +1,12 @@
 import 'dart:convert';
-
+import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:reflect/models/chapter.dart';
 import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/backend_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/cache_service.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 import 'package:reflect/services/user_service.dart';
 
@@ -101,9 +103,16 @@ class ChapterService extends BackendServices {
 
   Future<bool> exportAll() async {
     final encryptedChapter = await CacheService().exportFromCache(user!.uid, encrypted: true);
-    print("encryptedChapter: ${jsonEncode(encryptedChapter)}");
+    //print("encryptedChapter: ${jsonEncode(encryptedChapter)}");
 
+    final EncryptionService encryptionService = EncryptionService();
     //final decrypted
+    final decryptedEntries = [];
+    for(var chapter in encryptedChapter){
+      final decryptedChapter = Map<String, dynamic>.from(chapter);
+      decryptedChapter['entries'] = await encryptionService.decryptEntriesOfChapter(chapter['entries'] as List<Map<String, dynamic>>);
+      decryptedEntries.add(decryptedChapter['entries']);
+    }
 
     return true;
 
