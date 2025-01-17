@@ -11,6 +11,8 @@ import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/pages/waiting.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:reflect/services/cache_service.dart';
+import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/user_service.dart';
 
@@ -60,6 +62,10 @@ class _AuthPageState extends State<AuthPage> {
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
 
+    final userSetting = UserService().getUserSettingFromCache();
+
+    
+
     if(authResponse['encryptionMode'] == 'encrypted'){
       print("encrypted");
       final encryptionService = EncryptionService();
@@ -69,10 +75,8 @@ class _AuthPageState extends State<AuthPage> {
       else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
     }
 
-    /*if([0, 1, 2, 4].contains(authResponse['code']) || authResponse['encryptionMode'] != 'encrypted'){
-      authPermission = true;
-      saveAuthPermission(true);
-    }*/
+    final chapters = CacheService().loadChaptersFromCache();
+    if(chapters == null && userSetting.encryptionMode != 'local') await ChapterService().importAll();
 
     saveAuthPermission(authPermission);
     print("authPermission changed: $authPermission");
