@@ -280,7 +280,7 @@ class EncryptionService {
 
       entry["title"] = encryptData(entry["title"], key);
       entry["content"] = tempContent.map((content) => encryptNestedData(Map<String, dynamic>.from(content), key)).toList();
-      entry["tags"] = entry["tags"].map((tag) => encryptNestedData(tag, key)).toList();
+      entry["tags"] = entry["tags"].map((tag) => encryptNestedData(Map<String, dynamic>.from(tag), key)).toList();
       entry["encrypted"] = true;
     }
 

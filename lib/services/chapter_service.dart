@@ -100,8 +100,8 @@ class ChapterService extends BackendServices {
   }
 
   Future<bool> exportAll() async {
-    final encryptedChapter = CacheService().exportFromCacheEncrypted(user!.uid);
-    print("encryptedChapter: $encryptedChapter");
+    final encryptedChapter = await CacheService().exportFromCacheEncrypted(user!.uid);
+    print("encryptedChapter: ${jsonEncode(encryptedChapter)}");
 
     return true;
 

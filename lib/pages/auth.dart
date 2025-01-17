@@ -38,11 +38,13 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void saveAuthPermission(bool authP) async {
+    print("saving authPermission: $authP");
     await settingBox.put('authPermission', authP);
   }
 
   void loadAuthPermission() async {
     authPermission = settingBox.get('authPermission', defaultValue: false);
+    print("loading authPermission: $authPermission");
     final UserSetting userSetting = await UserService().getUserSettingFromCache();
     bool flag = true;
 
