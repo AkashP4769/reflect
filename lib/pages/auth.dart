@@ -38,7 +38,7 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void saveAuthPermission(bool authP) async {
-    settingBox.put('authPermission', authP);
+    await settingBox.put('authPermission', authP);
   }
 
   void loadAuthPermission() async {
@@ -71,6 +71,7 @@ class _AuthPageState extends State<AuthPage> {
       final encryptionService = EncryptionService();
       final symKey = await encryptionService.getSymmetricKey();
 
+      print("symKey: $symKey, keyValidator: ${authResponse['keyValidator']}");
       if(symKey == null) authPermission = false;
       else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
     }

@@ -4,6 +4,7 @@ import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/models/tag.dart';
 import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
 
@@ -245,5 +246,24 @@ class CacheService{
     return chaptersData;
   }
   
+  List<Map<String, dynamic>> exportFromCacheEncrypted(String uid){
+    final cachedData = chapterBox.get(uid);
+    if(cachedData == null) return [];
+
+    final List cachedChapters = cachedData["chapters"] ?? [];
+    List<Map<String, dynamic>> chaptersData = [];
+    final encryptionService = EncryptionService();
+
+    for(var _chapter in cachedChapters){
+      final chapter = Map<String, dynamic>.from(_chapter as Map);
+      final chapterId = chapter['_id'];
+      final entries = List.from(entryBox.get(chapterId) ?? []);
+      chapter['entries'] = encryptionService.encryptEntriesOfChapter(entries.map((e) => Map<String, dynamic>.from(e as Map)).toList() as List<Map<String, dynamic>>);
+      chaptersData.add(chapter);
+    }
+
+    //print(chaptersData);
+    return chaptersData;
+  }
   
 }
