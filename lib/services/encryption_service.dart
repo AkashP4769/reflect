@@ -285,7 +285,22 @@ class EncryptionService {
     }
 
     return entries;
+  }
 
+  Future<List<Map<String, dynamic>>?> decryptEntriesOfChapter(List<Map<String, dynamic>> entries) async {
+    final key = await getSymmetricKey();
+    if(key == null) return null;
+
+    for(var entry in entries){
+      List tempContent = entry["content"] ?? [];
+
+      entry["title"] = decryptData(entry["title"], key);
+      entry["content"] = tempContent.map((content) => decryptNestedData(content, key)).toList();
+      entry["tags"] = entry["tags"].map((tag) => decryptNestedData(tag, key)).toList();
+      entry["encrypted"] = false;
+    }
+
+    return entries;
   }
 
 }

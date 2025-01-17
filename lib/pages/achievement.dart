@@ -68,10 +68,10 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     calculateAcheivements();
   }
 
-  void calculateAcheivements(){
+  void calculateAcheivements() async {
     final cacheService = CacheService();
     final userSetting = UserService().getUserSettingFromCache();
-    final chapterDetails = cacheService.exportFromCache(userSetting.uid);
+    final chapterDetails = await cacheService.exportFromCache(userSetting.uid);
     final allTags = TagService().getAllTags();
 
     bool firstEntry = false;

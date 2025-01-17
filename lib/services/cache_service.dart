@@ -222,23 +222,32 @@ class CacheService{
     }
 
     tags = tags.toSet().toList();
-    //print("tags ${tags.toString()}");
     tagService.updateTags(tags);
 
     chapterBox.put(uid, {"chapters": chapters});
   }
 
-  List<Map<String, dynamic>> exportFromCache(String uid){
+  Future<List<Map<String, dynamic>>> exportFromCache(String uid, {bool encrypted = false}) async {
     final cachedData = chapterBox.get(uid);
     if(cachedData == null) return [];
 
     final List cachedChapters = cachedData["chapters"] ?? [];
     List<Map<String, dynamic>> chaptersData = [];
+    final encryptionService = EncryptionService();
+
     for(var _chapter in cachedChapters){
       final chapter = Map<String, dynamic>.from(_chapter as Map);
       final chapterId = chapter['_id'];
       final entries = entryBox.get(chapterId);
-      chapter['entries'] = entries;
+
+      if(encrypted){
+        final entries = List.from(entryBox.get(chapterId) ?? []);
+        chapter['entries'] = await encryptionService.encryptEntriesOfChapter(entries.map((e) => Map<String, dynamic>.from(e as Map)).toList() as List<Map<String, dynamic>>);
+      }
+      else{
+        chapter['entries'] = entries;
+      }
+      
       chaptersData.add(chapter);
     }
 
@@ -257,8 +266,7 @@ class CacheService{
     for(var _chapter in cachedChapters){
       final chapter = Map<String, dynamic>.from(_chapter as Map);
       final chapterId = chapter['_id'];
-      final entries = List.from(entryBox.get(chapterId) ?? []);
-      chapter['entries'] = await encryptionService.encryptEntriesOfChapter(entries.map((e) => Map<String, dynamic>.from(e as Map)).toList() as List<Map<String, dynamic>>);
+      
       chaptersData.add(chapter);
     }
 
