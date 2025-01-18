@@ -19,6 +19,7 @@ import 'package:reflect/pages/entry.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/conversion_service.dart';
+import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:reflect/services/entrylist_service.dart';
 import 'package:reflect/services/image_service.dart';
@@ -246,11 +247,14 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
-      chapterBox.put(userId, {"chapters": data});
+      cacheService.addChaptersToCache(data);
 
-      data.forEach((chapter){
+      data.forEach((chapter) async {
         if(chapter["_id"] == widget.chapter!.id) {
-          this.chapter = Chapter.fromMap(chapter);
+          if(chapter["encrypted"]){
+            this.chapter = Chapter.fromMap(await EncryptionService().decryptChapter(chapter));
+          }
+          else this.chapter = Chapter.fromMap(chapter);
         }
       });
     }

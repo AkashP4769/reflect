@@ -38,6 +38,12 @@ class ChapterService extends BackendServices {
   Future<bool> createChapter(Map<String, dynamic> chapter) async {
     try{
       chapter['uid'] = user!.uid;
+      final userSetting = UserService().getUserSettingFromCache();
+
+      if(userSetting.encryptionMode == 'encrypted'){
+        chapter = await EncryptionService().encryptChapter(chapter);
+      }
+
       print(jsonEncode(chapter));
       final response = await http.post(Uri.parse('$baseUrl/chapters/'), body: jsonEncode({"chapter":chapter}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 201){
@@ -70,6 +76,12 @@ class ChapterService extends BackendServices {
   Future<bool> updateChapter(String chapterId, Map<String, dynamic> chapter) async {
     try{
       print("sending chapter $chapter");
+      final userSetting = UserService().getUserSettingFromCache();
+
+      if(userSetting.encryptionMode == 'encrypted'){
+        chapter = await EncryptionService().encryptChapter(chapter);
+      }
+      
       final response = await http.post(Uri.parse('$baseUrl/chapters/update/'), body: jsonEncode({"chapter":chapter}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200){
         print("Chapter updated successfully");

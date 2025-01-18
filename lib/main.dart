@@ -43,8 +43,8 @@ void main() async {
   //final chapterbox = Hive.box('chapters');
   //chapterbox.clear();
 
-  final settingBox = Hive.box('settings');
-  settingBox.clear();
+  //final settingBox = Hive.box('settings');
+  //settingBox.clear();
 
   //await FlutterSecureStorage().deleteAll();
 

@@ -303,4 +303,28 @@ class EncryptionService {
     return entries;
   }
 
+  Future<Map<String, dynamic>> encryptChapter(Map<String, dynamic> chapter) async{
+    final key = await getSymmetricKey();
+    if(key == null) return {};
+
+    chapter['encrypted'] = true;
+    chapter['title'] = encryptData(chapter['title'], key);
+    chapter['description'] = encryptData(chapter['description'], key);
+    chapter['imageUrl'] = List<String>.from(chapter['imageUrl']).map((url) => encryptData(url, key)).toList();
+
+    return chapter;
+  }
+
+  Future<Map<String, dynamic>> decryptChapter(Map<String, dynamic> chapter) async{
+    final key = await getSymmetricKey();
+    if(key == null) return {};
+
+    chapter['encrypted'] = false;
+    chapter['title'] = decryptData(chapter['title'], key);
+    chapter['description'] = decryptData(chapter['description'], key);
+    chapter['imageUrl'] = List<String>.from(chapter['imageUrl']).map((url) => decryptData(url, key)).toList();
+
+    return chapter;
+  }
+
 }

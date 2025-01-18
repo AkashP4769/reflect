@@ -7,6 +7,7 @@ import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 import '../models/chapter.dart';
 
@@ -50,7 +51,20 @@ class CacheService{
 
   Future<void> addChaptersToCache(List<Map<String,dynamic>>? data) async {
     print("adding data to  cache");
-    await chapterBox.put(userId, {"chapters": data});
+    final userSetting = UserService().getUserSettingFromCache();
+    List<Map<String, dynamic>> chapters = [];
+    
+    for(var _chapter in data ?? []) {
+      Map<String, dynamic> chapter = Map<String, dynamic>.from(_chapter as Map);
+      if(chapter['encrypted']){
+        chapter = await EncryptionService().decryptChapter(chapter);
+      }
+
+      chapters.add(chapter);
+    }
+
+
+    await chapterBox.put(userId, {"chapters": chapters});
     await TimestampService().updateChapterTimestamp();
   }
 
@@ -223,7 +237,8 @@ class CacheService{
 
     for(var chapter in chaptersData){
       if(chapter["encrypted"]){
-        final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(List<Map<String, dynamic>>.from(chapter['entries']));
+        chapter = await EncryptionService().decryptChapter(Map<String, dynamic>.from(chapter as Map));
+        final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(List<Map<String, dynamic>>.from(chapter['entries'] ?? []));
         print("decryptedEntries: $decryptedEntries");
         await entryBox.put(chapter['_id'], decryptedEntries);
       }
@@ -254,7 +269,15 @@ class CacheService{
     final encryptionService = EncryptionService();
 
     for(var _chapter in cachedChapters){
-      final chapter = Map<String, dynamic>.from(_chapter as Map);
+      Map<String, dynamic>? chapter;
+      if(encrypted){
+        chapter = await encryptionService.encryptChapter(Map<String, dynamic>.from(_chapter as Map));
+        if(chapter == null) continue;
+      }
+      else{
+        chapter = Map<String, dynamic>.from(_chapter as Map);
+      }
+
       final chapterId = chapter['_id'];
       chapter['encrypted'] = encrypted;
 
