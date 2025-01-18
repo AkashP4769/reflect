@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:reflect/services/backend_services.dart';
 import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/timestamp_service.dart';
+import 'package:reflect/services/user_service.dart';
 
 class EntryService extends BackendServices {
   Future<List<Map<String, dynamic>>?> getEntries(String chapterId, bool? explicit) async {
@@ -32,7 +33,12 @@ class EntryService extends BackendServices {
 
   Future<bool> createEntry(Map<String, dynamic> entry) async {
     try{
-      print(entry.toString());
+      final userSetting = UserService().getUserSettingFromCache();
+
+      if(userSetting.encryptionMode == 'encrypted'){
+        entry = (await EncryptionService().encryptEntriesOfChapter([entry]))![0];
+      }
+
       final response = await http.post(Uri.parse('$baseUrl/entries/'), body: jsonEncode({"entrybody":entry, 'uid':user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 201) return true;
       return false;
@@ -44,8 +50,11 @@ class EntryService extends BackendServices {
 
   Future<bool> updateEntry(Map<String, dynamic> entry) async {
     try{
-      EncryptionService encryptionService = EncryptionService();
-      //encryptionService.encryptData(entry, )
+      final userSetting = UserService().getUserSettingFromCache();
+
+      if(userSetting.encryptionMode == 'encrypted'){
+        entry = (await EncryptionService().encryptEntriesOfChapter([entry]))![0];
+      }
 
       final response = await http.post(Uri.parse('$baseUrl/entries/update/'), body: jsonEncode({"entry":entry, 'uid':user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200) return true;

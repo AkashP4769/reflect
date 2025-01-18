@@ -100,7 +100,16 @@ class CacheService{
   }
 
   Future<void> addEntryToCache(List<Map<String, dynamic>>? data, String chapterId) async {
-    await entryBox.put(chapterId, data);
+    if(data == null) return;
+
+    if(data[0]['encrypted']){
+      final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(data);
+      await entryBox.put(chapterId, decryptedEntries);
+    }
+    else{
+      await entryBox.put(chapterId, data);
+    }
+
     final tagService = TagService();
     final entryTags = tagService.parseTagFromEntryData(data!);
     final currentTags = tagService.getAllTags();

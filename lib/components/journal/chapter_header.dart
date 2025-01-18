@@ -31,7 +31,6 @@ class ChapterHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("chapter here ${chapter.toString()}");
     return Container(
       width: double.infinity,
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
