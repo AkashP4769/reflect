@@ -102,24 +102,14 @@ class ChapterService extends BackendServices {
   }
 
   Future<bool> exportAll() async {
-    final encryptedChapter = await CacheService().exportFromCache(user!.uid, encrypted: true);
-    //print("encryptedChapter: ${jsonEncode(encryptedChapter)}");
+    //final encryptedChapter = await CacheService().exportFromCache(user!.uid, encrypted: true);
+    final userSetting = UserService().getUserSettingFromCache();
+    print(userSetting.encryptionMode);
 
-    final EncryptionService encryptionService = EncryptionService();
-    //final decrypted
-    final decryptedEntries = [];
-    for(var chapter in encryptedChapter){
-      final decryptedChapter = Map<String, dynamic>.from(chapter);
-      decryptedChapter['entries'] = await encryptionService.decryptEntriesOfChapter(chapter['entries'] as List<Map<String, dynamic>>);
-      decryptedEntries.add(decryptedChapter['entries']);
-    }
-
-    return true;
-
-    /*try{
+    try{
       print("Exporting chapters");
       //Error: This expression has type 'void' and can't be used.
-      final response = await http.post(Uri.parse('$baseUrl/chapters/export/'), body: jsonEncode({"chapters":CacheService().exportFromCache(user!.uid), "uid": user!.uid}), headers: {'Content-Type': 'application/json'});
+      final response = await http.post(Uri.parse('$baseUrl/chapters/export/'), body: jsonEncode({"chapters":await CacheService().exportFromCache(user!.uid, encrypted: userSetting.encryptionMode == 'encrypted' ? true : false), "uid": user!.uid}), headers: {'Content-Type': 'application/json'});
       if(response.statusCode == 200){
         print("Exporting chapters");
         return true;
@@ -129,6 +119,6 @@ class ChapterService extends BackendServices {
     } catch(e){
       print("Error exporting chapters: $e");
       return false;
-    }*/
+    }
   }
 }
