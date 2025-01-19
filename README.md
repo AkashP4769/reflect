@@ -98,6 +98,15 @@ Celebrate your journaling journey with achievements! Unlock badges for:
 
 ---
 
+![screenshot](/screenshots/1.jpg)
+![screenshot](/screenshots/2.jpg)
+![screenshot](/screenshots/3.jpg)
+![screenshot](/screenshots/4.jpg)
+![screenshot](/screenshots/5.jpg)
+![screenshot](/screenshots/6.jpg)
+![screenshot](/screenshots/7.jpg)
+![screenshot](/screenshots/8.jpg)
+
 ## Technologies Used
 ### Frontend
 - **Flutter**: For building a cross-platform, responsive UI.
