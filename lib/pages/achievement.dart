@@ -113,9 +113,6 @@ class _HomePageState extends ConsumerState<AchievementPage> {
             int textLength;
             if(entry['content'] == null || (entry['content'] as List).isEmpty) textLength = 0;
             else {
-              if(entry['title'] == "Test123"){
-                print("Entry: ${quill.Document.fromJson(entry['content']).toPlainText().split(" ").length}");
-              }
               final delta = quill.Document.fromJson(entry['content']);
               textLength = delta.toPlainText().split(" ").length;
             }
