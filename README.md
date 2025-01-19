@@ -1,6 +1,6 @@
-# Journal App - README
+# Reflect - README
 
-Welcome to the Journal App! This README provides an overview of the app, its features, and the technologies used to build it. The app is designed to help users organize their thoughts, memories, and ideas through a structured journaling experience.
+Welcome to the Reflect. This README provides an overview of the app, its features, and the technologies used to build it. The app is designed to help users organize their thoughts, memories, and ideas through a structured journaling experience.
 
 ---
 
@@ -13,14 +13,15 @@ Welcome to the Journal App! This README provides an overview of the app, its fea
 6. [Cache Management](#cache-management)
 7. [Save Modes](#save-modes)
 8. [Achievements](#achievements)
-9. [Technologies Used](#technologies-used)
-10. [Setup and Installation](#setup-and-installation)
-11. [Contributing](#contributing)
+9. [Tags and Accessibility Features](#tags-and-accessibility-features)
+10. [Technologies Used](#technologies-used)
+11. [Setup and Installation](#setup-and-installation)
+12. [Contributing](#contributing)
 
 ---
 
 ## About the App
-The Journal App is a versatile platform for users to write, organize, and manage their entries. It introduces a unique chapter-based structure for categorization and supports offline and cloud-synced journaling, along with encryption for enhanced privacy. With robust features and a user-friendly design, the app is perfect for both personal and professional use.
+Reflect is a versatile platform for users to write, organize, and manage their entries. It introduces a unique chapter-based structure for categorization and supports offline and cloud-synced journaling, along with encryption for enhanced privacy. With robust features and a user-friendly design, the app is perfect for both personal and professional use.
 
 ---
 
@@ -31,6 +32,7 @@ The Journal App is a versatile platform for users to write, organize, and manage
 - **Robust Cache Management:** Efficient caching system for seamless offline access, tailored to individual users and chapters.
 - **Multiple Save Modes:** Flexible save options, including local-only, cloud-synced, and encrypted cloud-synced modes.
 - **Achievements:** Unlock milestones for writing streaks, chapter organization, and word counts.
+- **Tags and Accessibility Features:** Add tags to entries and utilize filtering, sorting, and searching for enhanced navigation.
 
 ---
 
@@ -80,6 +82,20 @@ Celebrate your journaling journey with achievements! Unlock badges for:
 
 ---
 
+## Tags and Accessibility Features
+### Tags
+- **Custom Tags:** Users can add tags to entries to enhance organization and categorization.
+- **Tag Management:** Tags are reusable and help in grouping similar entries.
+- **Insights with Tags:** Track and analyze tag usage for better journaling insights.
+
+### Accessibility Features
+- **Search:** Quickly locate entries by searching keywords or tags.
+- **Filter:** Filter entries by date, tags, chapters, or other attributes.
+- **Sort:** Sort entries alphabetically, by creation date, or by modification date.
+- **Favorites:** Mark and access frequently used or important entries with ease.
+
+---
+
 ## Technologies Used
 ### Frontend
 - **Flutter**: For building a cross-platform, responsive UI.
@@ -111,17 +127,4 @@ Celebrate your journaling journey with achievements! Unlock badges for:
    ```bash
    flutter run
    ```
-
----
-
-## Contributing
-We welcome contributions to improve the Journal App. Please follow the standard fork-and-pull request model:
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Commit your changes with clear messages.
-4. Push to your fork and create a pull request.
-
----
-
-Thank you for using the Journal App! We hope it enhances your journaling experience.
 
