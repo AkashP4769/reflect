@@ -2,6 +2,8 @@
 
 Welcome to the Reflect. This README provides an overview of the app, its features, and the technologies used to build it. The app is designed to help users organize their thoughts, memories, and ideas through a structured journaling experience.
 
+**Reflect Backend** - https://github.com/FrostyCake47/reflect-backend
+
 ---
 
 ## Table of Contents
