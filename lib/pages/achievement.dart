@@ -108,24 +108,24 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
         for(var entry in List<Map<dynamic, dynamic>>.from(chapter['entries'] ?? [])){
           if(entry['favourite'] ?? false) totalFavs++;
-          /*if(entry['images'] != null && (entry['images'] as List).isNotEmpty){
-            firstImage = true;
-            totalImages += (entry['images'] as List).length;
-          }*/
+
           if(entry['content'] != null){
-            String text;
-            if(entry['content'] == null || (entry['content'] as List).isEmpty) text = '';
+            int textLength;
+            if(entry['content'] == null || (entry['content'] as List).isEmpty) textLength = 0;
             else {
+              if(entry['title'] == "Test123"){
+                print("Entry: ${quill.Document.fromJson(entry['content']).toPlainText().split(" ").length}");
+              }
               final delta = quill.Document.fromJson(entry['content']);
-              text = delta.toPlainText();
+              textLength = delta.toPlainText().split(" ").length;
             }
 
-            shortestLength = shortestLength == 0 ? text.length : min(shortestLength, text.length);
-            longestLength = max(longestLength, text.length);
-            totalWords += text.length;
+            shortestLength = shortestLength == 0 ? textLength : min(shortestLength, textLength);
+            longestLength = max(longestLength, textLength);
+            totalWords += textLength;
 
-            if(text.length < 50) shortEntry = true;
-            if(text.length > 1000) longEntry = true;
+            if(textLength < 50) shortEntry = true;
+            if(textLength > 1000) longEntry = true;
           }
         }
       }
