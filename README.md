@@ -97,15 +97,21 @@ Celebrate your journaling journey with achievements! Unlock badges for:
 - **Favorites:** Mark and access frequently used or important entries with ease.
 
 ---
+<p align="center">
+   <img src="/screenshots/1.jpg" width="256">
+   <img src="/screenshots/2.jpg" width="256">
+</p>
+<p align="center">
+   <img src="/screenshots/3.jpg" width="256">
+   <img src="/screenshots/4.jpg" width="256">
+   <img src="/screenshots/5.jpg" width="256">
+</p>
+<p align="center">
+   <img src="/screenshots/6.jpg" width="256">
+   <img src="/screenshots/7.jpg" width="256">
+   <img src="/screenshots/8.jpg" width="256">
+</p>
 
-![screenshot](/screenshots/1.jpg)
-![screenshot](/screenshots/2.jpg)
-![screenshot](/screenshots/3.jpg)
-![screenshot](/screenshots/4.jpg)
-![screenshot](/screenshots/5.jpg)
-![screenshot](/screenshots/6.jpg)
-![screenshot](/screenshots/7.jpg)
-![screenshot](/screenshots/8.jpg)
 
 ## Technologies Used
 ### Frontend
