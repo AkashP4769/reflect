@@ -15,10 +15,10 @@ class KeyComponent extends StatefulWidget {
 
 class _KeyComponentState extends State<KeyComponent> {
   //Map<String, Map<String, String>> rsaKeys = {'privateKey': {'exponent':'null', 'modulus':'null'}, 'publicKey': {'exponent':'null', 'modulus':'null'}};
-  Uint8List symmetricKey = Uint8List(0);
-  String data = "my name is omawea";
+  Uint8List? symmetricKey = Uint8List(0);
+  String data = "my name is awesome";
   Map<String, dynamic> nestedData = {
-    'name': 'omawea',
+    'name': 'My cool name',
     'age': 20,
     'address': {
       'street': '1234',
@@ -35,31 +35,47 @@ class _KeyComponentState extends State<KeyComponent> {
 
   void getKeys() async {
     //final keyPair = encryptionService.generateSymmetricKey("abcd");
-    symmetricKey = (await encryptionService.getSymmetricKey())!; //keyPair['key']!;
+    symmetricKey = (await encryptionService.getSymmetricKey()); //keyPair['key']!;
     setState(() {});
   }
 
   void encryptData() async {
-    data = await encryptionService.encryptData(data, symmetricKey);
+    if(symmetricKey == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Generate symmetric key first")));
+      return;
+    }
+    data = await encryptionService.encryptData(data, symmetricKey!);
     toggleEncryption = !toggleEncryption;
     setState(() {});
   }
 
   void decryptData() async {
-    data = await encryptionService.decryptData(data, symmetricKey);
+    if(symmetricKey == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Generate symmetric key first")));
+      return;
+    }
+    data = await encryptionService.decryptData(data, symmetricKey!);
     toggleEncryption = !toggleEncryption;
     setState(() {});
   }
 
   void encryptNestedData() {
-    nestedEnc = encryptionService.encryptNestedData(nestedData, symmetricKey);
+    if(symmetricKey == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Generate symmetric key first")));
+      return;
+    }
+    nestedEnc = encryptionService.encryptNestedData(nestedData, symmetricKey!);
     nestedData = {};
     toggleNestedEnc = !toggleNestedEnc;
     setState(() {});
   }
 
   void decryptNestedData() {
-    nestedData = encryptionService.decryptNestedData(nestedEnc, symmetricKey);
+    if(symmetricKey == null){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Generate symmetric key first")));
+      return;
+    }
+    nestedData = encryptionService.decryptNestedData(nestedEnc, symmetricKey!);
     nestedEnc = 'null';
     toggleNestedEnc = !toggleNestedEnc;
     setState(() {});
@@ -81,7 +97,7 @@ class _KeyComponentState extends State<KeyComponent> {
             ElevatedButton(onPressed: getKeys, child: Text("Generate Symmetric Key", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
             //ElevatedButton(onPressed: (){toggleEncryption == false ? encryptSymKey() : decryptSymKey();}, child: Text("Encrypt/Decrypt", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),)),
             SizedBox(height: 20),
-            Text("Symmetric key: ${base64Encode(symmetricKey)}"),
+            Text("Symmetric key: ${base64Encode(symmetricKey ?? [])}"),
             //Text("Private key: \nexponent ${rsaKeys['privateKey']!['exponent']}\nmodulus ${rsaKeys['privateKey']!['modulus']}"),
             //Text("Public key: \nexponent ${rsaKeys['publicKey']!['exponent']}\nmodulus ${rsaKeys['publicKey']!['modulus']}"),
 

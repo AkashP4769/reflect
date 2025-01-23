@@ -46,11 +46,11 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
 
   Future<void> _showConfirmationDialog(String newValue, ThemeData themeData) async {
     final symKey = await EncryptionService().getSymmetricKey();
+
     if(newValue == 'encrypted' && symKey == null) {
       final bool everEncrypted = await userService.everEncrypted();
       if(everEncrypted) {
         await _showValidatePasswordDialog(themeData, userService.getUserSettingFromCache());
-        return;
       }
       else {
         //create new password
@@ -58,8 +58,20 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
         if(_password != null){
           await userService.generateKeyAndUploadSalt(_password);
         }
-        return;
       }
+
+      await userService.updateEncryptionMode(newValue);
+      
+      widget.refreshPage(true);
+      selectedSave = newValue;
+      if(mounted) setState(() {});
+
+      if(newValue == 'encrypted' || newValue == 'unencrypted'){
+        await ChapterService().importAll();
+        await ChapterService().exportAll();
+      }
+
+      return;
     }
 
     final bool? result = await showDialog<bool>(
@@ -84,9 +96,16 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
 
     if (result == true) {
       await userService.updateEncryptionMode(newValue);
+      
       widget.refreshPage(true);
       selectedSave = newValue;
-      setState(() {});
+      if(mounted) setState(() {});
+
+    }
+
+    if(newValue == 'encrypted' || newValue == 'unencrypted'){
+      await ChapterService().importAll();
+      await ChapterService().exportAll();
     }
   }
 
