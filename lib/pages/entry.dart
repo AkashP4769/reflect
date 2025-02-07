@@ -71,7 +71,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     //entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
     
     //panelController.hide();
-    date = widget.entry.date;
+    //print("date: ${widget.entry.date}");
+    //print("timezone: ${widget.entry.date.toLocal().timeZoneOffset.inMinutes}");
+    int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
+    bool isPositive = timezone >= 0 ? true : false;
+
+    if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
+    else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
+
     isFavourite = widget.entry.favourite ?? false;
 
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(editorFocusNode: contentFocusNode);
@@ -121,9 +128,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentOffset = quillController.selection.base.offset;
-      print("currentOffset: $currentOffset | length: ${quillController.document.length}");
+      //print("currentOffset: $currentOffset | length: ${quillController.document.length}");
       if (scrollController.hasClients && currentOffset > quillController.document.length - 200) {
-        print("scrolling");
+        //print("scrolling");
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 200),
@@ -172,7 +179,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Entry'),
-        content: const Text('Are you sure you want to delete this entry?'),
+        content: const Text('Are you sure you want to delet this entry?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -222,6 +229,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             );
             setState(() {
               date = selectedDateTime;
+              print("selectedDate: ${selectedDateTime.toString()}");
               isDateEdited = true;
             }); // You can use the selectedDateTime as needed.
           }
@@ -235,7 +243,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       context: context, 
       builder: (context) => TagSelectionBox(themeData: themeData, tags: entryTags),
     );
-    print(newEntryTags.toString());
+    //print(newEntryTags.toString());
     if(newEntryTags != null) {
       entryTags = newEntryTags;
       isTagsEdited = true;
@@ -339,7 +347,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                     ],
                   ),
-                  
+
                   TextField(
                     controller: titleController,
                     focusNode: titleFocusNode,
@@ -370,7 +378,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                           placeholder: "Start writing here...",
                           keyboardAppearance: themeData.brightness,
                           onPerformAction: (TextInputAction action) {
-                            print(action.toString());
+                            //print(action.toString());
                           },
                           
                           customStyles: quill.DefaultStyles(
