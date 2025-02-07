@@ -240,7 +240,7 @@ class CacheService{
         chapter = await EncryptionService().decryptChapter(Map<String, dynamic>.from(chapter as Map));
         final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(List<Map<String, dynamic>>.from(chapter['entries'] ?? []));
         print("decryptedEntries: $decryptedEntries");
-        await entryBox.put(chapter['_id'], decryptedEntries);
+        if(decryptedEntries != null) await entryBox.put(chapter['_id'], decryptedEntries);
       }
       else{
         await entryBox.put(chapter['_id'], chapter['entries']);
@@ -248,9 +248,11 @@ class CacheService{
 
       if(chapter['entries'] != null && (chapter['entries'] as List).isNotEmpty) tags.addAll(tagService.parseTagFromEntryData(List<Map<String, dynamic>>.from(chapter['entries'])));
 
-      chapter['encrypted'] = false;
-      chapter.remove("entries");
-      chapters.add(chapter);
+      if(chapter.isNotEmpty){
+        chapter['encrypted'] = false;
+        chapter.remove("entries");
+        chapters.add(chapter);
+      }
   
     }
 

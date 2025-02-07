@@ -34,19 +34,19 @@ void main() async {
   await Hive.openBox('sorts');
 
 
-  //final timestampBox = Hive.box('timestamps');
-  //timestampBox.clear();
+  /*final timestampBox = Hive.box('timestamps');
+  timestampBox.clear();
 
-  //final entryBox = Hive.box('entries');
-  //entryBox.clear();
+  final entryBox = Hive.box('entries');
+  entryBox.clear();
 
-  //final chapterbox = Hive.box('chapters');
-  //chapterbox.clear();
+  final chapterbox = Hive.box('chapters');
+  chapterbox.clear();
 
-  //final settingBox = Hive.box('settings');
-  //settingBox.clear();
+  final settingBox = Hive.box('settings');
+  settingBox.clear();
 
-  //await FlutterSecureStorage().deleteAll();
+  await const FlutterSecureStorage().deleteAll();*/
 
   runApp(const ProviderScope(child: MainApp()));
 }
