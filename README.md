@@ -132,7 +132,7 @@ Celebrate your journaling journey with achievements! Unlock badges for:
 ## Setup and Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/journal-app.git
+   git clone https://github.com/FrostyCake47/reflect.git
    ```
 2. Install dependencies:
    ```bash
