@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
 import 'package:reflect/services/entrylist_service.dart';
+import 'package:reflect/services/image_service.dart';
 
 class GroupedEntryBuilder extends StatefulWidget {
   final List<Entry> entries;
@@ -74,7 +77,12 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               physics: const ScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 0),
               itemBuilder: (context, index) {
-                
+                if(Random().nextInt(100) % 2 == 0){
+                  List<String> imageUrl = [];
+                  imageUrl.add(ImageService().getRandomImage());
+                  validEntries[index].imageUrl = imageUrl;
+                }
+
                 return GestureDetector(
                   onTap: () async {
                     final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
