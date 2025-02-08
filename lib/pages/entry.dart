@@ -155,9 +155,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void addEntry() async {
+    final newImageUrl = await uploadImage();
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, []);
-    final result;
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
+    final bool result;
     
     if(userSetting.encryptionMode == 'local') result = await cacheService.addOneEntryToCache(entry.toMap(), entry.chapterId!);
     else result = await entryService.createEntry(entry.toMap());
@@ -172,8 +173,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void updateEntry() async {
+    final newImageUrl = await uploadImage();
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, []);
+    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
     bool result;
 
     if(userSetting.encryptionMode == 'local') result = await cacheService.updateOneEntryInCache(entry.id!, entry.toMap(), entry.chapterId!);
