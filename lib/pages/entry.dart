@@ -58,7 +58,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   final ImagePicker _picker = ImagePicker();
   File? image;
-  String imageType = 'url';
+  String imageType = 'null';
   late List<String> imageUrl;
 
   @override
@@ -92,8 +92,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     isFavourite = widget.entry.favourite ?? false;
     imageUrl = widget.entry!.imageUrl ?? [];
+    if(imageUrl.isNotEmpty) imageType = 'url';
 
-    imageUrl.add("https://img.freepik.com/free-photo/digital-art-style-river-nature-landscape_23-2151825792.jpg?t=st=1727633824~exp=1727637424~hmac=9414f70adc8deaa8fbfcb76720166319533a01c3aab771afb83d9d2da258f80c&w=900");
+    //imageUrl.add("https://img.freepik.com/free-photo/digital-art-style-river-nature-landscape_23-2151825792.jpg?t=st=1727633824~exp=1727637424~hmac=9414f70adc8deaa8fbfcb76720166319533a01c3aab771afb83d9d2da258f80c&w=900");
 
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(editorFocusNode: contentFocusNode);
     else {
