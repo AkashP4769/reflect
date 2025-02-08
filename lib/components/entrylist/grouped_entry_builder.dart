@@ -49,6 +49,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
         final date = groupedEntries.keys.elementAt(widget.isAscending && widget.sortMethod == 'time' ? index : groupedEntries.length - 1 - index);
         final _entries = groupedEntries[date];
         final validEntries = entrylistService.sortEntries(_entries!, widget.sortMethod, widget.isAscending);
+        final random = Random();
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -77,7 +78,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               physics: const ScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 0),
               itemBuilder: (context, index) {
-                if(Random().nextInt(100) % 2 == 0){
+                if(random.nextBool()){
                   List<String> imageUrl = [];
                   imageUrl.add(ImageService().getRandomImage());
                   validEntries[index].imageUrl = imageUrl;
