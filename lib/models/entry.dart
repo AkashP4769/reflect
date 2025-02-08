@@ -10,10 +10,11 @@ class Entry{
   final List<Map<String, dynamic>>? tags;
   final bool? encrypted;
   final bool? favourite;
+  List<String>? imageUrl;
 
-  Entry({this.title, this.content, this.id, this.tags, this.encrypted, this.chapterId, this.favourite, DateTime? date}) : date = date ?? DateTime.now();
+  Entry({this.title, this.content, this.id, this.tags, this.encrypted, this.chapterId, this.favourite, this.imageUrl, DateTime? date}) : date = date ?? DateTime.now();
 
-  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id, bool encrypted, bool favourite) {
+  factory Entry.fromQuill(String title, quill.Document document, DateTime date, List<Map<String, dynamic>>? tags, String chapterId, String? id, bool encrypted, bool favourite, List<String>? imageUrl) {
     return Entry(
       id: id,
       chapterId: chapterId,
@@ -23,6 +24,7 @@ class Entry{
       tags: tags,
       encrypted: false,
       favourite: favourite,
+      imageUrl: imageUrl,
     );
   }
 
@@ -44,6 +46,7 @@ class Entry{
       'tags': tags,
       'encrypted': encrypted,
       'favourite': favourite,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -58,6 +61,7 @@ class Entry{
       tags: json['tags'] != null ? List<Map<String, dynamic>>.from(json['tags']) : null,
       encrypted: json['encrypted'],
       favourite: json['favourite'],
+      imageUrl: json['imageUrl'] != null ? List<String>.from(json['imageUrl']) : null,
     );
   }
 
@@ -80,6 +84,7 @@ class Entry{
         : null,
       encrypted: data['encrypted'],
       favourite: data['favourite'],
+      imageUrl: data['imageUrl'] != null ? List<String>.from(data['imageUrl']) : null,
     );
   }
 
@@ -93,11 +98,12 @@ class Entry{
       'tags': tags,
       'encrypted': encrypted,
       'favourite': favourite,
+      'imageUrl': imageUrl,
     };
   }
 
   @override
   String toString(){
-    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags}, encrypted: $encrypted , favourite: $favourite';
+    return 'Entry{id: $id, chapterId: $chapterId, title: $title, date: $date, tags: $tags,  encrypted: $encrypted , favourite: $favourite, imageUrl: $imageUrl}';
   }
 }
