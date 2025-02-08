@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:icon_decoration/icon_decoration.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/components/entry/favourite_heart.dart';
 import 'package:reflect/components/entry/sliding_carousel.dart';
@@ -15,6 +20,7 @@ import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
+import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 
@@ -50,6 +56,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late UserSetting userSetting;
   List<Tag> entryTags = [];
 
+  final ImagePicker _picker = ImagePicker();
+  File? image;
+  String imageType = 'url';
+  late List<String> imageUrl;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -80,6 +91,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
 
     isFavourite = widget.entry.favourite ?? false;
+    imageUrl = widget.entry!.imageUrl ?? [];
+
+    imageUrl.add("https://img.freepik.com/free-photo/digital-art-style-river-nature-landscape_23-2151825792.jpg?t=st=1727633824~exp=1727637424~hmac=9414f70adc8deaa8fbfcb76720166319533a01c3aab771afb83d9d2da258f80c&w=900");
 
     if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(editorFocusNode: contentFocusNode);
     else {
@@ -291,6 +305,57 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     return true;
   }
 
+  Future<List<String>> uploadImage() async {
+    String? newImageUrl = null;
+    if(imageType == 'file'){
+      newImageUrl = await ImageService().uploadImage(image!);
+      if(newImageUrl == null) return [];
+      imageUrl = [newImageUrl];
+      setState(() {});
+    }
+    else if(imageType == 'url'){
+      newImageUrl = imageUrl[0];
+    }
+    return newImageUrl == null ? [] : [newImageUrl];
+  }
+
+  void getRandomImage() => setState((){
+    imageUrl = [ImageService().getRandomImage()];
+    imageType = 'url';
+  });
+
+  void onEditImage() async {
+    await _pickImage(ImageSource.gallery);
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+
+      if (pickedFile != null) {
+          image = File(pickedFile.path);
+          imageType = 'file';
+      } else {
+        print('No image selected.');
+      }
+      setState(() {});
+
+    } catch (e) {
+      print('Error picking image: $e');
+      SnackBar snackBar = const SnackBar(content: Text("Error picking image"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      imageType = 'null';
+      setState(() {});
+    }
+  }
+
+  void removeSelectedPhoto(){
+    image = null;
+    imageType = 'null';
+    imageUrl = [];
+    setState(() {});
+  }
+
   @override
   void dispose() {
     titleController.dispose();
@@ -332,7 +397,46 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true,),
+
+                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage),
+                  if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) const SizedBox(height: 20),
+
+                  if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if(imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover),
+                          if(imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
+                        
+                          if(((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
+                            alignment: Alignment.topRight,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: removeSelectedPhoto, 
+                                  icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                ),
+                                IconButton(
+                                  onPressed: getRandomImage,
+                                  icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                ),
+                                IconButton(
+                                  onPressed: onEditImage,
+                                  icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                ),
+                              ]
+                            )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          
+
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -503,11 +607,15 @@ class EntryAppbar extends StatelessWidget {
     required this.themeData,
     required this.deleteEntry,
     required this.showDelete,
+    required this.imageType,
+    required this.addImage,
   });
 
   final ThemeData themeData;
   final void Function()? deleteEntry;
   final bool showDelete;
+  final String imageType;
+  final void Function()? addImage;
 
   @override
   Widget build(BuildContext context) {
@@ -523,10 +631,24 @@ class EntryAppbar extends StatelessWidget {
             },
           ),
           //const SizedBox(width: 10),
-          
-          if(showDelete) IconButton(
-            onPressed: deleteEntry, 
-            icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
+          Container(
+            child: Row(
+              children: [
+                if(imageType == 'null') Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: IconButton(
+                    onPressed: addImage, 
+                    icon: Icon(Icons.add_a_photo_rounded, color: themeData.colorScheme.onPrimary, size: 24,),
+                  ),
+                ),
+            
+                
+                if(showDelete) IconButton(
+                  onPressed: deleteEntry, 
+                  icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
+                )
+              ],
+            ),
           )
         ],
       ),
