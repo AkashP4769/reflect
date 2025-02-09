@@ -109,6 +109,8 @@ class _HomePageState extends ConsumerState<AchievementPage> {
         for(var entry in List<Map<dynamic, dynamic>>.from(chapter['entries'] ?? [])){
           if(entry['favourite'] ?? false) totalFavs++;
 
+          totalImages += List.from(entry['imageUrl'] ?? []).length;
+
           if(entry['content'] != null){
             int textLength;
             if(entry['content'] == null || (entry['content'] as List).isEmpty) textLength = 0;

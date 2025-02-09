@@ -371,8 +371,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void screenshotAndShare() async {
     setState(() {isHiddenForSS = true;});
     await screenshotController.capture(
-      pixelRatio: 4.0,
-      delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+      pixelRatio: 3.0,
+      delay: const Duration(milliseconds: 100)).then((Uint8List? image) async {
       {
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = await File('${directory.path}/${titleController.text.trim().split(' ').join('-')}.png').create();
@@ -517,7 +517,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       ),
                       SizedBox(height: 5,),
                         
-                      if(entryTags.isEmpty && !isHiddenForSS) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+                      if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                       const SizedBox(height: 10),
                       quill.QuillEditor.basic(
                             controller: quillController,
