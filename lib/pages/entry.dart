@@ -41,7 +41,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isDateEdited = false;
   bool isTagsEdited = false;
   bool isFavouriteEdited = false;
-  bool imageEdited = false;
+  bool isImageEdited = false;
 
   bool isImageEditing = false;
   bool extendedToolbar = false;
@@ -293,7 +293,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   Future<bool> _onWillPop() async {
-    if (isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited) {
+    if (isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited || isImageEdited) {
       // Show the alert dialog
       return await showDialog(
         context: context,
@@ -334,10 +334,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void getRandomImage() => setState((){
     imageUrl = [ImageService().getRandomImage()];
     imageType = 'url';
+    isImageEdited = true;
   });
 
   void onEditImage() async {
     await _pickImage(ImageSource.gallery);
+
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -347,6 +349,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       if (pickedFile != null) {
           image = File(pickedFile.path);
           imageType = 'file';
+          isImageEdited = true;
       } else {
         print('No image selected.');
       }
@@ -365,6 +368,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     image = null;
     imageType = 'null';
     imageUrl = [];
+    isImageEdited = true;
     setState(() {});
   }
 
@@ -494,7 +498,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             onTap: showDatePickerr,
                             child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
                           ),
-                          Padding(
+                          if (!isHiddenForSS || isFavourite) Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
                           ),
@@ -627,7 +631,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   SizedBox(
                     width: 120,
                     child: ElevatedButton(
-                      onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited ? (){
+                      onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited || isImageEdited ? (){
                         if(widget.entry.id == null) addEntry();
                         else updateEntry();
                       } : null,
