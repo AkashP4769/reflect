@@ -370,10 +370,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void screenshotAndShare() async {
     setState(() {isHiddenForSS = true;});
-    await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+    await screenshotController.capture(
+      pixelRatio: 4.0,
+      delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
       {
         final directory = await getApplicationDocumentsDirectory();
-        final imagePath = await File('${directory.path}/image.png').create();
+        final imagePath = await File('${directory.path}/${titleController.text.trim().split(' ').join('-')}.png').create();
         if(image != null) {
           await imagePath.writeAsBytes(image);
           final result = await Share.shareXFiles([XFile(imagePath.path)]);
