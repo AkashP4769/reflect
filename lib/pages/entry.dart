@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:reflect/components/entry/favourite_heart.dart';
 import 'package:reflect/components/entry/sliding_carousel.dart';
 import 'package:reflect/components/entry/tag_alertbox.dart';
@@ -22,6 +23,8 @@ import 'package:reflect/services/entryService.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/user_service.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 
 class EntryPage extends ConsumerStatefulWidget {
@@ -61,6 +64,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   String imageType = 'null';
   late List<String> imageUrl;
 
+  late ScreenshotController screenshotController;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -70,6 +75,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     contentFocusNode = FocusNode();
     //panelController = SlidingUpPanelController();
     scrollController = ScrollController();
+    screenshotController = ScreenshotController();
 
     getUserSetting();
 
@@ -359,6 +365,25 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     setState(() {});
   }
 
+  void screenshotAndShare() async {
+    await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+      {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = await File('${directory.path}/image.png').create();
+        if(image != null) {
+          await imagePath.writeAsBytes(image);
+          final result = await Share.shareXFiles([XFile(imagePath.path)]);
+
+          /*if(result.status == ShareResultStatus.success) {
+            ScaffoldMessengerState().showSnackBar(const SnackBar(content: Text('Shared successfully')));
+          }
+          else {
+            ScaffoldMessengerState().showSnackBar(const SnackBar(content: Text('Sharing failed')));
+        }*/
+      }
+    }});
+  }
+  
   @override
   void dispose() {
     titleController.dispose();
@@ -366,6 +391,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleFocusNode.dispose();
     contentFocusNode.dispose();
     //panelController.dispose();
+    scrollController.dispose();
     
     super.dispose();
   }
@@ -398,131 +424,141 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
+      
                 children: [
-                  const SizedBox(height: 40),
-
-                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage),
-                  if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) const SizedBox(height: 20),
-
-                  if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if(imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover),
-                          if(imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
-                        
-                          if(((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
-                            alignment: Alignment.topRight,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  onPressed: removeSelectedPhoto, 
-                                  icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                ),
-                                IconButton(
-                                  onPressed: getRandomImage,
-                                  icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                ),
-                                IconButton(
-                                  onPressed: onEditImage,
-                                  icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                ),
-                              ]
-                            )
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-          
-
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: showDatePickerr,
-                        child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
-                      ),
-                    ],
-                  ),
-
-                  TextField(
-                    controller: titleController,
-                    focusNode: titleFocusNode,
-                    style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: "Title...",
-                      hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      isDense: true,
-                    ),
-                    maxLines: null,
-                  ),
-                  SizedBox(height: 5,),
-                    
-                  SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
-                  const SizedBox(height: 10),
-                  quill.QuillEditor.basic(
-                        controller: quillController,
-                        focusNode: contentFocusNode,
-                        //scrollController: scrollController,
-                        
-                        
-                    
-                        configurations: quill.QuillEditorConfigurations(
-                          scrollable: true,
-                          placeholder: "Start writing here...",
-                          keyboardAppearance: themeData.brightness,
-                          onPerformAction: (TextInputAction action) {
-                            //print(action.toString());
-                          },
-                          
-                          customStyles: quill.DefaultStyles(
-                            paragraph: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
-                              const quill.HorizontalSpacing(0, 0),
-                              const quill.VerticalSpacing(0, 0),
-                              quill.VerticalSpacing.zero,
-                              null
-                            ),
-                            placeHolder: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                              const quill.HorizontalSpacing(0, 0),
-                              const quill.VerticalSpacing(0, 0),
-                              quill.VerticalSpacing.zero,
-                              null
-                            ),
-                          )
+                  const SizedBox(height: 40),     
+                  EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare,),
+      
+                  Screenshot(
+                    controller: screenshotController,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) const SizedBox(height: 20),
                             
+                        if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
+                          height: 200,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if(imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover),
+                                if(imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
+                              
+                                if(((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
+                                  alignment: Alignment.topRight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        onPressed: removeSelectedPhoto, 
+                                        icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                      ),
+                                      IconButton(
+                                        onPressed: getRandomImage,
+                                        icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                      ),
+                                      IconButton(
+                                        onPressed: onEditImage,
+                                        icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                                      ),
+                                    ]
+                                  )
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),      
-                  
-                  /*TextField(
-                    controller: new TextEditingController(),
-                    focusNode: titleFocusNode,
-                    style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: "Title...",
-                      hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      isDense: true,
+                                
+                            
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: showDatePickerr,
+                              child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
+                            ),
+                          ],
+                        ),
+                            
+                        TextField(
+                          controller: titleController,
+                          focusNode: titleFocusNode,
+                          style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: "Title...",
+                            hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                            isDense: true,
+                          ),
+                          maxLines: null,
+                        ),
+                        SizedBox(height: 5,),
+                          
+                        SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+                        const SizedBox(height: 10),
+                        quill.QuillEditor.basic(
+                              controller: quillController,
+                              focusNode: contentFocusNode,
+                              //scrollController: scrollController,
+                              
+                              
+                          
+                              configurations: quill.QuillEditorConfigurations(
+                                scrollable: true,
+                                placeholder: "Start writing here...",
+                                keyboardAppearance: themeData.brightness,
+                                onPerformAction: (TextInputAction action) {
+                                  //print(action.toString());
+                                },
+                                
+                                customStyles: quill.DefaultStyles(
+                                  paragraph: quill.DefaultTextBlockStyle(
+                                    themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
+                                    const quill.HorizontalSpacing(0, 0),
+                                    const quill.VerticalSpacing(0, 0),
+                                    quill.VerticalSpacing.zero,
+                                    null
+                                  ),
+                                  placeHolder: quill.DefaultTextBlockStyle(
+                                    themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                    const quill.HorizontalSpacing(0, 0),
+                                    const quill.VerticalSpacing(0, 0),
+                                    quill.VerticalSpacing.zero,
+                                    null
+                                  ),
+                                )
+                                  
+                              ),
+                            ),      
+                        
+                        /*TextField(
+                          controller: new TextEditingController(),
+                          focusNode: titleFocusNode,
+                          style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: "Title...",
+                            hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                            isDense: true,
+                          ),
+                          maxLines: null,
+                        ),*/
+                        Container(height: 80,),
+                      ],
                     ),
-                    maxLines: null,
-                  ),*/
-                  Container(height: 80,),
+                  ),
                 ],
               ),
             ),
@@ -612,6 +648,7 @@ class EntryAppbar extends StatelessWidget {
     required this.showDelete,
     required this.imageType,
     required this.addImage,
+    required this.screenshotAndShare
   });
 
   final ThemeData themeData;
@@ -619,6 +656,7 @@ class EntryAppbar extends StatelessWidget {
   final bool showDelete;
   final String imageType;
   final void Function()? addImage;
+  final void Function()? screenshotAndShare;
 
   @override
   Widget build(BuildContext context) {
@@ -637,6 +675,11 @@ class EntryAppbar extends StatelessWidget {
           Container(
             child: Row(
               children: [
+                if(showDelete) IconButton(
+                  onPressed: deleteEntry, 
+                  icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
+                ),
+
                 if(imageType == 'null') Padding(
                   padding: const EdgeInsets.only(bottom: 2),
                   child: IconButton(
@@ -644,12 +687,14 @@ class EntryAppbar extends StatelessWidget {
                     icon: Icon(Icons.add_a_photo_rounded, color: themeData.colorScheme.onPrimary, size: 24,),
                   ),
                 ),
+
+                IconButton(
+                  onPressed: screenshotAndShare, 
+                  icon: Icon(Icons.share, color: themeData.colorScheme.onPrimary,),
+                ),
             
                 
-                if(showDelete) IconButton(
-                  onPressed: deleteEntry, 
-                  icon: Icon(Icons.delete, color: themeData.colorScheme.onPrimary,),
-                )
+                
               ],
             ),
           )
