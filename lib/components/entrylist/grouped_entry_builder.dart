@@ -78,11 +78,11 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               physics: const ScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 0),
               itemBuilder: (context, index) {
-                /*if(random.nextBool()){
+                if(random.nextBool()){
                   List<String> imageUrl = [];
                   imageUrl.add(ImageService().getRandomImage());
                   validEntries[index].imageUrl = imageUrl;
-                }*/
+                }
 
                 return GestureDetector(
                   onTap: () async {

@@ -41,8 +41,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isDateEdited = false;
   bool isTagsEdited = false;
   bool isFavouriteEdited = false;
+  bool imageEdited = false;
 
+  bool isImageEditing = false;
   bool extendedToolbar = false;
+  bool isHiddenForSS = false;
 
   late quill.QuillController quillController;
   late TextEditingController titleController;
@@ -366,6 +369,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void screenshotAndShare() async {
+    setState(() {isHiddenForSS = true;});
     await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
       {
         final directory = await getApplicationDocumentsDirectory();
@@ -382,6 +386,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         }*/
       }
     }});
+    setState(() {isHiddenForSS = false;});
   }
   
   @override
@@ -447,10 +452,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                               child: Stack(
                                 fit: StackFit.expand,
                                 children: [
-                                  if(imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover),
-                                  if(imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
+                                  if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover)),
+                                  if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
                                 
-                                  if(((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
+                                  if(isImageEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
                                     alignment: Alignment.topRight,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -507,7 +512,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                           ),
                           SizedBox(height: 5,),
                             
-                          SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+                          if(entryTags.isEmpty && !isHiddenForSS) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                           const SizedBox(height: 10),
                           quill.QuillEditor.basic(
                                 controller: quillController,
