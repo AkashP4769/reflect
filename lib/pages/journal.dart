@@ -142,7 +142,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.secondaryContainer]
+            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
           )
         ),
         child: TweenAnimationBuilder(

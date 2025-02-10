@@ -17,12 +17,13 @@ class _ScreenLockState extends ConsumerState<ScreenLock> {
 
     return Scaffold(
       body: Container(
+        height: MediaQuery.of(context).size.height,
         padding: EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.secondaryContainer]
+            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
           )
         ),
         child: SingleChildScrollView(
