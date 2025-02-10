@@ -22,9 +22,8 @@ class EntryCard extends StatelessWidget {
       margin: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 10),
       
       decoration: BoxDecoration(
-        color: hasImage ? Colors.white : themeData.colorScheme.secondary,
+        color: hasImage ? Colors.transparent : themeData.colorScheme.secondary,
         borderRadius: BorderRadius.circular(10),
-        //border: Border.all(color: Colors.black.withOpacity(0.1), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.4),
@@ -39,24 +38,22 @@ class EntryCard extends StatelessWidget {
           children: [
             if(hasImage) Container(
               width: double.infinity,
-              child: Opacity(
-                opacity: 1,
-                child: CachedNetworkImage(
-                  imageUrl: entry.imageUrl![0],
-                  fit: BoxFit.fitWidth,  
-                ),
+              child: CachedNetworkImage(
+                imageUrl: entry.imageUrl![0],
+                fit: BoxFit.fitWidth,  
               ),
             ),
 
             if(hasImage) Positioned.fill(
               child: Container(
+                clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       themeData.brightness == Brightness.light ? Colors.grey.withOpacity(0.4) : Colors.black.withOpacity(0.2), // Fully transparent at the top
-                      Colors.black.withOpacity(0.8), // Darker towards the bottom
+                      Colors.black.withOpacity(0.7), // Darker towards the bottom
                     ],
                   ),
                 ),
