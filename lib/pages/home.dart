@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/chapter.dart';
+import 'package:reflect/pages/screenlock.dart';
 import 'package:reflect/services/auth_service.dart';
 import 'package:reflect/services/cache_service.dart';
 
@@ -108,6 +109,10 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
         
             SizedBox(height: 30,),
+            GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenLock())),
+              child: Text("Screenlock", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
+            )
             //Text("How are you feeling today?", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
         
           ],

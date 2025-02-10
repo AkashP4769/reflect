@@ -192,11 +192,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     else result = await entryService.updateEntry(entry.toMap());
 
     if(result) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
+      if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry updated successfully')));
       Navigator.pop(context, 'entry_updated');
     }
     else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update entry')));
+      if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update entry')));
     }
   }
 

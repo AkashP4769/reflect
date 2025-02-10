@@ -66,8 +66,6 @@ class _AuthPageState extends State<AuthPage> {
 
     final userSetting = UserService().getUserSettingFromCache();
 
-    
-
     if(authResponse['encryptionMode'] == 'encrypted'){
       print("encrypted");
       final encryptionService = EncryptionService();
