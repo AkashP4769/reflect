@@ -91,112 +91,115 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
           content: IntrinsicHeight(
             child: Container(
               width: MediaQuery.of(context).size.width, 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Selected Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
-                  const SizedBox(height: 10,),
-
-                  //entrytags
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      ...entryTags.mapIndexed((index, tag) => 
-                        GestureDetector(
-                          onTap: (){
-                            entryTags.remove(tag);
-                            userTags.add(tag);
-                            setState(() {});
-                          },
-                          child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: deleteBits[index],)
-                        )
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
-                  const SizedBox(height: 10,),
-
-                  //usertags
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      ...userTags.mapIndexed((index, tag) => 
-                        GestureDetector(
-                          onTap: (){
-                            if(tagDeleteState){
-                              deleteBits[index] = !deleteBits[index];
-                              bool prevState = false;
-                              for (var bit in deleteBits) {
-                                if(bit){
-                                  prevState = true;
-                                  break;
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Selected Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
+                    const SizedBox(height: 10,),
+                
+                    //entrytags
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        ...entryTags.mapIndexed((index, tag) => 
+                          GestureDetector(
+                            onTap: (){
+                              entryTags.remove(tag);
+                              userTags.add(tag);
+                              setState(() {});
+                            },
+                            child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: deleteBits[index],)
+                          )
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
+                    const SizedBox(height: 10,),
+                
+                    //usertags
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        ...userTags.mapIndexed((index, tag) => 
+                          GestureDetector(
+                            onTap: (){
+                              if(tagDeleteState){
+                                deleteBits[index] = !deleteBits[index];
+                                bool prevState = false;
+                                for (var bit in deleteBits) {
+                                  if(bit){
+                                    prevState = true;
+                                    break;
+                                  }
                                 }
+                                tagDeleteState = prevState;
+                                setState(() {});
                               }
-                              tagDeleteState = prevState;
-                              setState(() {});
-                            }
-                            else {
-                              entryTags.add(tag);
-                              userTags.remove(tag);
-                              setState(() {});
-                            }
-                          },
-                          onLongPress: () => {
-                            setState(() {
-                              tagDeleteState = true;
-                              deleteBits[index] = !deleteBits[index];
-                              print(deleteBits);
-                            })
-                          },
-                          child: TagCard(tag: tag, themeData: widget.themeData, selected: false, deleteBit: deleteBits[index],)
+                              else {
+                                entryTags.add(tag);
+                                userTags.remove(tag);
+                                setState(() {});
+                              }
+                            },
+                            onLongPress: () => {
+                              setState(() {
+                                tagDeleteState = true;
+                                deleteBits[index] = !deleteBits[index];
+                                print(deleteBits);
+                              })
+                            },
+                            child: TagCard(tag: tag, themeData: widget.themeData, selected: false, deleteBit: deleteBits[index],)
+                          )
+                        ),
+                        if(tagDeleteState) IconButton(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          onPressed: deleteTags, 
+                          icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
                         )
-                      ),
-                      if(tagDeleteState) IconButton(
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        onPressed: deleteTags, 
-                        icon: Icon(Icons.delete_outline, color: Colors.redAccent,),
-                      )
-            
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  Text('Create a Tag', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: textController,
-                          decoration: const InputDecoration(
-                            hintText: 'Add a tag',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14.0,
+                            
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    Text('Create a Tag', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: textController,
+                            decoration: const InputDecoration(
+                              hintText: 'Add a tag',
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14.0,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 3.0),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Color(selectedColor),
+                        SizedBox(width: 3.0),
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Color(selectedColor),
+                          ),
+                          onPressed: () async {
+                            int newsSelectedColor = await showColorPicker(context);
+                            setState(() {
+                              selectedColor = newsSelectedColor;
+                            });
+                          },
                         ),
-                        onPressed: () async {
-                          int newsSelectedColor = await showColorPicker(context);
-                          setState(() {
-                            selectedColor = newsSelectedColor;
-                          });
-                        },
-                      ),
-                      IconButton(onPressed: addTag, 
-                        icon: Icon(Icons.check, color: widget.themeData.colorScheme.primary, size: 36,)
-                      ),
-                    ],
-                  )
-                ],
+                        IconButton(onPressed: addTag, 
+                          icon: Icon(Icons.check, color: widget.themeData.colorScheme.primary, size: 36,)
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
