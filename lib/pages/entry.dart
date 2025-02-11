@@ -93,11 +93,16 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     //panelController.hide();
     //print("date: ${widget.entry.date}");
     //print("timezone: ${widget.entry.date.toLocal().timeZoneOffset.inMinutes}");
-    int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
-    bool isPositive = timezone >= 0 ? true : false;
+  
 
-    if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
-    else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
+    if(widget.entry.id == null) date = widget.entry.date;
+    else {
+      int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
+      bool isPositive = timezone >= 0 ? true : false;
+
+      if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
+      else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
+    }
 
     isFavourite = widget.entry.favourite ?? false;
     imageUrl = widget.entry!.imageUrl ?? [];
