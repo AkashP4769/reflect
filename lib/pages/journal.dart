@@ -196,7 +196,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
               
                       TweenAnimationBuilder(
                         tween: Tween<double>(begin: 0, end: _chapters.length.toDouble()),
-                        duration: Duration(milliseconds: 300 * _chapters.length),
+                        duration: const Duration(milliseconds:  1000),
                         curve: Curves.easeInOutCirc,
                         builder: (context, value, child) => ListView.builder(
                           shrinkWrap: true,

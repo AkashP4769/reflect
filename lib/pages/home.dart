@@ -116,18 +116,23 @@ Widget _buildChapterIntro(List<Chapter> chapters, ThemeData themeData, void Func
     children: [
       Text("The chapters of your life", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),),
       const SizedBox(height: 10,),
-      ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemCount: min(2, chapters.length),
-          itemBuilder: (BuildContext context, int index){
-            return GestureDetector(
-              onTap: () => goToJournalPage(),
-              child: ChapterCard(chapter: chapters[index], themeData: themeData, tween: 1, index: 0,)
-            );
-          }
-        ),
+      TweenAnimationBuilder(
+        duration: const Duration(milliseconds: 1000),
+        tween: Tween<double>(begin: 0, end: 1),
+        builder: (context, value, child) => ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            itemCount: min(2, chapters.length),
+            itemBuilder: (BuildContext context, int index){
+              return GestureDetector(
+                onTap: () => goToJournalPage(),
+                child: ChapterCard(chapter: chapters[index], themeData: themeData, tween: value, index: 0,)
+              );
+            }
+          ),
+        
+      ),
       const SizedBox(height: 10,),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
