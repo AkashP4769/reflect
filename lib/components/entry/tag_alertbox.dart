@@ -96,8 +96,8 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Selected Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
-                    const SizedBox(height: 10,),
+                    if(entryTags.isNotEmpty) Text('Selected Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
+                    if(entryTags.isNotEmpty) const SizedBox(height: 10,),
                 
                     //entrytags
                     Wrap(
@@ -116,8 +116,8 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                       ],
                     ),
                     const SizedBox(height: 10,),
-                    Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
-                    const SizedBox(height: 10,),
+                    if(userTags.isNotEmpty) Text('Available Tags', style: widget.themeData.textTheme.bodyMedium!.copyWith(fontFamily: "Poppins", fontSize: 18, color: const Color(0xffAFAFAF)),),
+                    if(userTags.isNotEmpty) const SizedBox(height: 10,),
                 
                     //usertags
                     Wrap(
