@@ -52,7 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -61,63 +61,102 @@ class _HomePageState extends ConsumerState<HomePage> {
         )
       ),
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align(child: Text("Reflect", style: themeData.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600, fontSize: 28),), alignment: Alignment.center,),
-            SizedBox(height: 30,),
-            Row(
+        child: TweenAnimationBuilder(
+          duration: const Duration(milliseconds: 500),
+          tween: Tween<double>(begin: 0, end: 4),
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: 1,
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning" : datetime.hour < 18 ? "Good Afternoon" : "Good Evening"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),),
-                SizedBox(width: 10,),
-                Icon((datetime.hour < 12 && datetime.hour > 6 ? Icons.wb_sunny : datetime.hour < 18 ? Icons.brightness_5 : Icons.brightness_3), color: datetime.hour < 6 && datetime.hour > 18 ? Colors.white : themeData.colorScheme.primary, size: 30,),
-              ],
-            ),
-            SizedBox(height: 10,),
-            Text(quotes[datetime.day % quotes.length], style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16),),
-            SizedBox(height: 30,),
-        
-            Text("The chapters of your life", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
-            //cook some philosophical description for me
-            //Text("Each chapter is a collection of your thoughts, feelings and experiences. You can add entries to each chapter to document your journey.", style: themeData.textTheme.bodyMedium,),
-            
-            SizedBox(height: 10,),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              itemCount: min(2, chapters.length),
-              itemBuilder: (BuildContext context, int index){
-                return GestureDetector(
-                  onTap: () => widget.goToJournalPage(),
-                  child: ChapterCard(chapter: chapters[index], themeData: themeData)
-                );
-              }
-            ),
-            SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Go to ", style: themeData.textTheme.bodyMedium,),
-                InkWell(
-                  onTap: () => widget.goToJournalPage(),
-                  child: Text("Journal", style: themeData.textTheme.bodyMedium!.copyWith( color: themeData.colorScheme.primary, fontWeight: FontWeight.w600),),
+                Opacity(opacity: min(value, 1), child: Align(child: Text("Reflect", style: themeData.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600, fontSize: 28),), alignment: Alignment.center,)),
+                const SizedBox(height: 30,),
+                Opacity(
+                  opacity: min(max(0, value - 1), 1),
+                  child: Row(
+                    children: [
+                      Text((datetime.hour < 12 && datetime.hour > 6 ? "Good Morning" : datetime.hour < 18 ? "Good Afternoon" : "Good Evening"), style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),),
+                      const SizedBox(width: 10,),
+                      Icon((datetime.hour < 12 && datetime.hour > 6 ? Icons.wb_sunny : datetime.hour < 18 ? Icons.brightness_5 : Icons.brightness_3), color: datetime.hour < 6 && datetime.hour > 18 ? Colors.white : themeData.colorScheme.primary, size: 30,),
+                    ],
+                  ),
                 ),
-                Text(" for more chapters", style: themeData.textTheme.bodyMedium,),
+                const SizedBox(height: 10,),
+                Opacity(
+                  opacity: min(max(0, value - 2), 1),
+                  child: Text(quotes[datetime.day % quotes.length], style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16),)
+                ),
+                const SizedBox(height: 30,),
+            
+                if(chapters.isNotEmpty) Opacity(
+                  opacity: min(max(0, value - 3), 1),
+                  child: _buildChapterIntro(chapters, themeData, widget.goToJournalPage)
+                )
+                else Opacity(
+                  opacity: min(max(0, value - 3), 1),
+                  child: _buildEmptyChapterIntro(themeData)
+                ),
+                
+                SizedBox(height: 30,),    
               ],
-            ),
-        
-            SizedBox(height: 30,),
-            GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenLock())),
-              child: Text("Screenlock", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
-            )
-            //Text("How are you feeling today?", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600),),
-        
-          ],
+              ),
+            );
+          },
+          ),
         ),
-      ),
     );
   }
+}
+
+Widget _buildChapterIntro(List<Chapter> chapters, ThemeData themeData, void Function() goToJournalPage){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text("The chapters of your life", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),),
+      const SizedBox(height: 10,),
+      ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          itemCount: min(2, chapters.length),
+          itemBuilder: (BuildContext context, int index){
+            return GestureDetector(
+              onTap: () => goToJournalPage(),
+              child: ChapterCard(chapter: chapters[index], themeData: themeData, tween: 1, index: 0,)
+            );
+          }
+        ),
+      const SizedBox(height: 10,),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Go to ", style: themeData.textTheme.bodyMedium,),
+          InkWell(
+            onTap: () => goToJournalPage(),
+            child: Text("Journal", style: themeData.textTheme.bodyMedium!.copyWith( color: themeData.colorScheme.primary, fontWeight: FontWeight.w600),),
+          ),
+          Text(" for more chapters", style: themeData.textTheme.bodyMedium,),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget _buildEmptyChapterIntro(ThemeData themeData){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 20,),
+      Text("Looks like you're new here", style: themeData.textTheme.titleMedium!.copyWith(fontSize: 24, fontWeight: FontWeight.w600, color: themeData.colorScheme.primary),), 
+      const SizedBox(height: 10,),
+
+      Text("Go on, explore the app and start your journey of self-reflection. You can create chapters, add entries, and track your progress.", style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16),),
+      const SizedBox(height: 10,),
+
+      Text("I'll be adding more features soon, so stay tuned!", style: themeData.textTheme.bodyMedium!.copyWith(fontSize: 16),),
+      const SizedBox(height: 10,),
+    ],
+  );
 }

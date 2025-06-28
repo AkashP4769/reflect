@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -146,8 +148,9 @@ class _HomePageState extends ConsumerState<JournalPage> {
           )
         ),
         child: TweenAnimationBuilder(
-          tween: Tween<double>(begin: 0.0, end: 1.0), 
-          duration: const Duration(milliseconds: 1000), 
+          tween: Tween<double>(begin: isCreate ? 0 : 1, end: isCreate ? 1 : 0), 
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic, 
           builder: (context, value, child){
             if(isFetching) {
               return Center(
@@ -157,74 +160,88 @@ class _HomePageState extends ConsumerState<JournalPage> {
                 ),
               );
             }
-            if(isCreate) return NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter);
-            if(_chapters.isEmpty) return Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value)));
+            if(isCreate) return Opacity(opacity: value, child: NewChapter(toggleCreate: toggleCreate, tween: value, addChapter: createChapter));
+            if(_chapters.isEmpty) return Opacity(opacity: 1-value, child: Align(alignment: Alignment.center, child: SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: EmptyChapters(themeData: themeData, toggleCreate: toggleCreate, tween: value))));
             
-            return Scaffold(
-              backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-              body: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                clipBehavior: Clip.none,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Icon(userSetting.encryptionMode == 'local' ? Icons.cloud_off : Icons.cloud_outlined, color: themeData.colorScheme.onPrimary.withOpacity(0.7),),
-                        ), alignment: Alignment.centerLeft,),
-                        Align(child: Text("Chapters", style: themeData.textTheme.titleLarge,), alignment: Alignment.center,),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () => setState(() => isEditingSort = !isEditingSort), 
-                            icon: Icon(Icons.sort, color: isEditingSort ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    if(isEditingSort) ChapterSortSetting(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
-
-                    ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      clipBehavior: Clip.none,
-                      itemCount: _chapters.length,
-                      physics: const ScrollPhysics(),
-                      itemBuilder: (context, index){
-                        if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
-                          return GestureDetector(
-                            onTap: () async {
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
-                              if(result != null && result == true) fetchChapters(true);
-                            },
-                            child: ChapterCard(chapter: _chapters[index], themeData: themeData)
-                          );
-                        }
-                        else if(_chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || _chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
-                          return GestureDetector(
-                            onTap: () async {
-                              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
-                              if(result != null && result == true) fetchChapters(true);
-                                
-                            },
-                            child: ChapterCard(chapter: _chapters[index], themeData: themeData)
-                          );
-                        }
-                        else return Container();
-                      }
-                    ),
-                  ],
+            return Opacity(
+              opacity: 1-value,
+              child: Scaffold(
+                backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                body: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  clipBehavior: Clip.none,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Align(child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(userSetting.encryptionMode == 'local' ? Icons.cloud_off : Icons.cloud_outlined, color: themeData.colorScheme.onPrimary.withOpacity(0.7),),
+                          ), alignment: Alignment.centerLeft,),
+                          Align(child: Text("Chapters", style: themeData.textTheme.titleLarge,), alignment: Alignment.center,),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () => setState(() => isEditingSort = !isEditingSort), 
+                              icon: Icon(Icons.sort, color: isEditingSort ? themeData.colorScheme.primaryFixed : themeData.colorScheme.onPrimary,)
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      if(isEditingSort) ChapterSortSetting(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
+              
+                      TweenAnimationBuilder(
+                        tween: Tween<double>(begin: 0, end: _chapters.length.toDouble()),
+                        duration: Duration(milliseconds: 300 * _chapters.length),
+                        curve: Curves.easeInOutCirc,
+                        builder: (context, value, child) => ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          clipBehavior: Clip.none,
+                          itemCount: _chapters.length,
+                          physics: const ScrollPhysics(),
+                          itemBuilder: (context, index){
+                            if(widget.searchQuery == null || widget.searchQuery!.isEmpty) {
+                              return Opacity(
+                                opacity: min(max(0, value - index), 1),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
+                                    if(result != null && result == true) fetchChapters(true);
+                                  },
+                                  child: ChapterCard(chapter: _chapters[index], themeData: themeData, tween: value / _chapters.length.toDouble(), index: index,)
+                                ),
+                              );
+                            }
+                            else if(_chapters[index].title!.toLowerCase().contains(widget.searchQuery!.toLowerCase()) || _chapters[index].description!.toLowerCase().contains(widget.searchQuery!.toLowerCase())) {
+                              return Opacity(
+                                opacity: min(max(0, value - index), 1),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryListPage(chapter: _chapters[index])));
+                                    if(result != null && result == true) fetchChapters(true);
+                                      
+                                  },
+                                  child: ChapterCard(chapter: _chapters[index], themeData: themeData, tween: value / _chapters.length.toDouble(), index: index,)
+                                ),
+                              );
+                            }
+                            else return Container();
+                          }
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: toggleCreate,
-                child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
-                backgroundColor: themeData.colorScheme.primary,
+                floatingActionButton: FloatingActionButton(
+                  onPressed: toggleCreate,
+                  child: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
+                  backgroundColor: themeData.colorScheme.primary,
+                ),
               ),
             );
           }
@@ -365,9 +382,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               const SizedBox(height: 50),
               Stack(
                 children: [
-                  const ImageStack(height: 450, width: 320, offset: Offset(3, 0), rotation: -7,),
-                  const ImageStack(height: 450, width: 320, offset: Offset(0, 7), rotation: 7,),
-                  ImageStack(height: 450, width: 320, 
+                  ImageStack(height: 450, width: 320, offset: Offset(lerpDouble(-30, 3, widget.tween)!, lerpDouble(-20, 0, widget.tween)!), rotation: lerpDouble(20, -7, widget.tween)),
+                  ImageStack(height: 450, width: 320, offset: Offset(lerpDouble(-20, 0, widget.tween)!, lerpDouble(-40, 7, widget.tween)!), rotation: lerpDouble(30, 7, widget.tween),),
+                  ImageStack(height: 450, width: 320, offset: Offset(0, lerpDouble(30, 0, widget.tween)!), rotation: lerpDouble(10, 0, widget.tween),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [

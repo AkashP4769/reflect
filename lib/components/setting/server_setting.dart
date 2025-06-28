@@ -19,7 +19,8 @@ class _ServerSettingState extends State<ServerSetting> {
     'Localhost (Kv)': /*'http://192.168.29.226:3000/api'*/ /*'http://192.168.18.239:3000/api'*/ "http://192.168.18.105:3000/api",
     'Localhost (Jio)': 'http://192.168.29.226:3000/api',
     'Vercel': 'https://reflect-server.vercel.app/api',
-    'AWS': 'http://13.233.167.195:3000/api'
+    'AWS': 'http://13.233.167.195:3000/api',
+    'AWS2': 'http://13.127.192.3:3000/api'
   };
 
   @override

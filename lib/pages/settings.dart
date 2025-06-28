@@ -94,11 +94,11 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 const SizedBox(height: 20),
                 if(userSetting.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting.primaryDevice, ...userSetting.devices], refreshPage: getUserSetting, encryptionMode: userSetting.encryptionMode),
                 
-                const SizedBox(height: 20),
-                KeyComponent(themeData: themeData)
+                // const SizedBox(height: 20),
+                // KeyComponent(themeData: themeData)
               ],
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.7.3.25" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.8.0:27" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),
