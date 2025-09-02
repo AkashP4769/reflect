@@ -31,6 +31,18 @@
 
   <title>reflect</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+  function startGapi() {
+    gapi.load('client', () => {
+      gapi.client.init({
+        apiKey: "AIzaSyA0ZOIQn0j9jNEiCo63xXNA-IDwCqPk-7c",
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]
+      }).then(() => {
+        console.log('gapi client initialized');
+      });
+    });
+  }
+</script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

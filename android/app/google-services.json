@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "176638636870",
     "project_id": "reflect-47",
-    "storage_bucket": "reflect-47.appspot.com"
+    "storage_bucket": "reflect-47.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,20 @@
           "package_name": "com.example.reflect"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "176638636870-tt4o7a13hs1fimkabmhv97p0kmi4k7j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.reflect",
+            "certificate_hash": "ea169e225df750d45c63bd8790cad3f93dd6ec1c"
+          }
+        },
+        {
+          "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAxuTFEKSGpu2_jNJ5GeBHeqYz3GSpuF6Q"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "176638636870-h8e3m1e9ae21bfokie4u8j9of0b88l5l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reflect"
+              }
+            }
+          ]
         }
       }
     }

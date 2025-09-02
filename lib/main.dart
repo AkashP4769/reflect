@@ -16,16 +16,26 @@ import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/theme/theme_constants.dart';
 import 'package:reflect/theme/theme_manager.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 
 final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.init(dir.path);
+  if (kIsWeb) {
+    // Initialize Hive for web
+    Hive.initFlutter();
+  } else {
+    // Initialize Hive for mobile
+    final dir = await getApplicationDocumentsDirectory();
+    Hive.init(dir.path);
+  }
+
   await Hive.openBox('chapters');
   await Hive.openBox('entries');
   await Hive.openBox('settings');
@@ -58,7 +68,20 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.read(themeManagerProvider.notifier).initializeTheme();
     final themeData = ref.watch(themeManagerProvider);
-    
+
+    //return a normal page
+    // return MaterialApp(
+    //   debugShowCheckedModeBanner: false,
+    //   home: Scaffold(
+    //     body: Center(
+    //       child: Text(
+    //         'Welcome to Reflect',
+    //         style: TextStyle(fontSize: 24, color: Theme.of(context).primaryColor),
+    //       ),
+    //     ),
+    //   ) // Replace with your initial page
+    // );
+
     return MaterialApp(
       initialRoute: '/',
       debugShowCheckedModeBanner: false,

@@ -93,7 +93,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         actions: [
           IconButton(onPressed: (){
             ref.read(themeManagerProvider.notifier).toggleTheme(!(themeData.brightness == Brightness.dark));
-          }, icon: themeData.brightness == Brightness.dark ? Icon(Icons.brightness_2) : Icon(Icons.brightness_5), color: themeData.colorScheme.surfaceContainerHighest,),
+          }, icon: themeData.brightness == Brightness.dark ? Icon(Icons.brightness_2) : Icon(Icons.brightness_5), color: themeData.colorScheme.onPrimary,),
         ],
       ),
 
@@ -115,9 +115,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               text: 'Home',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              textColor: themeData.colorScheme.surfaceContainer,
-              iconColor: themeData.colorScheme.surfaceContainerHighest,
-              iconActiveColor: themeData.colorScheme.surfaceContainer,
+              textColor: themeData.colorScheme.onPrimary,
+              iconColor: themeData.colorScheme.onPrimary,
+              iconActiveColor: themeData.colorScheme.onPrimary,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
             GButton(
@@ -125,9 +125,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               text: 'Journal',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              textColor: themeData.colorScheme.surfaceContainer,
-              iconColor: themeData.colorScheme.surfaceContainerHighest,
-              iconActiveColor: themeData.colorScheme.surfaceContainer,
+              textColor: themeData.colorScheme.onPrimary,
+              iconColor: themeData.colorScheme.onPrimary,
+              iconActiveColor: themeData.colorScheme.onPrimary,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
             GButton(
@@ -135,9 +135,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               text: 'Progress',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              textColor: themeData.colorScheme.surfaceContainer,
-              iconColor: themeData.colorScheme.surfaceContainerHighest,
-              iconActiveColor: themeData.colorScheme.surfaceContainer,
+              textColor: themeData.colorScheme.onPrimary,
+              iconColor: themeData.colorScheme.onPrimary,
+              iconActiveColor: themeData.colorScheme.onPrimary,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
             GButton(
@@ -145,9 +145,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
               text: 'Settings',
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              textColor: themeData.colorScheme.surfaceContainer,
-              iconColor: themeData.colorScheme.surfaceContainerHighest,
-              iconActiveColor: themeData.colorScheme.surfaceContainer,
+              textColor: themeData.colorScheme.primary,
+              iconColor: themeData.colorScheme.onPrimary,
+              iconActiveColor: themeData.colorScheme.onPrimary,
               backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
             ),
           ],

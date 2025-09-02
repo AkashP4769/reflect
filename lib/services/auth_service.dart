@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:reflect/services/user_service.dart';
@@ -7,7 +8,10 @@ class AuthService{
   static Future<Map<String, dynamic>> signInWithGoogle() async {
     try{
       print("inside signInWithGoogle function");
-      final GoogleSignInAccount? gUser = await GoogleSignIn(scopes: <String>["email"]).signIn();
+      final GoogleSignInAccount? gUser = await GoogleSignIn(
+        scopes: <String>["email"],
+        clientId: kIsWeb ? '176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com' : null,
+      ).signIn();
 
       final GoogleSignInAuthentication gAuth = await gUser!.authentication;
 
@@ -16,10 +20,19 @@ class AuthService{
         idToken: gAuth.idToken,
       );
 
-      print("signed in on google");
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+      /*UserCredential? userCredential;
 
-      final authResponse = await UserService().addUser(userCredential.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
+      if(kIsWeb){
+        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+
+      } else {
+        // For mobile, we can directly use the credentials
+        await FirebaseAuth.instance.signInWithCredential(credentials);
+      }*/
+      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+      print("signed in on google");
+
+      final authResponse = await UserService().addUser(userCredential!.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
       return authResponse;
       //return {"code": 0, "message": "Success"};
     }

@@ -49,8 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '491140441464',
     projectId: 'reflect-0',
     authDomain: 'reflect-0.firebaseapp.com',
-    storageBucket: 'reflect-0.appspot.com',
-    databaseURL: ''
+    storageBucket: 'reflect-0.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -58,7 +57,7 @@ class DefaultFirebaseOptions {
     appId: '1:491140441464:android:c991d8719dc4a23ebf548d',
     messagingSenderId: '491140441464',
     projectId: 'reflect-0',
-    storageBucket: 'reflect-0.appspot.com',
+    storageBucket: 'reflect-0.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -66,7 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:491140441464:ios:cd517964a28db6cebf548d',
     messagingSenderId: '491140441464',
     projectId: 'reflect-0',
-    storageBucket: 'reflect-0.appspot.com',
+    storageBucket: 'reflect-0.firebasestorage.app',
     iosBundleId: 'com.example.reflect',
   );
 
@@ -76,6 +75,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '491140441464',
     projectId: 'reflect-0',
     authDomain: 'reflect-0.firebaseapp.com',
-    storageBucket: 'reflect-0.appspot.com',
+    storageBucket: 'reflect-0.firebasestorage.app',
   );
+
 }

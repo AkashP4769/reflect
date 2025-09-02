@@ -88,6 +88,7 @@ ThemeData darkTheme = ThemeData(
     tertiary: Color(0xff303030),
     onTertiary: Color(0xff141414),
     
+    
   ),
   textTheme: ThemeData.dark().textTheme.copyWith(
     titleLarge: const TextStyle(color: Colors.white, fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w700),
