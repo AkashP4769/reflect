@@ -387,6 +387,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final width = MediaQuery.of(context).size.width;
     List<Entry> validEntries = entries;
 
     if(isTyping) validEntries = entrylistService.applySearchFilter(entries, searchController.text);
@@ -407,7 +408,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           child: Container(
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
-            //padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
@@ -415,20 +416,25 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                 colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
               )
             ),
-            child: SingleChildScrollView(
+            child: isEditing ? Center(
+              child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
+            ) :
+            SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                //mainAxisSize: isEditing ? MainAxisSize.max : MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: isEditing ? MainAxisAlignment.center : MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40,),
                   if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
               
                   const SizedBox(height: 20),
-                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
+                  if(!isTyping) Center(child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto)),
                   //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
+                  if(!isEditing) Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
                   
-                  if(isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
+                  if(!isEditing && isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
 
                   if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
                   GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,)

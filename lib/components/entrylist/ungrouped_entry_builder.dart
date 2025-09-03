@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
@@ -19,13 +21,19 @@ class _UngroupedEntryBuilderState extends State<UngroupedEntryBuilder> {
   
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    final columnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
+    return GridView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemCount: widget.entries.length,
       clipBehavior: Clip.none,
       physics: const ScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 0),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columnCount,
+        crossAxisSpacing: 0,
+        mainAxisExtent: 180,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () async {

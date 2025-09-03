@@ -40,6 +40,7 @@ class _ServerSettingState extends State<ServerSetting> {
   Widget build(BuildContext context) {
     final themeData = widget.ref.watch(themeManagerProvider);
     return SettingContainer(
+      maxHeight: 100,
       themeData: themeData,
       child: Column(
         mainAxisSize: MainAxisSize.min,

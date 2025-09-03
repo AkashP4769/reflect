@@ -19,7 +19,7 @@ class EntryCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: hasImage ? 160 : null,
-      margin: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 10),
       
       decoration: BoxDecoration(
         color: hasImage ? Colors.transparent : themeData.colorScheme.secondary,
@@ -41,6 +41,7 @@ class EntryCard extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: entry.imageUrl![0],
                 fit: BoxFit.fitWidth,  
+                errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,),
               ),
             ),
 

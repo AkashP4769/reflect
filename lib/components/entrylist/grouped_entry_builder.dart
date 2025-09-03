@@ -35,6 +35,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    final columnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
     Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     print(_groupedEntries.keys.toString());
     final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
@@ -70,13 +71,18 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
                 ),
               ),
             ),
-            if(widget.visibleMap[index]) ListView.builder(
+            if(widget.visibleMap[index]) GridView.builder(
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               itemCount: validEntries!.length,
               clipBehavior: Clip.none,
               physics: const ScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columnCount,
+                childAspectRatio: 1,
+                mainAxisExtent: 180,
+              ),
               itemBuilder: (context, index) {
                 /*if(random.nextBool()){
                   List<String> imageUrl = [];

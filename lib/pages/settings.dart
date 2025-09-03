@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -44,8 +46,38 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final columnCount = max(1, (MediaQuery.of(context).size.width / 400).floor());
+    final settingWidgets = [
+      SettingContainer(
+        themeData: themeData,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("• Your Account", style: themeData.textTheme.titleMedium!.copyWith(color:themeData.colorScheme.primary)),
+            const SizedBox(height: 10),
+            Text("Name: ${userSetting.name}", style: themeData.textTheme.bodyMedium),
+            Text("Email: ${userSetting.email}", style: themeData.textTheme.bodyMedium),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                AuthService.signOut();
+              },
+              child: Text('Logout', style: themeData.textTheme.bodyMedium,),
+            ),
+          ],
+        ), 
+      ),
+  
+      EncryptionSetting(themeData: themeData, encryptionMode: userSetting.encryptionMode, refreshPage: getUserSetting),
+      
+      if(userSetting.encryptionMode != 'local') ServerSetting(ref: ref,),
+      
+      if(userSetting.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting.primaryDevice, ...userSetting.devices], refreshPage: getUserSetting, encryptionMode: userSetting.encryptionMode),
+    ];
+
     return Container(
-      //height: double.infinity,
+      height: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -58,46 +90,28 @@ class _HomePageState extends ConsumerState<SettingsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Text('Settings', style: themeData.textTheme.titleLarge),
-
-                const SizedBox(height: 20),
-                SettingContainer(
-                  themeData: themeData,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("• Your Account", style: themeData.textTheme.titleMedium!.copyWith(color:themeData.colorScheme.primary)),
-                      const SizedBox(height: 10),
-                      Text("Name: ${userSetting.name}", style: themeData.textTheme.bodyMedium),
-                      Text("Email: ${userSetting.email}", style: themeData.textTheme.bodyMedium),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          AuthService.signOut();
-                        },
-                        child: Text('Logout', style: themeData.textTheme.bodyMedium,),
-                      ),
-                    ],
-                  ), 
-                ),
-
-                const SizedBox(height: 20),
-                EncryptionSetting(themeData: themeData, encryptionMode: userSetting.encryptionMode, refreshPage: getUserSetting),
-                
-                const SizedBox(height: 20),
-                if(userSetting.encryptionMode != 'local') ServerSetting(ref: ref,),
-                
-                const SizedBox(height: 20),
-                if(userSetting.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting.primaryDevice, ...userSetting.devices], refreshPage: getUserSetting, encryptionMode: userSetting.encryptionMode),
-                
-                // const SizedBox(height: 20),
-                // KeyComponent(themeData: themeData)
-              ],
+            Text('Settings', style: themeData.textTheme.titleLarge),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columnCount,
+                childAspectRatio: 1.0,
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+              ),
+              itemCount: settingWidgets.length,
+              itemBuilder: (BuildContext context, int index) => settingWidgets[index],
             ),
+            /*Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              children: settingWidgets.map((widget) => SizedBox(
+                width: MediaQuery.of(context).size.width / 3,
+                child: widget,
+              )).toList(),
+              //children: settingWidgets,
+            ),*/
             Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.8.0:27" , style: themeData.textTheme.titleSmall))
           ],
         ),
