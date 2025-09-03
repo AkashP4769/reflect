@@ -130,9 +130,12 @@ class _HomePageState extends ConsumerState<JournalPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     final themeData = ref.watch(themeManagerProvider);
     final _chapters = chapters;
+    final width = MediaQuery.of(context).size.width;
+    final columnCount = max(1, (width / 480).floor());
+    print(columnCount);
+
     return RefreshIndicator(
       onRefresh: () async {
         await fetchChapters(true);
@@ -198,7 +201,14 @@ class _HomePageState extends ConsumerState<JournalPage> {
                         tween: Tween<double>(begin: 0, end: _chapters.length.toDouble()),
                         duration: const Duration(milliseconds:  1000),
                         curve: Curves.easeInOutCirc,
-                        builder: (context, value, child) => ListView.builder(
+                        builder: (context, value, child) => GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: columnCount,
+                            mainAxisSpacing: 5,
+                            crossAxisSpacing: 30,
+                            childAspectRatio: 2.3,
+                            mainAxisExtent: 205
+                          ),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           clipBehavior: Clip.none,
@@ -322,6 +332,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
   void getRandomImage() => setState((){
     imageUrl = ImageService().getRandomImage();
     imageType = 'url';
+    print("Random image URL: $imageUrl");
   });
 
   void onEditImage() async {

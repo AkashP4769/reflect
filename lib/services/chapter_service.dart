@@ -11,7 +11,7 @@ import 'package:reflect/services/timestamp_service.dart';
 import 'package:reflect/services/user_service.dart';
 
 class ChapterService extends BackendServices {
-  Future<List<Map<String, dynamic>>?> getChapters(bool? explicit) async {
+  /*Future<List<Map<String, dynamic>>?> getChapters(bool? explicit) async {
     try{
       final date = TimestampService().getChapterTimestamp();
 
@@ -33,6 +33,25 @@ class ChapterService extends BackendServices {
       print("Error fetching chapters here?: $e");
       return null;
     }
+  }*/
+
+  Future<List<Map<String, dynamic>>?> getChapters(bool? explicit) async {
+    final date = TimestampService().getChapterTimestamp();
+
+    final response = await http.get(Uri.parse("$baseUrl/chapters/?uid=${user!.uid}&date=$date&explicit=${explicit == true ? 'true' :'false'}")).timeout(const Duration(seconds: 5), onTimeout: () => http.Response('Error', 408));
+    print(response.statusCode);
+    if(response.statusCode == 304){
+      print("User already has latest");
+      return null;
+    }
+    if(response.statusCode == 200){
+      final decodedList = jsonDecode(response.body) as List;
+      await TimestampService().updateChapterTimestamp();
+      return decodedList.map((chapter) => chapter as Map<String, dynamic>).toList();
+    }
+
+    print("status code: ${response.statusCode}");
+    return null;
   }
 
   Future<bool> createChapter(Map<String, dynamic> chapter) async {

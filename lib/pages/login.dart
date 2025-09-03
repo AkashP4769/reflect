@@ -70,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Container(
         height: height,
+        /*child: Text("Bruhhhh"),*/
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -84,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (BuildContext context, double value, Widget? child){
                         return Column( //wrap with scroll
                           mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             /*ElevatedButton(onPressed: (){
                                   setState(() {
@@ -125,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: const Center(
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text("A journal for your thoughts", style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600),),
                                           Text("A reflection for your soul.", style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600),),
@@ -192,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             AnimatedReflect(value: _value, color: color,),
                             SizedBox(height: height/2,)

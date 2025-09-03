@@ -113,6 +113,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     print("authPermission: $authPermission, backendVerified: $backendVerified");
     return Scaffold(
+      //body: LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot){

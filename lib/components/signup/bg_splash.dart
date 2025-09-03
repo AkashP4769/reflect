@@ -37,7 +37,9 @@ class _Bg_SplashState extends State<Bg_Splash> {
       autoPlay: true,
       looping: true,
       showControls: false,
-      showOptions: false
+      showOptions: false,
+      allowFullScreen: false,
+      allowMuting: true,
     );
     setState(() {});
   }

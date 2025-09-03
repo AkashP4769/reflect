@@ -24,7 +24,7 @@ class EncryptionService {
     String identifier;
     try {
       identifier = await UniqueIdentifier.serial ?? 'Unknown';
-    } on PlatformException {
+    } on Exception {
       identifier = 'Unknown';
     }
     return identifier;

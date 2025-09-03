@@ -110,14 +110,19 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     //imageUrl.add("https://img.freepik.com/free-photo/digital-art-style-river-nature-landscape_23-2151825792.jpg?t=st=1727633824~exp=1727637424~hmac=9414f70adc8deaa8fbfcb76720166319533a01c3aab771afb83d9d2da258f80c&w=900");
 
-    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(editorFocusNode: contentFocusNode);
+    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(/*editorFocusNode: contentFocusNode*/);
     else {
-      quillController = quill.QuillController(
-        document: quill.Document.fromJson(widget.entry.content ?? []),
+      quillController = quill.QuillController.basic(
+        /*document: quill.Document.fromJson(widget.entry.content ?? []),
         selection: const TextSelection.collapsed(offset: 0),
-        editorFocusNode: contentFocusNode,
-        configurations: quill.QuillControllerConfigurations()
+        /*editorFocusNode: contentFocusNode,*/
+        config: quill.QuillControllerConfigurations()*/
+        config: quill.QuillControllerConfig(
+          clipboardConfig: quill.QuillClipboardConfig()
+          //editorFocusNode: contentFocusNode,
+        )
       );
+      quillController.document = quill.Document.fromJson(widget.entry.getContentAsQuill().toDelta().toJson());
     }
 
     quillController.document.changes.listen((_) => _scrollToBottom());
@@ -433,7 +438,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             ),
             
             child: SingleChildScrollView(
-              controller: scrollController, 
+              //controller: scrollController, 
               clipBehavior: Clip.none,
               scrollDirection: Axis.vertical,
               physics: const ScrollPhysics(),
@@ -528,40 +533,37 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         
                       if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
                       const SizedBox(height: 10),
-                      quill.QuillEditor.basic(
-                            controller: quillController,
-                            focusNode: contentFocusNode,
-                            //scrollController: scrollController,
-                            
-                            
-                        
-                            configurations: quill.QuillEditorConfigurations(
-                              scrollable: true,
-                              placeholder: "Start writing here...",
-                              keyboardAppearance: themeData.brightness,
-                              onPerformAction: (TextInputAction action) {
-                                //print(action.toString());
-                              },
-                              
-                              customStyles: quill.DefaultStyles(
-                                paragraph: quill.DefaultTextBlockStyle(
-                                  themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
-                                  const quill.HorizontalSpacing(0, 0),
-                                  const quill.VerticalSpacing(0, 0),
-                                  quill.VerticalSpacing.zero,
-                                  null
-                                ),
-                                placeHolder: quill.DefaultTextBlockStyle(
-                                  themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                  const quill.HorizontalSpacing(0, 0),
-                                  const quill.VerticalSpacing(0, 0),
-                                  quill.VerticalSpacing.zero,
-                                  null
-                                ),
-                              )
-                                
+
+                      quill.QuillEditor(
+                        focusNode: contentFocusNode,
+                        controller: quillController,
+                        scrollController: scrollController,
+                        config: quill.QuillEditorConfig(
+                          scrollable: true,
+                          placeholder: "Start writing here...",
+                          keyboardAppearance: themeData.brightness,
+                          onPerformAction: (TextInputAction action) {
+                            //print(action.toString());
+                          },
+                          
+                          customStyles: quill.DefaultStyles(
+                            paragraph: quill.DefaultTextBlockStyle(
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
+                              const quill.HorizontalSpacing(0, 0),
+                              const quill.VerticalSpacing(0, 0),
+                              quill.VerticalSpacing.zero,
+                              null
                             ),
-                          ),      
+                            placeHolder: quill.DefaultTextBlockStyle(
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                              const quill.HorizontalSpacing(0, 0),
+                              const quill.VerticalSpacing(0, 0),
+                              quill.VerticalSpacing.zero,
+                              null
+                            ),
+                          )
+                        ),
+                      ),     
                       
                       /*TextField(
                         controller: new TextEditingController(),
@@ -596,9 +598,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 //mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: quill.QuillToolbar.simple(
+                    child: quill.QuillSimpleToolbar(
                       controller: quillController,
-                      configurations: quill.QuillSimpleToolbarConfigurations(
+                      config: quill.QuillSimpleToolbarConfig(
                         showBoldButton: extendedToolbar ? false : true,
                         showItalicButton: extendedToolbar ? false : true,
                         showUnderLineButton: extendedToolbar ? false : true,

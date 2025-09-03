@@ -31,6 +31,8 @@ class ChapterCard extends StatelessWidget {
         ]
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if(chapter.imageUrl!.isNotEmpty) Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -39,7 +41,15 @@ class ChapterCard extends StatelessWidget {
                 if(chapter.entryCount > 1) ImageStack(height: 120, width: 120, offset: const Offset(0,0), rotation: lerpDouble(20, -7, tween)),
                 if(chapter.entryCount > 2) ImageStack(height: 120, width: 120, offset: const Offset(0,0), rotation: lerpDouble(30, 7, tween),),
                 ImageStack(height: 120, width: 120, padding: 5, /*offset:  Offset(0, lerpDouble(30, 0, tween)!),*/ rotation: lerpDouble(10, 0, tween)!,
-                  child: CachedNetworkImage(imageUrl: chapter.imageUrl![0], fit: BoxFit.cover, width: 100, height: 100)
+                  child: CachedNetworkImage(
+                    imageUrl: chapter.imageUrl![0], 
+                    fit: BoxFit.cover, 
+                    width: 100, 
+                    height: 100,
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator(),),
+                    errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,),
+                  )
+
                 )
               ],
             ),
@@ -48,6 +58,7 @@ class ChapterCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Opacity(
                     opacity: min(max(0, tween*3 - 0), 1),

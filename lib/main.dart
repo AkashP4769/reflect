@@ -17,6 +17,8 @@ import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/theme/theme_constants.dart';
 import 'package:reflect/theme/theme_manager.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 
 final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager());
@@ -88,6 +90,12 @@ class MainApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeData.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
+      ],
       routes: {
         '/': (context) => const AuthPage(),
         '/login': (context) => const LoginPage(),

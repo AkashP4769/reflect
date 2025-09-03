@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,14 +62,13 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        //toolbarHeight: 70,
-        //backgroundColor: Colors.grey,
+        toolbarHeight: 70,
         titleSpacing: 0,
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 15),
           child: FirebaseAuth.instance.currentUser!.photoURL != null ? CircleAvatar(
-            backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!, scale: 2),
+            backgroundImage: CachedNetworkImageProvider(FirebaseAuth.instance.currentUser!.photoURL!, scale: 2, cacheKey: FirebaseAuth.instance.currentUser!.uid),
             radius: 5,
           ) : Container(),
         ),

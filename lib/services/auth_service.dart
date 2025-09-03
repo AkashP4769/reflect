@@ -7,30 +7,49 @@ import 'package:reflect/services/user_service.dart';
 class AuthService{
   static Future<Map<String, dynamic>> signInWithGoogle() async {
     try{
-      print("inside signInWithGoogle function");
-      final GoogleSignInAccount? gUser = await GoogleSignIn(
-        scopes: <String>["email"],
-        clientId: kIsWeb ? '176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com' : null,
-      ).signIn();
+      // print("inside signInWithGoogle function");
+      // final GoogleSignInAccount? gUser = await GoogleSignIn(
+      //   scopes: <String>["email"],
+      //   clientId: kIsWeb ? '176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com' : null,
+      // ).signIn();
 
-      final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+      // final GoogleSignInAuthentication gAuth = await gUser!.authentication;
 
-      final credentials = GoogleAuthProvider.credential(
-        accessToken: gAuth.accessToken,
-        idToken: gAuth.idToken,
-      );
+      // final credentials = GoogleAuthProvider.credential(
+      //   accessToken: gAuth.accessToken,
+      //   idToken: gAuth.idToken,
+      // );
 
-      /*UserCredential? userCredential;
+      // UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+      // print("signed in on google");
+      UserCredential? userCredential;
 
       if(kIsWeb){
-        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+        GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
-      } else {
-        // For mobile, we can directly use the credentials
-        await FirebaseAuth.instance.signInWithCredential(credentials);
-      }*/
-      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
-      print("signed in on google");
+        googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+
+        // Once signed in, return the UserCredential
+        userCredential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
+
+        // await FirebaseAuth.instance.signInWithRedirect(googleProvider);
+        // userCredential = await FirebaseAuth.instance.getRedirectResult();
+      }
+
+      else {
+        // Trigger the authentication flow
+        final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication googleAuth = googleUser!.authentication;
+
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+
+        // Once signed in, return the UserCredential
+        userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+
 
       final authResponse = await UserService().addUser(userCredential!.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
       return authResponse;
@@ -86,7 +105,7 @@ class AuthService{
     try{
       //await GoogleSignIn().signOut();
       await FirebaseAuth.instance.signOut();
-      await GoogleSignIn().signOut();
+      await GoogleSignIn.instance.signOut();
       return '';
 
     } on FirebaseAuthException catch (e) {
