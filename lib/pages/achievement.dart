@@ -155,6 +155,9 @@ class _HomePageState extends ConsumerState<AchievementPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final statColumnCount = max(1, (MediaQuery.of(context).size.width / 360).floor());
+    final achievementsColumnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
+
     List<Achievement> completedAchievements = [];
     List<Achievement> lockedAchievements = [];
     for(int i = 0; i < achievements.length; i++){
@@ -192,12 +195,19 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
             ),
-            ListView.builder(
+            GridView.builder(
               shrinkWrap: true,
               clipBehavior: Clip.none,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: showMoreAchievement ? finalAchievements.length : min(3, finalAchievements.length),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: achievementsColumnCount, 
+                crossAxisSpacing: 10, 
+                mainAxisSpacing: 1, 
+                childAspectRatio: 6, 
+                mainAxisExtent: 120
+              ),
+              itemCount: showMoreAchievement ? finalAchievements.length : min(achievementsColumnCount * 3, finalAchievements.length),
               itemBuilder: (BuildContext context, int index){
                 return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
               }
@@ -228,7 +238,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: statistics.length,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: statColumnCount, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0, mainAxisExtent: 120),
               itemBuilder: (BuildContext context, int index){
                 return Container(
                   padding: const EdgeInsets.all(10),

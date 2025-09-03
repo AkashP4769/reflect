@@ -41,7 +41,7 @@ class _AchievementCardState extends State<AchievementCard> with SingleTickerProv
 
           children: [
             Container(
-              height: 85,
+              //height: 85,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
@@ -55,7 +55,7 @@ class _AchievementCardState extends State<AchievementCard> with SingleTickerProv
               )
             ),
             Container(
-              height: 85,
+              //height: 85,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
