@@ -430,7 +430,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
               
                   const SizedBox(height: 20),
-                  if(!isTyping) Center(child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto)),
+                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
                   //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
                   if(!isEditing) Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
                   

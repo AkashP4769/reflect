@@ -226,28 +226,24 @@ class ChapterHeader extends StatelessWidget {
     
     print(width);
     return Container(
-      //alignment: Alignment.center,
       width: double.infinity,
-      //height: isEditing ? MediaQuery.of(context).size.height : null,
       padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 20 : 120,),
-      child: Expanded(
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columnCount,
-            childAspectRatio: 1.0,
-            mainAxisExtent: columnCount == 1 ? 200 : 360,
-            crossAxisSpacing: 40,
-          ),
-          
-          shrinkWrap: true,
-          clipBehavior: Clip.hardEdge,
-          itemCount: widgets.length,
-          physics: const NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemBuilder: (context, index) {
-            return widgets[index];
-          },
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columnCount,
+          childAspectRatio: 1.0,
+          mainAxisExtent: columnCount == 1 ? 200 : 360,
+          crossAxisSpacing: 40,
         ),
+        
+        shrinkWrap: true,
+        clipBehavior: Clip.hardEdge,
+        itemCount: widgets.length,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        itemBuilder: (context, index) {
+          return widgets[index];
+        },
       ),
     );
   }

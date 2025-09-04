@@ -380,6 +380,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final width = MediaQuery.of(context).size.width;
+    final bool isSmall = width < 720;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: SingleChildScrollView(
@@ -393,14 +396,14 @@ class _NewChapterState extends ConsumerState<NewChapter> {
               const SizedBox(height: 50),
               Stack(
                 children: [
-                  ImageStack(height: 450, width: 320, offset: Offset(lerpDouble(-30, 3, widget.tween)!, lerpDouble(-20, 0, widget.tween)!), rotation: lerpDouble(20, -7, widget.tween)),
-                  ImageStack(height: 450, width: 320, offset: Offset(lerpDouble(-20, 0, widget.tween)!, lerpDouble(-40, 7, widget.tween)!), rotation: lerpDouble(30, 7, widget.tween),),
-                  ImageStack(height: 450, width: 320, offset: Offset(0, lerpDouble(30, 0, widget.tween)!), rotation: lerpDouble(10, 0, widget.tween),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                  ImageStack(height: isSmall ? 450 : 360, width: isSmall ? 320 : 640, offset: Offset(lerpDouble(-30, 3, widget.tween)!, lerpDouble(-20, 0, widget.tween)!), rotation: lerpDouble(20, -7, widget.tween)),
+                  ImageStack(height: isSmall ? 450 : 360, width: isSmall ? 320 : 640, offset: Offset(lerpDouble(-20, 0, widget.tween)!, lerpDouble(-40, 7, widget.tween)!), rotation: lerpDouble(30, 7, widget.tween),),
+                  ImageStack(height: isSmall ? 450 : 360, width: isSmall ? 320 : 640, offset: Offset(0, lerpDouble(30, 0, widget.tween)!), rotation: lerpDouble(10, 0, widget.tween),
+                      child: ColumnRow(
+                        isSmall: isSmall,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(top: 20),
+                            margin: EdgeInsets.only(top: isSmall ? 20 : 0),
                             height: 300,
                             width: 300,
                             color:  Colors.white,
@@ -432,72 +435,88 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                               ],
                             ),
                           ),
-                          TextField(
-                            controller: titleController,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                              labelStyle: TextStyle(color: Colors.white),
-                              label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
-                              floatingLabelBehavior: FloatingLabelBehavior.never,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              border: InputBorder.none,
-                              alignLabelWithHint: true
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                TextField(
+                                  controller: titleController,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 24, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    labelStyle: TextStyle(color: Colors.white),
+                                    label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
+                                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    border: InputBorder.none,
+                                    alignLabelWithHint: true
+                                  ),
+                                ),
+                                TextField(
+                                  controller: descriptionController,
+                                  textAlign: TextAlign.center,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  maxLines: 3,
+                                  style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    labelStyle: TextStyle(color: Colors.white, fontSize: 12),
+                                    label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
+                                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    alignLabelWithHint: true
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          TextField(
-                            controller: descriptionController,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            maxLines: 3,
-                            style: const TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 12, fontWeight: FontWeight.w400),   
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                              labelStyle: TextStyle(color: Colors.white, fontSize: 12),
-                              label: Center(child: Text("Description", style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontSize: 14, fontWeight: FontWeight.w400, decoration: TextDecoration.none, decorationThickness: 0, height: 0.7))),
-                              floatingLabelBehavior: FloatingLabelBehavior.never,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              alignLabelWithHint: true
-                            ),
-                          ),
+                          
                         ],
                       ),
                     ),
                     
                 ],
               ),
-              const SizedBox(height: 60,),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: ElevatedButton(
-                      onPressed: widget.toggleCreate,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: themeData.colorScheme.surface,
-                        elevation: 10
+              SizedBox(height: isSmall ? 60 : 100,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: isSmall ? 0 : 200),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ElevatedButton(
+                        onPressed: widget.toggleCreate,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: themeData.colorScheme.surface,
+                          elevation: 10,
+                          fixedSize: Size(isSmall ? 100 : 150, 60)
+                        ),
+                        child: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,)
                       ),
-                      child: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,)
                     ),
-                  ),
-                  const SizedBox(width: 20,),
-                  Expanded(
-                    flex: 4,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 10,
+                    const SizedBox(width: 20,),
+                    Expanded(
+                      flex: 4,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 10,
+                          fixedSize: Size(isSmall ? 100 : 150, 60),
+                          
+                        ),
+                        onPressed: (titleController.text.isEmpty || descriptionController.text.isEmpty) ? null : _addChapter,
+                        child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                       ),
-                      onPressed: (titleController.text.isEmpty || descriptionController.text.isEmpty) ? null : _addChapter,
-                      child: Text("Create", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           ),
@@ -533,5 +552,17 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     descriptionController.dispose();
     imageUrlController.dispose();
     super.dispose();
+  }
+}
+
+class ColumnRow extends StatelessWidget {
+  const ColumnRow({super.key, required this.children, required this.isSmall});
+
+  final List<Widget> children;
+  final bool isSmall;
+
+  @override
+  Widget build(BuildContext context) {
+    return isSmall ? Column(mainAxisSize: MainAxisSize.min, children: children) : Row(mainAxisSize: MainAxisSize.min, children: children);
   }
 }
