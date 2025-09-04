@@ -20,7 +20,7 @@ class ChapterCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
       decoration: BoxDecoration(
-        color: themeData.colorScheme.secondaryContainer,
+        color: themeData.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(

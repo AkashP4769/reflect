@@ -68,6 +68,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late List<String> imageUrl;
 
   late ScreenshotController screenshotController;
+  
 
   @override
   void initState() {
@@ -420,6 +421,90 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
+    final width = MediaQuery.of(context).size.width;
+    final columnCount = width < 720 ? 1 : 2;
+    double fontsize = columnCount == 1 ? 16 : 20;
+
+    print("columnCount: $columnCount");
+
+    final gridWidgets = [
+      if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
+        height: columnCount == 1 ? 200 : 300,
+        width: columnCount == 1 ? MediaQuery.of(context).size.width - 40 : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,))),
+              if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
+            
+              if(isImageEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
+                alignment: Alignment.topRight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: removeSelectedPhoto, 
+                      icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                    ),
+                    IconButton(
+                      onPressed: getRandomImage,
+                      icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                    ),
+                    IconButton(
+                      onPressed: onEditImage,
+                      icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
+                    ),
+                  ]
+                )
+              ),
+            ],
+          ),
+        ),
+      ),
+          
+    
+      Container(
+        //color: Colors.lightGreen,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: showDatePickerr,
+                  child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                ),
+                if (!isHiddenForSS || isFavourite) Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
+                ),
+              ],
+            ),
+        
+            TextField(
+              controller: titleController,
+              focusNode: titleFocusNode,
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: "Title...",
+                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                isDense: true,
+              ),
+              maxLines: null,
+            ),
+            SizedBox(height: 5,),
+              
+            if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+          ],
+        ),
+      ),
+    ];
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -429,6 +514,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           ),
           child: Container(
             //height: MediaQuery.of(context).size.height,
+            padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
@@ -461,78 +547,31 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                     children: [
                       if(!isHiddenForSS) const SizedBox(height: 40),     
                       if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS,),
-                  
-                      if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) const SizedBox(height: 20),
-                          
-                      if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
-                        height: 200,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,))),
-                              if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
-                            
-                              if(isImageEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
-                                alignment: Alignment.topRight,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      onPressed: removeSelectedPhoto, 
-                                      icon: const DecoratedIcon(icon: Icon(Icons.close, color: Colors.white,), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                    ),
-                                    IconButton(
-                                      onPressed: getRandomImage,
-                                      icon: const DecoratedIcon(icon: Icon(Icons.shuffle, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                    ),
-                                    IconButton(
-                                      onPressed: onEditImage,
-                                      icon: const DecoratedIcon(icon: Icon(Icons.edit, color: Colors.white), decoration: IconDecoration(border: IconBorder(width: 1)),),
-                                    ),
-                                  ]
-                                )
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                              
-                          
+
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: showDatePickerr,
-                            child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))
-                          ),
-                          if (!isHiddenForSS || isFavourite) Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: FavouriteHeart(isFav: isFavourite, toggleIsFav: toggleFavourite)
-                          ),
-                        ],
+                      (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columnCount,
+                          childAspectRatio: 1.0,
+                          mainAxisExtent: columnCount == 1 ? 200 : 240,
+                          crossAxisSpacing: 40,
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        shrinkWrap: true,
+                        clipBehavior: Clip.hardEdge,
+                        itemCount: gridWidgets.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return gridWidgets[index];
+                        },
+                      ) :
+                      Column(
+                        children: gridWidgets,
                       ),
                           
-                      TextField(
-                        controller: titleController,
-                        focusNode: titleFocusNode,
-                        style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: "Title...",
-                          hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          isDense: true,
-                        ),
-                        maxLines: null,
-                      ),
-                      SizedBox(height: 5,),
-                        
-                      if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
-                      const SizedBox(height: 10),
+                      
+                      const SizedBox(height: 20),
 
                       quill.QuillEditor(
                         focusNode: contentFocusNode,
@@ -548,14 +587,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                           
                           customStyles: quill.DefaultStyles(
                             paragraph: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16) ?? const TextStyle(),
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
                               const quill.HorizontalSpacing(0, 0),
                               const quill.VerticalSpacing(0, 0),
                               quill.VerticalSpacing.zero,
                               null
                             ),
                             placeHolder: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: 16, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                              themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
                               const quill.HorizontalSpacing(0, 0),
                               const quill.VerticalSpacing(0, 0),
                               quill.VerticalSpacing.zero,
@@ -565,20 +604,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         ),
                       ),     
                       
-                      /*TextField(
-                        controller: new TextEditingController(),
-                        focusNode: titleFocusNode,
-                        style: themeData.textTheme.titleLarge?.copyWith(fontSize: 20, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: "Title...",
-                          hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          isDense: true,
-                        ),
-                        maxLines: null,
-                      ),*/
                       Container(height: 80,),
                     ],
                   ),
@@ -590,70 +615,64 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         bottomSheet: (!isHiddenForSS) ? Container(
           color: themeData.colorScheme.tertiary,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
+            mainAxisSize: columnCount == 1 ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                //mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: quill.QuillSimpleToolbar(
-                      controller: quillController,
-                      config: quill.QuillSimpleToolbarConfig(
-                        showBoldButton: extendedToolbar ? false : true,
-                        showItalicButton: extendedToolbar ? false : true,
-                        showUnderLineButton: extendedToolbar ? false : true,
-                        showStrikeThrough: false, //
-                        showColorButton: extendedToolbar ? true :  false, //
-                        showBackgroundColorButton: false,
-                        showClearFormat: false, //
-                        showHeaderStyle: false,
-                        showListNumbers: extendedToolbar ? true :  false, //
-                        showListBullets: extendedToolbar ? true :  false, //
-                        showCodeBlock: false,
-                        showQuote: false, //
-                        showLink: false,
-                        showSubscript: false,
-                        showSuperscript: false,
-                        showAlignmentButtons: false,
-                        showClipboardCopy: false,
-                        showClipboardCut: false,
-                        showClipboardPaste: false,
-                        showDividers: false,
-                        showListCheck: false,
-                        showIndent: false,
-                        showFontFamily: false,
-                        showFontSize: false,
-                        showSearchButton: false, //
-                        showInlineCode: false, //
-                        showRedo: extendedToolbar ? true :  false, //
-                        showUndo: extendedToolbar ? false : true,
-                      )
-                    ),
+              quill.QuillSimpleToolbar(
+                controller: quillController,
+                config: quill.QuillSimpleToolbarConfig(
+                  showBoldButton: columnCount == 2 ? true : (extendedToolbar ? false : true),
+                  showItalicButton: columnCount == 2 ? true : (extendedToolbar ? false : true),
+                  showUnderLineButton: columnCount == 2 ? true : (extendedToolbar ? false : true),
+                  showStrikeThrough: false, //
+                  showColorButton: columnCount == 2 ? true : (extendedToolbar ? true : false), //
+                  showBackgroundColorButton: false,
+                  showClearFormat: false, //
+                  showHeaderStyle: false,
+                  showListNumbers: columnCount == 2 ? true : (extendedToolbar ? true : false),
+                  showListBullets: columnCount == 2 ? true : (extendedToolbar ? true : false),
+                  showCodeBlock: false,
+                  showQuote: false, //
+                  showLink: false,
+                  showSubscript: false,
+                  showSuperscript: false,
+                  showAlignmentButtons: false,
+                  showClipboardCopy: false,
+                  showClipboardCut: false,
+                  showClipboardPaste: false,
+                  showDividers: false,
+                  showListCheck: false,
+                  showIndent: false,
+                  showFontFamily: false,
+                  showFontSize: false,
+                  showSearchButton: false, //
+                  showInlineCode: false, //
+                  showRedo: columnCount == 2 ? true : (extendedToolbar ? true :  false), //
+                  showUndo: columnCount == 2 ? true : (extendedToolbar ? false : true),
+                )
+              ),
+              IconButton(
+                onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
+              ),
+              SizedBox(
+                width: columnCount == 1 ? 120 : 150,
+                child: ElevatedButton(
+                  onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited || isImageEdited ? (){
+                    if(widget.entry.id == null) addEntry();
+                    else updateEntry();
+                  } : null,
+                
+                  style: ElevatedButton.styleFrom(
+                    disabledBackgroundColor: Colors.grey,
+                    backgroundColor: const Color(0xffFF9432),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    )
                   ),
-                  IconButton(
-                    onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
-                  ),
-                  SizedBox(
-                    width: 120,
-                    child: ElevatedButton(
-                      onPressed: isTitleEdited || isContentEdited || isDateEdited || isTagsEdited || isFavouriteEdited || isImageEdited ? (){
-                        if(widget.entry.id == null) addEntry();
-                        else updateEntry();
-                      } : null,
-                    
-                      style: ElevatedButton.styleFrom(
-                        disabledBackgroundColor: Colors.grey,
-                        backgroundColor: const Color(0xffFF9432),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        )
-                      ),
-                      child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-                    ),
-                  ),
-                ],
+                  child: Text('Save', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+                ),
               ),
             ],
           ),

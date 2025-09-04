@@ -81,10 +81,10 @@ class _HomePageState extends ConsumerState<SettingsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.secondaryContainer]
-        )
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+          )
       ),
       child: SingleChildScrollView(
         child: Column(

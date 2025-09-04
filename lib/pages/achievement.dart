@@ -243,7 +243,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 return Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                  color: themeData.colorScheme.secondaryContainer,
+                  color: themeData.colorScheme.surface,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
