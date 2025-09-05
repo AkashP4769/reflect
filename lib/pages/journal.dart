@@ -208,7 +208,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                             mainAxisSpacing: 5,
                             crossAxisSpacing: 30,
                             childAspectRatio: 2.3,
-                            mainAxisExtent: 205
+                            mainAxisExtent: columnCount == 1 ? 225 : 210,
                           ),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,

@@ -69,7 +69,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         textColor: themeData.colorScheme.onPrimary,
         iconColor: themeData.colorScheme.onPrimary,
-        iconActiveColor: themeData.colorScheme.onPrimary,
+        iconActiveColor: themeData.colorScheme.primary,
         backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
       ),
       GButton(
@@ -79,7 +79,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         textColor: themeData.colorScheme.onPrimary,
         iconColor: themeData.colorScheme.onPrimary,
-        iconActiveColor: themeData.colorScheme.onPrimary,
+        iconActiveColor: themeData.colorScheme.primary,
         backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
       ),
       GButton(
@@ -89,7 +89,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         textColor: themeData.colorScheme.onPrimary,
         iconColor: themeData.colorScheme.onPrimary,
-        iconActiveColor: themeData.colorScheme.onPrimary,
+        iconActiveColor: themeData.colorScheme.primary,
         backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
       ),
       GButton(
@@ -97,9 +97,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         text: 'Settings',
         margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        textColor: themeData.colorScheme.primary,
+        textColor: themeData.colorScheme.onPrimary,
         iconColor: themeData.colorScheme.onPrimary,
-        iconActiveColor: themeData.colorScheme.onPrimary,
+        iconActiveColor: themeData.colorScheme.primary,
         backgroundColor: themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor,
       ),
     ];
@@ -184,14 +184,14 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: currentPageIndex == index ? (themeData.brightness == Brightness.dark ? const Color(0xff303030) : themeData.primaryColor) : Colors.transparent,
+                      color: currentPageIndex == index ? themeData.colorScheme.primary : themeData.colorScheme.surface,
                     ),
                     
                     //padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                     child: Icon(
                       navItems[index].icon,
                       size: 28,
-                      color: currentPageIndex == index ? themeData.colorScheme.primary : themeData.colorScheme.onPrimary,
+                      color: themeData.colorScheme.onPrimary,
                     ),
                   ),
                 );

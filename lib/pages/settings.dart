@@ -46,7 +46,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    final columnCount = max(1, (MediaQuery.of(context).size.width / 400).floor());
+    final columnCount = MediaQuery.of(context).size.width < 640 ? 1 : 2;
     final settingWidgets = [
       SettingContainer(
         themeData: themeData,
@@ -68,7 +68,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           ],
         ), 
       ),
-  
+      //SizedBox(width: 20, height: 20,),
       EncryptionSetting(themeData: themeData, encryptionMode: userSetting.encryptionMode, refreshPage: getUserSetting),
       
       if(userSetting.encryptionMode != 'local') ServerSetting(ref: ref,),
@@ -91,27 +91,32 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Settings', style: themeData.textTheme.titleLarge),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columnCount,
-                childAspectRatio: 1.0,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-              ),
-              itemCount: settingWidgets.length,
-              itemBuilder: (BuildContext context, int index) => settingWidgets[index],
-            ),
-            /*Wrap(
+
+            columnCount == 1 ? Wrap(
               spacing: 20,
               runSpacing: 20,
-              children: settingWidgets.map((widget) => SizedBox(
-                width: MediaQuery.of(context).size.width / 3,
-                child: widget,
-              )).toList(),
+              children: settingWidgets,
               //children: settingWidgets,
-            ),*/
+            ) : 
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    spacing: 20,
+                    children: [settingWidgets[0], settingWidgets[2], if (settingWidgets.length > 3) settingWidgets[3]],
+                  ),
+                ),
+                const SizedBox(width: 20,),
+                Expanded(
+                  child: Column(
+                    spacing: 20,
+                    children: [settingWidgets[1],],
+                  ),
+                )
+              ]
+            ),
             Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.8.0:27" , style: themeData.textTheme.titleSmall))
           ],
         ),

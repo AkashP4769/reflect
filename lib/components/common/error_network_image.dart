@@ -10,16 +10,17 @@ class ErrorNetworkImage extends StatelessWidget {
   final BoxFit? fit;
   final double? width;
   final double? height;
-  final String? url;
+  String? url;
 
   @override
   Widget build(BuildContext context) {
+    if(url == null) url = imageService.getRandomImage();
     return Stack(
       fit: StackFit.expand,
       children: [
         
         CachedNetworkImage(
-          imageUrl: url ?? imageService.getRandomImage(),
+          imageUrl: url!, 
           fit: fit ?? BoxFit.cover,
           width: width ?? 100,
           height: height ?? 100,
@@ -28,7 +29,7 @@ class ErrorNetworkImage extends StatelessWidget {
           alignment: Alignment.topLeft,
           child: Padding(
             padding: const EdgeInsets.all(2.0),
-            child: Icon(Icons.shuffle, color: Theme.of(context).colorScheme.onPrimary, size: (width != null && height != null) ? (width! < height! ? width! * 0.2 : height! * 0.2) : 20,),
+            child: Icon(Icons.shuffle, color: Theme.of(context).colorScheme.onPrimary, size: 20,),
           ),
         ),
       ],

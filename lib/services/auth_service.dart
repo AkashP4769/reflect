@@ -29,11 +29,11 @@ class AuthService{
 
         googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
 
-        // Once signed in, return the UserCredential
-        userCredential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
-
-        await FirebaseAuth.instance.signInWithRedirect(googleProvider);
-        userCredential = await FirebaseAuth.instance.getRedirectResult();
+        if(defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) {
+          await FirebaseAuth.instance.signInWithRedirect(googleProvider);
+          userCredential = await FirebaseAuth.instance.getRedirectResult();
+        }
+        else userCredential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
       }
 
       else {

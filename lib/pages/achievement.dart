@@ -155,7 +155,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
   @override
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
-    final statColumnCount = max(1, (MediaQuery.of(context).size.width / 360).floor());
+    final statColumnCount = max(2, (MediaQuery.of(context).size.width / 360).floor());
     final achievementsColumnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
 
     List<Achievement> completedAchievements = [];
@@ -257,9 +257,9 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.left,),
+                      Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
                       const SizedBox(height: 10,),
-                      Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,)),
+                      Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
                     ],
                   ),
                 );
