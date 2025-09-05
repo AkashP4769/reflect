@@ -32,8 +32,8 @@ class AuthService{
         // Once signed in, return the UserCredential
         userCredential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
 
-        // await FirebaseAuth.instance.signInWithRedirect(googleProvider);
-        // userCredential = await FirebaseAuth.instance.getRedirectResult();
+        await FirebaseAuth.instance.signInWithRedirect(googleProvider);
+        userCredential = await FirebaseAuth.instance.getRedirectResult();
       }
 
       else {
@@ -61,20 +61,21 @@ class AuthService{
     }
   }
 
-  static Future<String> signInWithEmailPassword(String email, String password) async {
+  static Future<Map<String, dynamic>> signInWithEmailPassword(String email, String password) async {
     try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      return '';
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      final authResponse = await UserService().addUser(userCredential!.user!.uid, email.split('@')[0], email);
+      return authResponse;
     }
     on FirebaseAuthException catch(e) {
       print("Error at signInWithEmailPassword(): $e");
-      if(e.code == 'user-not-found') return "User not found";
-      else if(e.code == 'wrong-password') return "Wrong password";
-      return "Error: " + e.code;
+      if(e.code == 'user-not-found') return {"code": -1, "message": "User not found"};
+      else if(e.code == 'wrong-password') return {"code": -1, "message": "Wrong password"};
+      return {"code": -1, "message": "Error: ${e.code}"};
     }
   }
 
-  static Future<String> createUserWithEmailAndPassword(String name, String email, String password/* String phonenumber*/) async {
+  static Future<Map<String, dynamic>> createUserWithEmailAndPassword(String name, String email, String password/* String phonenumber*/) async {
     try{
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       
@@ -85,19 +86,15 @@ class AuthService{
         await user.sendEmailVerification();
       }
 
-      /*//add user to firestore
-      if(userCredential.user != null){
-        await UserService.addUser(userCredential.user!.uid, name, email, phonenumber);
-      }*/
-
-      return '';
+      final authResponse = await UserService().addUser(userCredential!.user!.uid, name, email);
+      return authResponse;
     }
     on FirebaseAuthException catch(e){
       print("Error at creatingUser(): ${e}");
-      if(e.code == 'email-already-in-use') return "Email already in use, Please use a different email";
-      else if(e.code == 'invalid-email') return "Invalid email";
-      else if(e.code == 'weak-password') return "Weak password";
-      return "Error: " + e.code;
+      if(e.code == 'email-already-in-use') return {"code": -1, "message": "Email already in use, Please use a different email"};
+      else if(e.code == 'invalid-email') return {"code": -1, "message": "Invalid email"};
+      else if(e.code == 'weak-password') return {"code": -1, "message": "Weak password"};
+      return {"code": -1, "message": "Error: " + e.code};
     }
   }
 

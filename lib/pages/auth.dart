@@ -93,8 +93,39 @@ class _AuthPageState extends State<AuthPage> {
 
   void signInWithEmailAndPass(String email, String password, Color loadingColor) async {
     showLoading(context, loadingColor);
-    String msg = await AuthService.signInWithEmailPassword(email, password);
-    if(msg != '') setState(() => loginErrorMsg = msg);
+
+    authPermission = true;
+    backendVerified = false;
+    loginErrorMsg = '';
+
+    
+    final authResponse = await AuthService.signInWithEmailPassword(email, password);
+    if(authResponse['code'] == -1){
+      setState(() => loginErrorMsg = authResponse['message']);
+      Navigator.pop(context);
+      return;
+    }
+
+
+    final userSetting = UserService().getUserSettingFromCache();
+
+    if(authResponse['encryptionMode'] == 'encrypted'){
+      print("encrypted");
+      final encryptionService = EncryptionService();
+      final symKey = await encryptionService.getSymmetricKey();
+
+      print("symKey: $symKey, keyValidator: ${authResponse['keyValidator']}");
+      if(symKey == null) authPermission = false;
+      else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
+    }
+
+    final chapters = CacheService().loadChaptersFromCache();
+    if(chapters == null && userSetting.encryptionMode != 'local') await ChapterService().importAll();
+
+    saveAuthPermission(authPermission);
+    print("authPermission changed: $authPermission");
+    backendVerified = true;
+    setState(() {});
     Navigator.pop(context);
   }
 
@@ -104,8 +135,33 @@ class _AuthPageState extends State<AuthPage> {
       return;
     }
     showLoading(context, loadingColor);
-    String msg = await AuthService.createUserWithEmailAndPassword(name, email, password);
-    if(msg != '') setState(() => signupErrorMsg = msg);
+    final authResponse = await AuthService.createUserWithEmailAndPassword(name, email, password);
+    if(authResponse['code'] == -1){
+      setState(() => loginErrorMsg = authResponse['message']);
+      Navigator.pop(context);
+      return;
+    }
+
+
+    final userSetting = UserService().getUserSettingFromCache();
+
+    if(authResponse['encryptionMode'] == 'encrypted'){
+      print("encrypted");
+      final encryptionService = EncryptionService();
+      final symKey = await encryptionService.getSymmetricKey();
+
+      print("symKey: $symKey, keyValidator: ${authResponse['keyValidator']}");
+      if(symKey == null) authPermission = false;
+      else if(encryptionService.decryptData(authResponse['keyValidator'], symKey) != '11111') authPermission = false;
+    }
+
+    final chapters = CacheService().loadChaptersFromCache();
+    if(chapters == null && userSetting.encryptionMode != 'local') await ChapterService().importAll();
+
+    saveAuthPermission(authPermission);
+    print("authPermission changed: $authPermission");
+    backendVerified = true;
+    setState(() {});
     Navigator.pop(context);
   }
 

@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:reflect/components/common/error_network_image.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:reflect/services/image_service.dart';
 
 class EntryCard extends StatelessWidget {
   final Entry entry;
@@ -41,7 +43,7 @@ class EntryCard extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: entry.imageUrl![0],
                 fit: BoxFit.fitWidth,  
-                errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,),
+                errorWidget: (context, url, error) => ErrorNetworkImage(),
               ),
             ),
 

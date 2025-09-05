@@ -9,6 +9,7 @@ import 'package:icon_decoration/icon_decoration.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:reflect/components/common/error_network_image.dart';
 import 'package:reflect/components/entry/favourite_heart.dart';
 import 'package:reflect/components/entry/sliding_carousel.dart';
 import 'package:reflect/components/entry/tag_alertbox.dart';
@@ -436,7 +437,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,))),
+              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(),),),
               if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
             
               if(isImageEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(

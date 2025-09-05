@@ -10,6 +10,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:reflect/components/common/error_network_image.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/components/journal/chapter_card.dart';
 import 'package:reflect/components/journal/chapter_sort_setting.dart';
@@ -410,7 +411,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                if(imageType == 'url' && imageUrl != null) CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover, errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,)),
+                                if(imageType == 'url' && imageUrl != null) CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover,errorWidget: (context, url, error) => ErrorNetworkImage(),),
                                 if(imageType =='file' && _image != null) Image.file(_image!, fit: BoxFit.cover),
                                 Align(
                                   alignment: Alignment.topRight,

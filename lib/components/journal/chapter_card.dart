@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:reflect/components/common/error_network_image.dart';
 import 'package:reflect/components/journal/image_stack.dart';
 import 'package:reflect/models/chapter.dart';
+import 'package:reflect/services/image_service.dart';
 
 class ChapterCard extends StatelessWidget {
   final Chapter chapter;
@@ -47,7 +49,7 @@ class ChapterCard extends StatelessWidget {
                     width: 100, 
                     height: 100,
                     placeholder: (context, url) => const Center(child: CircularProgressIndicator(),),
-                    errorWidget: (context, url, error) => Icon(Icons.broken_image, color: themeData.colorScheme.primary,),
+                    errorWidget: (context, url, error) => ErrorNetworkImage(),
                   )
 
                 )
@@ -66,7 +68,7 @@ class ChapterCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   Opacity(
                     opacity: min(max(0, tween*3 - 1), 1),
-                    child: Text(chapter.description, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onSecondary, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 4,)),
+                    child: Text(chapter.description, style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onSecondary, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 3,)),
                   const SizedBox(height: 10),
                   Opacity(
                     opacity: min(max(0, tween*3 - 2), 1),
