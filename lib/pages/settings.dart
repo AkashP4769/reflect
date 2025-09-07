@@ -79,13 +79,6 @@ class _HomePageState extends ConsumerState<SettingsPage> {
     return Container(
       height: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-          )
-      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,7 +110,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 )
               ]
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.8.0:27" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 1.9.2:30" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

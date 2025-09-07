@@ -467,7 +467,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           
     
       Container(
-        //color: Colors.lightGreen,
+        //color: Colors.lightGreen
+        padding: EdgeInsets.symmetric(vertical: columnCount == 1 ? 20 : 0),
         child: Column(
           children: [
             Row(

@@ -134,7 +134,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final themeData = ref.watch(themeManagerProvider);
     final _chapters = chapters;
     final width = MediaQuery.of(context).size.width;
-    final columnCount = max(1, (width / 480).floor());
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
     print(columnCount);
 
     return RefreshIndicator(
@@ -144,13 +144,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
       child: Container(
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-          )
-        ),
+        
+        
         child: TweenAnimationBuilder(
           tween: Tween<double>(begin: isCreate ? 0 : 1, end: isCreate ? 1 : 0), 
           duration: const Duration(milliseconds: 500),
@@ -175,6 +170,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   clipBehavior: Clip.none,
                   child: Column(
+                    
                     children: [
                       const SizedBox(height: 10),
                       Stack(
@@ -195,7 +191,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                           )
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      if(isEditingSort) const SizedBox(height: 10),
                       if(isEditingSort) ChapterSortSetting(sortMethod: sortMethod, isAscending: isAscending, onSort: onSort, themeData: themeData,),
               
                       TweenAnimationBuilder(
@@ -208,7 +204,7 @@ class _HomePageState extends ConsumerState<JournalPage> {
                             mainAxisSpacing: 5,
                             crossAxisSpacing: 30,
                             childAspectRatio: 2.3,
-                            mainAxisExtent: columnCount == 1 ? 225 : 210,
+                            mainAxisExtent: columnCount == 1 ? 210 : 210,
                           ),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,

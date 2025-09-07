@@ -21,11 +21,14 @@ class EntryListAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      //color: Colors.green,
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
+            //padding: EdgeInsets.zero,
+            //visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
             icon: Icon(Icons.arrow_back, color: themeData.colorScheme.onPrimary,),
             onPressed: () {
               popScreenWithUpdate!();
@@ -34,7 +37,7 @@ class EntryListAppbar extends StatelessWidget {
           //const SizedBox(width: 10),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(left: 10),
+              margin: const EdgeInsets.only(left: 0),
               height: 45,
               //width: double.infinity,
               child: SearchBar(

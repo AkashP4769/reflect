@@ -24,6 +24,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager());
 
 void main() async {
+  
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

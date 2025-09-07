@@ -6,7 +6,6 @@ import 'package:reflect/services/user_service.dart';
 
 class AuthService{
   static Future<Map<String, dynamic>> signInWithGoogle() async {
-    try{
       // print("inside signInWithGoogle function");
       // final GoogleSignInAccount? gUser = await GoogleSignIn(
       //   scopes: <String>["email"],
@@ -36,29 +35,36 @@ class AuthService{
         else userCredential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
       }
 
+      else if (defaultTargetPlatform == TargetPlatform.windows) {
+        print("Running on Windows");
+      }
+
       else {
+        print("Not web platform");
+        final _googleSignIn = GoogleSignIn.instance;
+        await _googleSignIn.initialize();
+  
         // Trigger the authentication flow
-        final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+        final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
 
         // Obtain the auth details from the request
         final GoogleSignInAuthentication googleAuth = googleUser!.authentication;
 
         // Create a new credential
-        final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+        final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken,);
 
         // Once signed in, return the UserCredential
         userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        
+
+
       }
 
 
       final authResponse = await UserService().addUser(userCredential!.user!.uid, userCredential.user!.displayName ?? '', userCredential.user!.email ?? '',);
       return authResponse;
       //return {"code": 0, "message": "Success"};
-    }
-    catch(e){
-      print("Error at signInWithGoogle(): $e");
-      return {"code": -1, "message": "Error: ${e.toString()}"};
-    }
   }
 
   static Future<Map<String, dynamic>> signInWithEmailPassword(String email, String password) async {

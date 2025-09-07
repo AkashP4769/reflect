@@ -17,11 +17,12 @@ class EntrySortSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final columnCount = MediaQuery.of(context).size.width < 720 ? 1 : 2;
     return Column(
       children: [
         Container(
           height: 60,
-          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: columnCount == 1 ? 0 : 10),
           //padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
           decoration: BoxDecoration(
             color: themeData.colorScheme.secondary,
@@ -58,7 +59,7 @@ class EntrySortSetting extends StatelessWidget {
         ),
         if(tags.isNotEmpty) Container(
           height: 60,
-          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: columnCount == 1 ? 0 : 10),
           //padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
           decoration: BoxDecoration(
             color: themeData.colorScheme.secondary,

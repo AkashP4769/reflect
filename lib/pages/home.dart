@@ -54,11 +54,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        /*gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-        )
+        )*/
       ),
       child: SingleChildScrollView(
         child: TweenAnimationBuilder(

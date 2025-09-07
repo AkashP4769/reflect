@@ -169,13 +169,6 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 0, vertical: 0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-        )
-      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

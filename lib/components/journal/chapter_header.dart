@@ -34,13 +34,13 @@ class ChapterHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final columnCount = width < 1080 ? 1 : 2;
+    final columnCount = width < 720 ? 1 : 2;
 
     final List<Widget> widgets = [
       Container(
         //height: 250,
         
-        width: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
+        width: columnCount == 1 ? double.infinity : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -115,7 +115,7 @@ class ChapterHeader extends StatelessWidget {
 
       Container(
         //height: 500,
-        width: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
+        width: columnCount == 1 ? double.infinity : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,9 +227,10 @@ class ChapterHeader extends StatelessWidget {
     
     print(width);
     return Container(
+      //color: Colors.green,
       width: double.infinity,
-      padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 20 : 120,),
-      child: GridView.builder(
+      padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 60,),
+      child: columnCount == 2 ? GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columnCount,
           childAspectRatio: 1.0,
@@ -245,6 +246,11 @@ class ChapterHeader extends StatelessWidget {
         itemBuilder: (context, index) {
           return widgets[index];
         },
+      ) : 
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        spacing: 20,
+        children: widgets,
       ),
     );
   }

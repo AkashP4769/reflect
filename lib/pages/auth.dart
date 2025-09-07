@@ -63,6 +63,17 @@ class _AuthPageState extends State<AuthPage> {
     backendVerified = false;
     loginErrorMsg = '';
     final authResponse = await AuthService.signInWithGoogle();
+    if(authResponse["code"] == -1){
+      //show SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authResponse['message'])),
+      );
+
+      setState(() => loginErrorMsg = authResponse['message']);
+      Navigator.pop(context);
+      return;
+
+    }
 
     final userSetting = UserService().getUserSettingFromCache();
 
@@ -101,6 +112,9 @@ class _AuthPageState extends State<AuthPage> {
     
     final authResponse = await AuthService.signInWithEmailPassword(email, password);
     if(authResponse['code'] == -1){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authResponse['message'])),
+      );
       setState(() => loginErrorMsg = authResponse['message']);
       Navigator.pop(context);
       return;
@@ -137,6 +151,9 @@ class _AuthPageState extends State<AuthPage> {
     showLoading(context, loadingColor);
     final authResponse = await AuthService.createUserWithEmailAndPassword(name, email, password);
     if(authResponse['code'] == -1){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authResponse['message'])),
+      );
       setState(() => loginErrorMsg = authResponse['message']);
       Navigator.pop(context);
       return;

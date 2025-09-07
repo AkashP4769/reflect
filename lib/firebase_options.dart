@@ -55,18 +55,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAxuTFEKSGpu2_jNJ5GeBHeqYz3GSpuF6Q',
-    appId: '1:176638636870:android:07e65dd1717c5f77c9eb47',
+    appId: '1:176638636870:android:d140597a335fc0b0c9eb47',
     messagingSenderId: '176638636870',
     projectId: 'reflect-47',
     storageBucket: 'reflect-47.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC3cugTnHFUxbp_AvUVcV34x2qo_mL5-ko',
-    appId: '1:491140441464:ios:cd517964a28db6cebf548d',
-    messagingSenderId: '491140441464',
-    projectId: 'reflect-0',
-    storageBucket: 'reflect-0.firebasestorage.app',
+    apiKey: 'AIzaSyBZLvfLGnAAmxkhyXTCnl_eyqdslV9Qu9k',
+    appId: '1:176638636870:ios:dba2d1134e60e7afc9eb47',
+    messagingSenderId: '176638636870',
+    projectId: 'reflect-47',
+    storageBucket: 'reflect-47.firebasestorage.app',
+    androidClientId: '176638636870-tt4o7a13hs1fimkabmhv97p0kmi4k7j5.apps.googleusercontent.com',
+    iosClientId: '176638636870-h8e3m1e9ae21bfokie4u8j9of0b88l5l.apps.googleusercontent.com',
     iosBundleId: 'com.example.reflect',
   );
 

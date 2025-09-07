@@ -20,7 +20,7 @@ class ChapterCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
       decoration: BoxDecoration(
         color: themeData.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
@@ -30,7 +30,12 @@ class ChapterCard extends StatelessWidget {
             blurRadius: 10,
             offset: const Offset(0, 5)
           )
-        ]
+        ],
+        /*gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [themeData.colorScheme.tertiary.withValues(alpha: 0.7), themeData.colorScheme.onTertiary.withValues(alpha: 0.7)]
+        )*/
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

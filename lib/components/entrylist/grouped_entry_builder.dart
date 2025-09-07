@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:reflect/components/entrylist/grid_or_column.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
@@ -35,7 +36,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    final columnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
     Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     print(_groupedEntries.keys.toString());
     final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
@@ -50,14 +51,14 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
         final date = groupedEntries.keys.elementAt(widget.isAscending && widget.sortMethod == 'time' ? index : groupedEntries.length - 1 - index);
         final _entries = groupedEntries[date];
         final validEntries = entrylistService.sortEntries(_entries!, widget.sortMethod, widget.isAscending);
-        final random = Random();
+        //final random = Random();
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
+              padding: EdgeInsets.symmetric(horizontal:columnCount == 1 ? 0 : 30),
               child: GestureDetector(
                 onTap: (){
                   widget.visibleMap[index] = !widget.visibleMap[index];
@@ -71,37 +72,22 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
                 ),
               ),
             ),
-            if(widget.visibleMap[index]) GridView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemCount: validEntries!.length,
-              clipBehavior: Clip.none,
-              physics: const ScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 0),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columnCount,
-                childAspectRatio: 1,
-                mainAxisExtent: 180,
-              ),
-              itemBuilder: (context, index) {
-                /*if(random.nextBool()){
-                  List<String> imageUrl = [];
-                  imageUrl.add(ImageService().getRandomImage());
-                  validEntries[index].imageUrl = imageUrl;
-                }*/
-
+            if(widget.visibleMap[index]) GridViewOrColumn(
+              columnCount: columnCount, 
+              itemCount: validEntries.length,
+              children: validEntries.map((entry){
                 return GestureDetector(
                   onTap: () async {
-                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: validEntries[index],)));
+                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: entry,)));
                     if(result == 'entry_updated') widget.fetchEntries(true);
                     if(result == 'entry_deleted'){
                       widget.updateHaveEdit(true);
                       widget.fetchEntries(true);
                     }
                   },
-                  child: EntryCard(entry: validEntries[index], themeData: widget.themeData)
+                  child: EntryCard(entry: entry, themeData: widget.themeData)
                 );
-              },
+              }).toList(), 
             ),
             SizedBox(height: 20,)
           ],
@@ -111,3 +97,5 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
     );
   }
 }
+
+

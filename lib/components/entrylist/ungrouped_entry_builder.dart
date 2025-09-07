@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:reflect/components/entrylist/grid_or_column.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/pages/entry.dart';
@@ -21,32 +22,23 @@ class _UngroupedEntryBuilderState extends State<UngroupedEntryBuilder> {
   
   @override
   Widget build(BuildContext context) {
-    final columnCount = max(1, (MediaQuery.of(context).size.width / 480).floor());
-    return GridView.builder(
-      shrinkWrap: true,
-      scrollDirection: Axis.vertical,
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
+    return GridViewOrColumn(
+      columnCount: columnCount, 
       itemCount: widget.entries.length,
-      clipBehavior: Clip.none,
-      physics: const ScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columnCount,
-        crossAxisSpacing: 0,
-        mainAxisExtent: 180,
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-      itemBuilder: (context, index) {
+      children: widget.entries.map((entry){
         return GestureDetector(
           onTap: () async {
-            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: widget.entries[index],)));
+            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: entry,)));
             if(result == 'entry_updated') widget.fetchEntries(true);
             if(result == 'entry_deleted'){
               widget.updateHaveEdit(true);
               widget.fetchEntries(true);
             }
           },
-          child: EntryCard(entry: widget.entries[index], themeData: widget.themeData)
+          child: EntryCard(entry: entry, themeData: widget.themeData)
         );
-      },
+      }).toList(), 
     );
   }
 }

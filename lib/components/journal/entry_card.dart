@@ -18,10 +18,12 @@ class EntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final quill.QuillController quillController = quill.QuillController(document: entry.getContentAsQuill(), selection: const TextSelection.collapsed(offset: 0));
     bool hasImage = entry.imageUrl != null && entry.imageUrl!.isNotEmpty;
+    final columnCount = MediaQuery.of(context).size.width < 720 ? 1 : 2;
+
     return Container(
       width: double.infinity,
       height: hasImage ? 160 : null,
-      margin: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 10),
+      margin: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 10, vertical: 10),
       
       decoration: BoxDecoration(
         color: hasImage ? Colors.transparent : themeData.colorScheme.secondary,
