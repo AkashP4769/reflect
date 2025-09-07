@@ -48,6 +48,78 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176638636870:android:d140597a335fc0b0c9eb47",
+        "android_client_info": {
+          "package_name": "com.frost.reflect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxuTFEKSGpu2_jNJ5GeBHeqYz3GSpuF6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "176638636870-h8e3m1e9ae21bfokie4u8j9of0b88l5l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reflect"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176638636870:android:26cddbe9ce3db4c9c9eb47",
+        "android_client_info": {
+          "package_name": "com.frost47.reflect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxuTFEKSGpu2_jNJ5GeBHeqYz3GSpuF6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176638636870-36pvnorj0aujq2ffgcqpoca5betf5fv8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "176638636870-h8e3m1e9ae21bfokie4u8j9of0b88l5l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reflect"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
