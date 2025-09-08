@@ -22,7 +22,7 @@ class SlidingCarousel extends StatelessWidget {
             spacing: 4,
             runSpacing: 0,
             children: [
-              GestureDetector(child: TagCard(tag: Tag(name: "+", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);}),
+              GestureDetector(child: TagCard(tag: Tag(name: entryTags.length == 0 ? "Add tag" : "+", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);}),
               ...entryTags.map((tag) => GestureDetector(child: TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false), onTap: (){showTagDialog(themeData);})).toList(),
               
             ],
@@ -31,7 +31,8 @@ class SlidingCarousel extends StatelessWidget {
       );
     }
 
-    return SizedBox(
+    return Container(
+      margin: EdgeInsets.only(bottom: columnCount == 2 ? 10 : 0),
       height: 45, // Adjust height to fit your items
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -39,7 +40,7 @@ class SlidingCarousel extends StatelessWidget {
         itemBuilder: (context, index) {
           if(index == entryTags.length){
             return Padding(
-              padding: EdgeInsets.only(right: 2),
+              padding: EdgeInsets.only(right: 2,),
               child: GestureDetector(child: TagCard(tag: Tag(name: index != 0 ? "+" : "Add Tag +", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);},),
             );
           }
