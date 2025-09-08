@@ -425,11 +425,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final width = MediaQuery.of(context).size.width;
     final columnCount = width < 720 ? 1 : 2;
     double fontsize = columnCount == 1 ? 16 : 20;
+    bool imageExists = (imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null);
 
     print("columnCount: $columnCount");
 
-    final gridWidgets = [
-      if((imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null)) Container(
+    final List<Widget> gridWidgets = [
+      if(imageExists) Container(
         height: columnCount == 1 ? 200 : 300,
         width: columnCount == 1 ? MediaQuery.of(context).size.width - 40 : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
         child: ClipRRect(
@@ -440,7 +441,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(),),),
               if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
             
-              if(isImageEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(
+              if(isImageEditing && imageExists) Align(
                 alignment: Alignment.topRight,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -468,8 +469,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     
       Container(
         //color: Colors.lightGreen
-        padding: EdgeInsets.symmetric(vertical: columnCount == 1 ? 20 : 0),
+        //height: 140,
+        padding: EdgeInsets.only(top: columnCount == 1 ? 20 : 0, bottom: columnCount == 1 ? 10 : 0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -500,8 +504,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               maxLines: null,
             ),
             SizedBox(height: 5,),
-              
-            if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection),
+
+            if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection, shouldWrap: true && imageExists, columnCount: columnCount,),
           ],
         ),
       ),
@@ -550,7 +554,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       if(!isHiddenForSS) const SizedBox(height: 40),     
                       if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS,),
 
-                      const SizedBox(height: 20),
+                      if(columnCount > 1 || imageExists) const SizedBox(height: 20),
                       (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: columnCount,
@@ -567,13 +571,20 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         itemBuilder: (context, index) {
                           return gridWidgets[index];
                         },
-                      ) :
-                      Column(
-                        children: gridWidgets,
+                      ) : Container(
+                        //color: Colors.green,
+                        child: ListView.builder(
+                          padding: EdgeInsets.symmetric(vertical: 0),
+                          shrinkWrap: true,
+                          itemCount: gridWidgets.length,
+                          itemBuilder: (context, index) => gridWidgets[index],
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                        ),
                       ),
                           
                       
-                      const SizedBox(height: 20),
+                       
 
                       quill.QuillEditor(
                         focusNode: contentFocusNode,

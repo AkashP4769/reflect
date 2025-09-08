@@ -177,7 +177,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         ],
       ) : null,
       
-      bottomNavigationBar: columnCount == 1 ? Container(
+      bottomNavigationBar: columnCount == 1 ? SizedBox(
         //color: Colors.greenAccent,
         width: MediaQuery.of(context).size.width,
         child: GNav(
@@ -228,35 +228,42 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
                           radius: 24,
                         ),
                       ),
-                    Expanded( // ✅ put Expanded HERE
-                      child: ListView.builder(
-                        itemCount: navItems.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              _pageController.animateToPage(
-                                index,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.ease,
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: currentPageIndex == index
-                                    ? themeData.colorScheme.primary
-                                    : themeData.colorScheme.surface,
+                    Expanded(
+                      child: Container(
+                        //color: Colors.green,
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          reverse: true,
+                          //shrinkWrap: true,
+                          itemCount: navItems.length,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                _pageController.animateToPage(
+                                  navItems.length - index - 1,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.ease,
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: currentPageIndex == navItems.length - index - 1
+                                      ? themeData.colorScheme.primary
+                                      : themeData.colorScheme.surface,
+                                ),
+                                child: Icon(
+                                  navItems[navItems.length - index - 1].icon,
+                                  size: 28,
+                                  color: themeData.colorScheme.onPrimary,
+                                ),
                               ),
-                              child: Icon(
-                                navItems[index].icon,
-                                size: 28,
-                                color: themeData.colorScheme.onPrimary,
-                              ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],

@@ -134,8 +134,8 @@ class _HomePageState extends ConsumerState<JournalPage> {
     final themeData = ref.watch(themeManagerProvider);
     final _chapters = chapters;
     final width = MediaQuery.of(context).size.width;
-    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
-    print(columnCount);
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 415).floor()));
+    print(width);
 
     return RefreshIndicator(
       onRefresh: () async {

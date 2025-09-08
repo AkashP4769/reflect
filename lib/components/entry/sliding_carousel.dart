@@ -6,13 +6,33 @@ class SlidingCarousel extends StatelessWidget {
   final List<Tag> tags;
   final ThemeData themeData;
   final void Function(ThemeData themeData) showTagDialog;
-  const SlidingCarousel({super.key, required this.tags, required this.themeData, required this.showTagDialog});
+  final bool? shouldWrap;
+  final int columnCount;
+  const SlidingCarousel({super.key, required this.tags, required this.themeData, required this.showTagDialog, this.shouldWrap = false, required this.columnCount});
 
   @override
   Widget build(BuildContext context) {
     final List<Tag> entryTags = tags;
+    if(shouldWrap == true && columnCount > 1){
+      return Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          physics: ScrollPhysics(),
+          child: Wrap(
+            spacing: 4,
+            runSpacing: 0,
+            children: [
+              GestureDetector(child: TagCard(tag: Tag(name: "+", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);}),
+              ...entryTags.map((tag) => GestureDetector(child: TagCard(tag: tag, themeData: themeData, selected: true, deleteBit: false), onTap: (){showTagDialog(themeData);})).toList(),
+              
+            ],
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
-      height: 40, // Adjust height to fit your items
+      height: 45, // Adjust height to fit your items
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: entryTags.length + 1,

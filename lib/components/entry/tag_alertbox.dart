@@ -25,7 +25,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
   bool tagDeleteState = false;
   TextEditingController textController = TextEditingController();
 
-  List<bool> deleteBits = List.generate(100, (index) => false);
+  List<bool> deleteBits = [];
 
 
   @override
@@ -37,6 +37,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
     //userTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
 
     userTags = userTags.difference(entryTags);
+    deleteBits = List.generate(userTags.length, (index) => false);
   }
 
   @override

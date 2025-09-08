@@ -22,7 +22,7 @@ class _UngroupedEntryBuilderState extends State<UngroupedEntryBuilder> {
   
   @override
   Widget build(BuildContext context) {
-    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 415).floor()));
     return GridViewOrColumn(
       columnCount: columnCount, 
       itemCount: widget.entries.length,

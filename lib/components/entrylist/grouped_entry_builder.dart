@@ -36,7 +36,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 420).floor()));
+    final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 415).floor()));
     Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
     print(_groupedEntries.keys.toString());
     final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
