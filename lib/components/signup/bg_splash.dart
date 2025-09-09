@@ -32,33 +32,24 @@ class _Bg_SplashState extends State<Bg_Splash> {
 
   Future<void> initializeControllers() async {
     _controller = VideoPlayerController.asset("assets/splash_bg.mp4");
-    //await _controller?.initialize();
 
     _controller.setLooping(true);
     
-    _controller.initialize().then((_) {
-        setState(() {}); // Refresh once video is ready
+    _controller.initialize().then((value) {
+      if (_controller.value.isInitialized) {
         _controller.play();
-      });
+      } else {
+        print("video file load failed");
+      }
+    }).catchError((e) {
+      print("controller.initialize() error occurs: $e");
+    });
 
-    /*_chewieController = ChewieController(videoPlayerController: _controller,
-      autoPlay: true,
-      looping: true,
-      showControls: false,
-      showOptions: false,
-      allowFullScreen: false,
-      allowMuting: true,
-    );*/
     setState(() {});
   }
   
   @override
   Widget build(BuildContext context) {
-    /*if (_chewieController == null) {
-      return Container(
-        child: const CircularProgressIndicator(),
-      );
-    }*/
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -74,7 +65,7 @@ class _Bg_SplashState extends State<Bg_Splash> {
                     width: _controller.value.size.width,
                     height: _controller.value.size.height,
                     //child: Chewie(controller: _chewieController!)
-                    child: VideoPlayer(_controller),
+                    child: _controller.value.isInitialized ? VideoPlayer(_controller) : Image.asset("assets/splash_bg.png", fit: BoxFit.cover,),
                   ),
                 ),
               ),

@@ -666,9 +666,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   showUndo: columnCount == 2 ? true : (extendedToolbar ? false : true),
                 )
               ),
-              IconButton(
+              columnCount == 1 ? IconButton(
                 onPressed: () => setState(() => extendedToolbar = !extendedToolbar), icon: Icon(Icons.more_vert, color: themeData.colorScheme.onPrimary,),
-              ),
+              ) : Container(width: 0, height: 0,),
               SizedBox(
                 width: columnCount == 1 ? 120 : 150,
                 child: ElevatedButton(

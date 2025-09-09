@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:reflect/components/common/loading.dart';
 import 'package:reflect/models/user_setting.dart';
@@ -15,6 +16,7 @@ import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/chapter_service.dart';
 import 'package:reflect/services/encryption_service.dart';
 import 'package:reflect/services/user_service.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -29,6 +31,7 @@ class _AuthPageState extends State<AuthPage> {
   String signupErrorMsg = '';
   late bool backendVerified = false;
   Box settingBox = Hive.box('settings');
+  bool _isFullScreen = false;
 
   @override
   void initState() {
@@ -185,19 +188,34 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     print("authPermission: $authPermission, backendVerified: $backendVerified");
-    return Scaffold(
-      //body: LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg),
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot){
-          if(snapshot.hasData && backendVerified) {
-             if(authPermission) return NavigationPage();
-             else return WaitingPage();
-            }
-          else {
-            return LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg);
+    return KeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKeyEvent: (event) async {
+        print("Key pressed: ${event.logicalKey}");
+        if (event.logicalKey == LogicalKeyboardKey.f11) {
+          if (_isFullScreen) {
+            await windowManager.setFullScreen(false);
+          } else {
+            await windowManager.setFullScreen(true);
           }
-        },
+          setState(() => _isFullScreen = !_isFullScreen);
+        }
+      },
+      child: Scaffold(
+        //body: LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg),
+        body: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot){
+            if(snapshot.hasData && backendVerified) {
+               if(authPermission) return NavigationPage();
+               else return WaitingPage();
+              }
+            else {
+              return LoginPage(signInwWithGoogle: signInWithGoogle, signInWithApple: signInWithApple, signInWithEmailAndPass: signInWithEmailAndPass, signUpWithEmailAndPass: signUpWithEmailAndPass , loginErrorMsg: loginErrorMsg, signupErrorMsg: signupErrorMsg);
+            }
+          },
+        ),
       ),
     );
   }
