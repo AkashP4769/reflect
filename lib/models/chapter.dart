@@ -64,7 +64,7 @@ class Chapter {
       'title': title,
       'description': description,
       'imageUrl': imageUrl,
-      'date': createdAt.toLocal().toIso8601String(),
+      'date': createdAt.toUtc().toIso8601String(),
       'entryCount': entryCount,
     };
   }
@@ -76,7 +76,7 @@ class Chapter {
       title: map['title'] as String,
       description: map['description'] as String,
       imageUrl: (map['imageUrl'] == null || (map['imageUrl'] as List).isEmpty)? [] : (map['imageUrl'] as List).map((imageUrl) => imageUrl as String).toList(),
-      createdAt: DateTime.parse(map['date'] ?? map['createdAt']),
+      createdAt: DateTime.parse(map['date'] ?? map['createdAt']).toLocal(),
       entryCount: map['entryCount'] as int,
     );
   }

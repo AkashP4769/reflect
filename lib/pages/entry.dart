@@ -26,6 +26,7 @@ import 'package:reflect/services/image_service.dart';
 import 'package:reflect/services/user_service.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 
 class EntryPage extends ConsumerStatefulWidget {
@@ -48,17 +49,17 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool extendedToolbar = false;
   bool isHiddenForSS = false;
 
-  bool useSubsections = false;
-
   List<quill.QuillController> quillControllers = [];
+  List<DateTime> subsectionDates = [];
+
   late TextEditingController titleController;
   //late SlidingUpPanelController panelController;
-  late ScrollController scrollController;
+  List<ScrollController> scrollControllers = [];
   late DateTime date;
   late bool isFavourite;
 
   late FocusNode titleFocusNode;
-  late FocusNode contentFocusNode;
+  List<FocusNode> focusNodes = [];
 
   EntryService entryService = EntryService();
   CacheService cacheService = CacheService();
@@ -79,9 +80,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     super.initState();
     titleController = TextEditingController(text: widget.entry.title);
     titleFocusNode = FocusNode();
-    contentFocusNode = FocusNode();
     //panelController = SlidingUpPanelController();
-    scrollController = ScrollController();
     screenshotController = ScreenshotController();
 
     getUserSetting();
@@ -95,36 +94,40 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         entryTags.add(Tag(name: tag['name'], color: tag['color']));
       }
     }
-    
 
-    if(widget.entry.id == null) date = widget.entry.date;
-    else {
-      int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
-      bool isPositive = timezone >= 0 ? true : false;
+    if(widget.entry.id == null) date = DateTime.now().toLocal();
+    else date = widget.entry.date;
 
-      if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
-      else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
-    }
+    // if(widget.entry.id == null) date = widget.entry.date;
+    // else {
+    //   int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
+    //   bool isPositive = timezone >= 0 ? true : false;
+
+    //   if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
+    //   else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
+    // }
 
     isFavourite = widget.entry.favourite ?? false;
     imageUrl = widget.entry!.imageUrl ?? [];
     if(imageUrl.isNotEmpty) imageType = 'url';
 
 
-    if(widget.entry.subsections == null || widget.entry.subsections!.isEmpty) quillControllers.add(quill.QuillController.basic());
+    if(widget.entry.subsections == null || widget.entry.subsections!.isEmpty){
+      quillControllers.add(quill.QuillController.basic());
+      subsectionDates.add(date);
+      scrollControllers = [ScrollController()];
+      focusNodes = [FocusNode()];
+    }
     else {
-      // quillControllers.add(quill.QuillController.basic(
-      //   config: quill.QuillControllerConfig(
-      //     clipboardConfig: quill.QuillClipboardConfig()
-      //   )
-      // ));
-      // quillControllers.last.document = quill.Document.fromJson(widget.entry.getContentAsQuill().toDelta().toJson());
 
       for(var subsection in widget.entry.subsections!) {
         quillControllers.add(quill.QuillController(
           document: subsection.getContentAsQuill(),
           selection: const TextSelection.collapsed(offset: 0),
         ));
+        subsectionDates.add(subsection.date);
+        scrollControllers.add(ScrollController());
+        focusNodes.add(FocusNode());
       }
     }
 
@@ -182,10 +185,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentOffset = quillControllers.last.selection.base.offset;
       //print("currentOffset: $currentOffset | length: ${quillControllers.last.document.length}");
-      if (scrollController.hasClients && currentOffset > quillControllers.last.document.length - 200) {
+      if (scrollControllers.last.hasClients && currentOffset > quillControllers.last.document.length - 200) {
         //print("scrolling");
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
+        scrollControllers.last.animateTo(
+          scrollControllers.last.position.maxScrollExtent,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
         );
@@ -198,8 +201,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
 
     List<Subsection> subsections = [];
-    for(var controller in quillControllers){
-      subsections.add(Subsection.fromQuill(controller.document, date));
+    for(int i=0; i<quillControllers.length; i++){
+      subsections.add(Subsection.fromQuill(quillControllers[i].document, subsectionDates[i]));
     }
 
     final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
@@ -222,8 +225,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
 
     List<Subsection> subsections = [];
-    for(var controller in quillControllers){
-      subsections.add(Subsection.fromQuill(controller.document, date));
+    for(int i=0; i<quillControllers.length; i++){
+      subsections.add(Subsection.fromQuill(quillControllers[i].document, subsectionDates[i]));
     }
 
     final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
@@ -276,10 +279,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     );
   }
 
-  Future<DateTime?> showDatePickerr() async {
+  Future<DateTime?> showDatePickerr(int index) async {
     return showDatePicker(
       context: context,
-      initialDate: date,
+      initialDate: subsectionDates[index],
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     ).then((selectedDate){
@@ -295,9 +298,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               selectedDate.day,
               selectedTime.hour,
               selectedTime.minute,
-            );
+            ).toLocal();
             setState(() {
-              date = selectedDateTime;
+              subsectionDates[index] = selectedDateTime;
               print("selectedDate: ${selectedDateTime.toString()}");
               isDateEdited = true;
             }); // You can use the selectedDateTime as needed.
@@ -439,7 +442,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void addSubsection(){
-    useSubsections = true;
+    subsectionDates.add(DateTime.now().toLocal());
+    scrollControllers.add(ScrollController());
+    focusNodes.add(FocusNode());
     quillControllers.add(quill.QuillController.basic());
     quillControllers.last.document.changes.listen((_) => _scrollToBottom());
     setState(() {});
@@ -447,11 +452,18 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void removeSubsection(int index){
     if(quillControllers.length > index){
+      subsectionDates.removeAt(index);
       quillControllers[index].dispose();
+
       quillControllers.removeAt(index);
+
+      scrollControllers[index].dispose();
+      scrollControllers.removeAt(index);
+
+      focusNodes[index].dispose();
+      focusNodes.removeAt(index);
       setState(() {});
     }
-    if(quillControllers.length == 1) useSubsections = false;
   }
   
   @override
@@ -459,9 +471,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleController.dispose();
     quillControllers.forEach((controller) => controller.dispose());
     titleFocusNode.dispose();
-    contentFocusNode.dispose();
+    focusNodes.forEach((controller) => controller.dispose());
     //panelController.dispose();
-    scrollController.dispose();
+    scrollControllers.forEach((controller) => controller.dispose());
     
     super.dispose();
   }
@@ -526,7 +538,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: showDatePickerr,
+                  onTap: (){ showDatePickerr(0); },
                   child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
                 ),
                 if (!isHiddenForSS || isFavourite) Padding(
@@ -599,7 +611,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                   
                     children: [
                       if(!isHiddenForSS) const SizedBox(height: 40),     
-                      if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS,),
+                      if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS, addSubsection: addSubsection,),
 
                       if(columnCount > 1 || imageExists) const SizedBox(height: 20),
                       (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
@@ -633,34 +645,125 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                       
                        
 
-                      quill.QuillEditor(
-                        focusNode: contentFocusNode,
-                        controller: quillControllers.last,
-                        scrollController: scrollController,
-                        config: quill.QuillEditorConfig(
-                          scrollable: true,
-                          placeholder: "Start writing here...",
-                          keyboardAppearance: themeData.brightness,
-                          onPerformAction: (TextInputAction action) {
-                            //print(action.toString());
-                          },
-                          
-                          customStyles: quill.DefaultStyles(
-                            paragraph: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
-                              const quill.HorizontalSpacing(0, 0),
-                              const quill.VerticalSpacing(0, 0),
-                              quill.VerticalSpacing.zero,
-                              null
+                      Container(
+                        child: ListView.builder(
+                          padding: EdgeInsets.symmetric(vertical: 0),
+                          itemCount: quillControllers.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) => Slidable(
+                            key: GlobalKey(),
+
+                            endActionPane: ActionPane(
+                              // A motion is a widget used to control how the pane animates.
+                              motion: const DrawerMotion(),
+
+                              // A pane can dismiss the Slidable.
+                              dismissible: DismissiblePane(
+                                confirmDismiss: () async {
+                                  bool confirm = false;
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Delete Subsection'),
+                                      content: const Text('Are you sure you want to delete this subsection?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            confirm = false;
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            confirm = true;
+                                          },
+                                          child: const Text('Delete'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return confirm;
+                                },
+                                onDismissed: () {removeSubsection(index); },
+
+                              ),
+
+                              // All actions are defined in the children parameter.
+                              children: [
+                                // A SlidableAction can have an icon and/or a label.
+                                SlidableAction(
+                                  onPressed: (BuildContext context){ removeSubsection(index); },
+                                  backgroundColor: Colors.redAccent,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  //label: 'Delete',
+                                ),
+                              ],
                             ),
-                            placeHolder: quill.DefaultTextBlockStyle(
-                              themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                              const quill.HorizontalSpacing(0, 0),
-                              const quill.VerticalSpacing(0, 0),
-                              quill.VerticalSpacing.zero,
-                              null
+                            child: Container(
+                              //color: Colors.green,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                //spacing: 10,
+                                children: [
+                                  
+                                  if(index != 0) Container(
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    child: GestureDetector(
+                                        onTap: () => showDatePickerr(index),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                          child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                                        ),
+                                      ),
+                                  ),
+                            
+                            
+                                  quill.QuillEditor(
+                                    focusNode: focusNodes[index],
+                                    controller: quillControllers[index],
+                                    scrollController: scrollControllers[index],
+                                    config: quill.QuillEditorConfig(
+                                      scrollable: true,
+                                      placeholder: "Start writing here...",
+                                      keyboardAppearance: themeData.brightness,
+                                      onPerformAction: (TextInputAction action) {
+                                        //print(action.toString());
+                                      },
+                                      
+                                      customStyles: quill.DefaultStyles(
+                                        paragraph: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                        placeHolder: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                      )
+                                    ),
+                                  ),
+                            
+                                  if(quillControllers.length != 1) Divider(
+                                    color: themeData.colorScheme.onPrimary.withOpacity(0.2),
+                                    thickness: 1,
+                                    height: 40,
+                                  ),
+                                ],
+                              ),
+                               
                             ),
-                          )
+                          ),
                         ),
                       ),     
                       
@@ -751,7 +854,8 @@ class EntryAppbar extends StatelessWidget {
     required this.imageType,
     required this.addImage,
     required this.screenshotAndShare,
-    required this.isHiddenForSS
+    required this.isHiddenForSS,
+    required this.addSubsection,
   });
 
   final ThemeData themeData;
@@ -760,6 +864,7 @@ class EntryAppbar extends StatelessWidget {
   final String imageType;
   final void Function()? addImage;
   final void Function()? screenshotAndShare;
+  final void Function()? addSubsection;
   final bool isHiddenForSS;
 
   @override
@@ -793,10 +898,7 @@ class EntryAppbar extends StatelessWidget {
                 ),
 
                 IconButton(
-                  onPressed: () {
-                    //Navigator.pop(context);
-                    
-                  }, 
+                  onPressed: addSubsection, 
                   icon: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
                 ),
 

@@ -160,12 +160,12 @@ class Entry{
                     (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
                   ))
                 : null,
-              date: DateTime.parse(data['date']),
+              date: DateTime.parse(data['date']).toLocal(),
             )
           ]
         : null,
 
-      date: DateTime.parse(data['date']),
+      date: DateTime.parse(data['date']).toLocal(),
       tags: data['tags'] != null
         ? List<Map<String, dynamic>>.from((data['tags'] as List).map(
             (item) => Map<String, dynamic>.from(item as Map<dynamic, dynamic>),
@@ -187,7 +187,7 @@ class Entry{
       'content': content,
       'subsections': subsections != null ? subsections!.map((sub) => sub.toMap()).toList() : null,
       //'useSubsections': useSubsections,
-      'date': date.toLocal().toIso8601String(),
+      'date': date.toUtc().toIso8601String(),
       'tags': tags,
       'encrypted': encrypted,
       'favourite': favourite,

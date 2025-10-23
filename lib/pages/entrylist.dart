@@ -282,7 +282,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
               selectedTime.minute,
             );
             setState(() {
-              chapterDate = selectedDateTime;
+              chapterDate = selectedDateTime.toLocal();
             }); 
           }
         });

@@ -87,12 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            /*ElevatedButton(onPressed: (){
-                                  setState(() {
-                                    splashPlayed = false;
-                                  });
-                                }, child: Text("start")
-                            ),*/
+                            
                             if(splashPlayed) GestureDetector(
                               onTap: toggleVisible,
                               child: Reflect(value: value,)
