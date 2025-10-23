@@ -81,8 +81,8 @@ class ChapterHeader extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if(!isEditing && imageType == 'url' && chapter.imageUrl!.isNotEmpty) CachedNetworkImage(imageUrl: chapter.imageUrl![0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(),),
-                    if(isEditing && imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(),),
+                    if(!isEditing && imageType == 'url' && chapter.imageUrl!.isNotEmpty) CachedNetworkImage(imageUrl: chapter.imageUrl![0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),
+                    if(isEditing && imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),
                     if(isEditing && imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
                   
                     if(isEditing && ((imageType == 'url' && imageUrl != null) || (imageType =='file' && image != null))) Align(

@@ -34,10 +34,12 @@ class _Bg_SplashState extends State<Bg_Splash> {
     _controller = VideoPlayerController.asset("assets/splash_bg.mp4");
 
     _controller.setLooping(true);
-    
-    _controller.initialize().then((value) {
+
+    _controller.initialize().then((value) async {
       if (_controller.value.isInitialized) {
-        _controller.play();
+        setState(() {});
+        await _controller.play();
+        setState(() {});
       } else {
         print("video file load failed");
       }

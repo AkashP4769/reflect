@@ -48,7 +48,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool extendedToolbar = false;
   bool isHiddenForSS = false;
 
-  late quill.QuillController quillController;
+  bool useSubsections = false;
+
+  List<quill.QuillController> quillControllers = [];
   late TextEditingController titleController;
   //late SlidingUpPanelController panelController;
   late ScrollController scrollController;
@@ -84,18 +86,16 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     getUserSetting();
 
+    print("widget.entry.title: ${widget.entry.title}");
+    print("widget.entry.content: ${widget.entry.content}");
+    print("widget.entry.subsections: ${widget.entry.subsections}");
+
     if(widget.entry.tags != null){
       for(var tag in widget.entry.tags!) {
         entryTags.add(Tag(name: tag['name'], color: tag['color']));
       }
     }
-    //entryTags.add(Tag(name: "Optimistic", color: 0xfff0bb2b));
-    //entryTags.add(Tag(name: "Pessimistic", color: 0xff592bf0));
     
-    //panelController.hide();
-    //print("date: ${widget.entry.date}");
-    //print("timezone: ${widget.entry.date.toLocal().timeZoneOffset.inMinutes}");
-  
 
     if(widget.entry.id == null) date = widget.entry.date;
     else {
@@ -110,24 +110,25 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     imageUrl = widget.entry!.imageUrl ?? [];
     if(imageUrl.isNotEmpty) imageType = 'url';
 
-    //imageUrl.add("https://img.freepik.com/free-photo/digital-art-style-river-nature-landscape_23-2151825792.jpg?t=st=1727633824~exp=1727637424~hmac=9414f70adc8deaa8fbfcb76720166319533a01c3aab771afb83d9d2da258f80c&w=900");
 
-    if(widget.entry.content == null || widget.entry.content!.isEmpty) quillController = quill.QuillController.basic(/*editorFocusNode: contentFocusNode*/);
+    if(widget.entry.subsections == null || widget.entry.subsections!.isEmpty) quillControllers.add(quill.QuillController.basic());
     else {
-      quillController = quill.QuillController.basic(
-        /*document: quill.Document.fromJson(widget.entry.content ?? []),
-        selection: const TextSelection.collapsed(offset: 0),
-        /*editorFocusNode: contentFocusNode,*/
-        config: quill.QuillControllerConfigurations()*/
-        config: quill.QuillControllerConfig(
-          clipboardConfig: quill.QuillClipboardConfig()
-          //editorFocusNode: contentFocusNode,
-        )
-      );
-      quillController.document = quill.Document.fromJson(widget.entry.getContentAsQuill().toDelta().toJson());
+      // quillControllers.add(quill.QuillController.basic(
+      //   config: quill.QuillControllerConfig(
+      //     clipboardConfig: quill.QuillClipboardConfig()
+      //   )
+      // ));
+      // quillControllers.last.document = quill.Document.fromJson(widget.entry.getContentAsQuill().toDelta().toJson());
+
+      for(var subsection in widget.entry.subsections!) {
+        quillControllers.add(quill.QuillController(
+          document: subsection.getContentAsQuill(),
+          selection: const TextSelection.collapsed(offset: 0),
+        ));
+      }
     }
 
-    quillController.document.changes.listen((_) => _scrollToBottom());
+    quillControllers.last.document.changes.listen((_) => _scrollToBottom());
 
     titleController.addListener(() {
       if(!isTitleEdited && titleController.text != widget.entry.title) {
@@ -140,18 +141,34 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       }
     });
 
-    quillController.addListener((){
-      String quillContent = quillController.document.toPlainText();
-      String entryContent = widget.entry.getContentAsQuill().toPlainText();
-      if(!isContentEdited && quillContent != entryContent) {
-        isContentEdited = true;
-        setState(() {});
-      }
-      else if(isContentEdited && quillContent == entryContent) {
-        isContentEdited = false;
-        setState(() {});
-      }
-    });
+    // quillControllers.last.addListener((){
+    //   String quillContent = quillControllers.last.document.toPlainText();
+    //   String entryContent = widget.entry.getContentAsQuill().toPlainText();
+    //   if(!isContentEdited && quillContent != entryContent) {
+    //     isContentEdited = true;
+    //     setState(() {});
+    //   }
+    //   else if(isContentEdited && quillContent == entryContent) {
+    //     isContentEdited = false;
+    //     setState(() {});
+    //   }
+    // });
+
+    for(int i=0; i<quillControllers.length; i++){
+      quillControllers[i].addListener((){
+        String quillContent = quillControllers[i].document.toPlainText();
+        String entryContent = "";
+        //String entryContent = widget.entry.subsections != null && widget.entry.subsections!.length > i && widget.entry.subsections![i].content!.isEmpty ? quill.Document.fromJson(widget.entry.subsections![i].content ?? []).toPlainText() : "";
+        if(!isContentEdited && quillContent != entryContent) {
+          isContentEdited = true;
+          setState(() {});
+        }
+        else if(isContentEdited && quillContent == entryContent) {
+          isContentEdited = false;
+          setState(() {});
+        }
+      });
+    }
   }
 
   void getUserSetting() async {
@@ -163,9 +180,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentOffset = quillController.selection.base.offset;
-      //print("currentOffset: $currentOffset | length: ${quillController.document.length}");
-      if (scrollController.hasClients && currentOffset > quillController.document.length - 200) {
+      final currentOffset = quillControllers.last.selection.base.offset;
+      //print("currentOffset: $currentOffset | length: ${quillControllers.last.document.length}");
+      if (scrollController.hasClients && currentOffset > quillControllers.last.document.length - 200) {
         //print("scrolling");
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
@@ -179,7 +196,13 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void addEntry() async {
     final newImageUrl = await uploadImage();
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
+
+    List<Subsection> subsections = [];
+    for(var controller in quillControllers){
+      subsections.add(Subsection.fromQuill(controller.document, date));
+    }
+
+    final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
     final bool result;
     
     if(userSetting.encryptionMode == 'local') result = await cacheService.addOneEntryToCache(entry.toMap(), entry.chapterId!);
@@ -197,8 +220,16 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   void updateEntry() async {
     final newImageUrl = await uploadImage();
     final entryTagList = entryTags.map((tag) => tag.toMap()).toList();
-    final entry = Entry.fromQuill(titleController.text, quillController.document, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
+
+    List<Subsection> subsections = [];
+    for(var controller in quillControllers){
+      subsections.add(Subsection.fromQuill(controller.document, date));
+    }
+
+    final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
     bool result;
+
+    print("Updating entry: ${entry.toMap()}");
 
     if(userSetting.encryptionMode == 'local') result = await cacheService.updateOneEntryInCache(entry.id!, entry.toMap(), entry.chapterId!);
     else result = await entryService.updateEntry(entry.toMap());
@@ -406,11 +437,27 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     }});
     setState(() {isHiddenForSS = false;});
   }
+
+  void addSubsection(){
+    useSubsections = true;
+    quillControllers.add(quill.QuillController.basic());
+    quillControllers.last.document.changes.listen((_) => _scrollToBottom());
+    setState(() {});
+  }
+
+  void removeSubsection(int index){
+    if(quillControllers.length > index){
+      quillControllers[index].dispose();
+      quillControllers.removeAt(index);
+      setState(() {});
+    }
+    if(quillControllers.length == 1) useSubsections = false;
+  }
   
   @override
   void dispose() {
     titleController.dispose();
-    quillController.dispose();
+    quillControllers.forEach((controller) => controller.dispose());
     titleFocusNode.dispose();
     contentFocusNode.dispose();
     //panelController.dispose();
@@ -438,7 +485,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(),),),
+              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),),
               if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
             
               if(isImageEditing && imageExists) Align(
@@ -588,7 +635,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
                       quill.QuillEditor(
                         focusNode: contentFocusNode,
-                        controller: quillController,
+                        controller: quillControllers.last,
                         scrollController: scrollController,
                         config: quill.QuillEditorConfig(
                           scrollable: true,
@@ -634,7 +681,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             //mainAxisAlignment: MainAxisAlignment.end,
             children: [
               quill.QuillSimpleToolbar(
-                controller: quillController,
+                controller: quillControllers.last,
                 config: quill.QuillSimpleToolbarConfig(
                   showBoldButton: columnCount == 2 ? true : (extendedToolbar ? false : true),
                   showItalicButton: columnCount == 2 ? true : (extendedToolbar ? false : true),
@@ -743,6 +790,14 @@ class EntryAppbar extends StatelessWidget {
                     onPressed: addImage, 
                     icon: Icon(Icons.add_a_photo_rounded, color: themeData.colorScheme.onPrimary, size: 24,),
                   ),
+                ),
+
+                IconButton(
+                  onPressed: () {
+                    //Navigator.pop(context);
+                    
+                  }, 
+                  icon: Icon(Icons.add, color: themeData.colorScheme.onPrimary,),
                 ),
 
                 IconButton(

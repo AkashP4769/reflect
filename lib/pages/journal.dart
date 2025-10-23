@@ -407,8 +407,9 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                if(imageType == 'url' && imageUrl != null) CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover,errorWidget: (context, url, error) => ErrorNetworkImage(),),
+                                if(imageType == 'url' && imageUrl != null) CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover,errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),
                                 if(imageType =='file' && _image != null) Image.file(_image!, fit: BoxFit.cover),
+                                
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: Row(

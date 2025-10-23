@@ -16,7 +16,7 @@ import 'package:reflect/pages/login.dart';
 import 'package:reflect/pages/navigation.dart';
 import 'package:reflect/theme/theme_constants.dart';
 import 'package:reflect/theme/theme_manager.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:window_manager/window_manager.dart';
@@ -29,8 +29,11 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await windowManager.ensureInitialized();
-  
+
+  if (defaultTargetPlatform == TargetPlatform.windows) {
+    await windowManager.ensureInitialized();
+  }
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -52,19 +55,19 @@ void main() async {
   await Hive.openBox('sorts');
 
 
-  /*final timestampBox = Hive.box('timestamps');
-  timestampBox.clear();
+  // final timestampBox = Hive.box('timestamps');
+  // timestampBox.clear();
 
-  final entryBox = Hive.box('entries');
-  entryBox.clear();
+  // final entryBox = Hive.box('entries');
+  // entryBox.clear();
 
-  final chapterbox = Hive.box('chapters');
-  chapterbox.clear();
+  // final chapterbox = Hive.box('chapters');
+  // chapterbox.clear();
 
-  final settingBox = Hive.box('settings');
-  settingBox.clear();
+  // final settingBox = Hive.box('settings');
+  // settingBox.clear();
 
-  await const FlutterSecureStorage().deleteAll();*/
+  // await const FlutterSecureStorage().deleteAll();
 
   runApp(const ProviderScope(child: MainApp()));
 }

@@ -94,4 +94,17 @@ class ImageService extends BackendServices{
       print('Error deleting images: $e');
     }
   }
+
+  Future<void> migrateImages(List<String> imageUrls) async {
+    for(int i=0; i<imageUrls.length; i++){
+      try{
+        var imageUrl = imageUrls[i];
+        imageUrl.replaceFirst("reflectimages.s3", "reflectimages2.s3");
+      } catch (e) {
+        print('Error migrating image ${imageUrls[i]}: $e');
+      }
+    }
+  }
+
+
 }

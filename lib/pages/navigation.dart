@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,8 @@ import 'package:reflect/pages/home.dart';
 import 'package:reflect/pages/journal.dart';
 import 'package:reflect/pages/settings.dart';
 import 'package:reflect/services/auth_service.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 
 class NavigationPage extends ConsumerStatefulWidget {
   const NavigationPage({super.key});
@@ -22,6 +25,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   int currentPageIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
   late TextEditingController searchController;
+  final bool isWin = defaultTargetPlatform == TargetPlatform.windows;
 
   List<String> titles = [/*"Welcome, User",*/ "Journal", /*"Your favourites",*/ "Settings"];
   String searchQuery = '';
@@ -45,6 +49,20 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
     searchController.dispose();
     super.dispose();
   }
+
+  Future<void> toggleFullScreen() async {
+    if(!isWin) return;
+
+    if (await windowManager.isFullScreen()) {
+      await windowManager.setFullScreen(false);
+      await windowManager.maximize();
+      await windowManager.setTitleBarStyle(TitleBarStyle.normal);
+    } else {
+      await windowManager.setFullScreen(true);
+      await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    }
+    setState(() {});
+    }
 
   void goToJournalPage(){
     _pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.ease);
@@ -129,6 +147,9 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         ref.read(themeManagerProvider.notifier).toggleTheme(!(themeData.brightness == Brightness.dark));
         }, icon: themeData.brightness == Brightness.dark ? Icon(Icons.brightness_2) : Icon(Icons.brightness_5), color: themeData.colorScheme.onPrimary,
       ),
+
+      if(isWin) IconButton(onPressed: toggleFullScreen, icon: const Icon(Icons.fullscreen), color: themeData.colorScheme.onPrimary,
+      ),
     ];
 
     print("width: ${MediaQuery.of(context).size.width}");
@@ -174,6 +195,8 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
           IconButton(onPressed: (){
             ref.read(themeManagerProvider.notifier).toggleTheme(!(themeData.brightness == Brightness.dark));
           }, icon: themeData.brightness == Brightness.dark ? Icon(Icons.brightness_2) : Icon(Icons.brightness_5), color: themeData.colorScheme.onPrimary,),
+          if(isWin) IconButton(onPressed: toggleFullScreen, icon: const Icon(Icons.fullscreen), color: themeData.colorScheme.onPrimary,
+          ),
         ],
       ) : null,
       

@@ -16,7 +16,7 @@ class EntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final quill.QuillController quillController = quill.QuillController(document: entry.getContentAsQuill(), selection: const TextSelection.collapsed(offset: 0));
+    final quill.QuillController quillController = quill.QuillController(document: entry.getCombinedContentAsQuill(), selection: const TextSelection.collapsed(offset: 0));
     bool hasImage = entry.imageUrl != null && entry.imageUrl!.isNotEmpty;
     final columnCount = MediaQuery.of(context).size.width < 720 ? 1 : 2;
 
@@ -44,8 +44,8 @@ class EntryCard extends StatelessWidget {
               width: double.infinity,
               child: CachedNetworkImage(
                 imageUrl: entry.imageUrl![0],
-                fit: BoxFit.fitWidth,  
-                errorWidget: (context, url, error) => ErrorNetworkImage(),
+                fit: BoxFit.fitWidth,
+                errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),
               ),
             ),
 

@@ -462,7 +462,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: ElevatedButton(
             onPressed: () async {
-              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",content: [], chapterId: chapter.id),)));
+              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",subsections: [], chapterId: chapter.id),)));
               if(result == 'entry_added'){
                 haveUpdated = true;
                 fetchEntries(true); 

@@ -4,7 +4,7 @@ import 'package:reflect/models/tag.dart';
 
 class EntrylistService {
   List<Entry> applySearchFilter(List<Entry> entries, String filterText){
-    return entries.where((element) => element.title!.toLowerCase().contains(filterText.toLowerCase()) || element.getContentAsQuill().toPlainText().toLowerCase().contains(filterText.toLowerCase())).toList();
+    return entries.where((element) => element.title!.toLowerCase().contains(filterText.toLowerCase()) || element.getCombinedContentAsQuill().toPlainText().toLowerCase().contains(filterText.toLowerCase())).toList();
   }
 
   List<Entry> sortEntries(List<Entry> entries, String method, bool isAscending){
@@ -16,7 +16,7 @@ class EntrylistService {
         entries.sort((a, b) => a.title!.toLowerCase().compareTo(b.title!.toLowerCase()));
         break;
       case 'length':
-        entries.sort((a, b) => a.getContentAsQuill().toPlainText().length.compareTo(b.getContentAsQuill().toPlainText().length));
+        entries.sort((a, b) => a.getCombinedContentAsQuill().toPlainText().length.compareTo(b.getCombinedContentAsQuill().toPlainText().length));
         break;
     }
     if (!isAscending) entries = entries.reversed.toList();
