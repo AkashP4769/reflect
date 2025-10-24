@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:reflect/components/common/overlay_menu.dart';
 import 'package:reflect/components/entrylist/grid_or_column.dart';
 import 'package:reflect/components/journal/entry_card.dart';
 import 'package:reflect/models/entry.dart';
@@ -31,7 +32,15 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    
+  }
+
+  Future<void> handleOnTapEntryCard(Entry entry) async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: entry,)));
+    if(result == 'entry_updated') widget.fetchEntries(true);
+    if(result == 'entry_deleted'){
+      widget.updateHaveEdit(true);
+      widget.fetchEntries(true);
+    }
   }
 
   @override
@@ -76,15 +85,21 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               columnCount: columnCount, 
               itemCount: validEntries.length,
               children: validEntries.map((entry){
-                return GestureDetector(
+                return OverlayMenu(
                   onTap: () async {
-                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: entry,)));
-                    if(result == 'entry_updated') widget.fetchEntries(true);
-                    if(result == 'entry_deleted'){
-                      widget.updateHaveEdit(true);
-                      widget.fetchEntries(true);
-                    }
+                    print("Tapped on entry card");
+                    await handleOnTapEntryCard(entry);
                   },
+
+                  items: [
+                    OverlayMenuItems(
+                      icon: Icon(Icons.delete, color: widget.themeData.colorScheme.onPrimary,),
+                      onTap: () async {
+                        print("Deleting entry ${entry.id}");
+                      },
+                    )
+                  ],
+
                   child: EntryCard(entry: entry, themeData: widget.themeData)
                 );
               }).toList(), 

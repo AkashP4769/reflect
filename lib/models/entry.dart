@@ -178,8 +178,6 @@ class Entry{
   }
 
   Map<String, dynamic> toMap() {
-    print("im a passing title" + title.toString());
-
     return {
       '_id': id,
       'chapterId': chapterId,

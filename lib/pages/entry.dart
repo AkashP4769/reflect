@@ -85,9 +85,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     getUserSetting();
 
-    print("widget.entry.title: ${widget.entry.title}");
-    print("widget.entry.content: ${widget.entry.content}");
-    print("widget.entry.subsections: ${widget.entry.subsections}");
+    // print("widget.entry.title: ${widget.entry.title}");
+    // print("widget.entry.content: ${widget.entry.content}");
+    // print("widget.entry.subsections: ${widget.entry.subsections}");
 
     if(widget.entry.tags != null){
       for(var tag in widget.entry.tags!) {
@@ -232,7 +232,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
     bool result;
 
-    print("Updating entry: ${entry.toMap()}");
+    //print("Updating entry: ${entry.toMap()}");
 
     if(userSetting.encryptionMode == 'local') result = await cacheService.updateOneEntryInCache(entry.id!, entry.toMap(), entry.chapterId!);
     else result = await entryService.updateEntry(entry.toMap());
