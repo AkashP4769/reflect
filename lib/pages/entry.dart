@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reflect/components/common/error_network_image.dart';
+import 'package:reflect/components/common/overlay_menu.dart';
 import 'package:reflect/components/entry/favourite_heart.dart';
 import 'package:reflect/components/entry/sliding_carousel.dart';
 import 'package:reflect/components/entry/tag_alertbox.dart';
@@ -48,6 +49,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   bool isImageEditing = false;
   bool extendedToolbar = false;
   bool isHiddenForSS = false;
+  bool isDragging = false;
 
   List<quill.QuillController> quillControllers = [];
   List<DateTime> subsectionDates = [];
@@ -467,6 +469,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void reorderSubsection(int oldIndex, int newIndex){
+    if(quillControllers.length < 2) return;
+    print("oldIndex: $oldIndex, newIndex: $newIndex");
+    print("quillControllers length: ${quillControllers.length}");
     if(oldIndex < newIndex) newIndex--;
 
     final _quillcontroller = quillControllers.removeAt(oldIndex);
@@ -474,10 +479,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final _focusNode = focusNodes.removeAt(oldIndex);
     final _scrollController = scrollControllers.removeAt(oldIndex);
 
-    quillControllers.insert(newIndex, _quillcontroller);
-    subsectionDates.insert(newIndex, _subsectiondate);
-    focusNodes.insert(newIndex, _focusNode);
-    scrollControllers.insert(newIndex, _scrollController);
+    if(newIndex != quillControllers.length + 1){
+      quillControllers.insert(newIndex, _quillcontroller);
+      subsectionDates.insert(newIndex, _subsectiondate);
+      focusNodes.insert(newIndex, _focusNode);
+      scrollControllers.insert(newIndex, _scrollController);
+    }
 
     date = subsectionDates.first;
     isDateEdited = true;
@@ -566,7 +573,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 ),
               ],
             ),
-        
+
+            if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection, shouldWrap: true && imageExists, columnCount: columnCount,),
+            SizedBox(height: 5,),
+
             TextField(
               controller: titleController,
               focusNode: titleFocusNode,
@@ -581,9 +591,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               ),
               maxLines: null,
             ),
-            SizedBox(height: 5,),
+            
 
-            if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection, shouldWrap: true && imageExists, columnCount: columnCount,),
+            
           ],
         ),
       ),
@@ -663,25 +673,26 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                           
                       
                        
-
                       Container(
                         child: ReorderableListView.builder(
                           onReorder: reorderSubsection,
                           buildDefaultDragHandles: false,
                           padding: EdgeInsets.symmetric(vertical: 0),
-                          itemCount: quillControllers.length,
+                          itemCount: quillControllers.length + 1,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
+
+                          onReorderStart: (int index) {setState(() {isDragging = true;});},
+                          onReorderEnd: (int index) {setState(() {isDragging = false;});},
+
                           itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
                             index: index,
                             key: ValueKey("subsection_$index"),
-                            child: Container(
-                              
+                            child: (index < quillControllers.length) ? Container(
                               //color: Colors.green,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                spacing: 10,
                                 children: [
                                   if(index != 0) Container(
                                     padding: EdgeInsets.only(bottom: 10),
@@ -689,7 +700,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                                         onTap: () => showDatePickerr(index),
                                         child: Padding(
                                           padding: const EdgeInsets.only(top: 10, bottom: 0),
-                                          child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                                          child: Text(DateFormat(subsectionDates[index-1].day == subsectionDates[index].day ? "hh:mm a" : "dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18, color: themeData.colorScheme.onPrimary.withValues(alpha: 0.5)),),
                                         ),
                                       ),
                                   ),
@@ -725,19 +736,33 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                                       )
                                     ),
                                   ),
+                                  SizedBox(height: 5,),
                             
                                   if(quillControllers.length != 1) Divider(
                                     color: themeData.colorScheme.onPrimary.withOpacity(0.2),
                                     thickness: 1,
                                     // height: 40,
                                   ),
+                                  SizedBox(height: 5,),
                                 ],
                               ),
                                
-                            ),
+                            ) : 
+                            (isDragging && quillControllers.length > 1) ? Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.delete, size: 20, color: Colors.redAccent.withValues(alpha: 0.5),),
+                                  SizedBox(width: 5,),
+                                  Text("Drag below to delete subsection", textAlign: TextAlign.center, style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.redAccent.withValues(alpha: 0.5))),
+                                ],
+                              ),
+                            ) : SizedBox(
+                              height: 0,
+                              width: 0,
                           ),
                         ),
-                      ),     
+                      )),     
                       
                       Container(height: 80,),
                     ],

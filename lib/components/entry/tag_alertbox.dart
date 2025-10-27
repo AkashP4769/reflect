@@ -103,15 +103,18 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                     //entrytags
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
+                      spacing: 5,
+                      children: <Widget>[
                         ...entryTags.mapIndexed((index, tag) => 
                           GestureDetector(
                             onTap: (){
-                              entryTags.remove(tag);
-                              userTags.add(tag);
-                              setState(() {});
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                entryTags.remove(tag);
+                                userTags.add(tag);
+                                setState(() {});
+                              });
                             },
-                            child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: deleteBits[index],)
+                            child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: false,)
                           )
                         ),
                       ],
@@ -123,10 +126,12 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                     //usertags
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
+                      spacing: 5,
+                      children: <Widget>[
                         ...userTags.mapIndexed((index, tag) => 
                           GestureDetector(
                             onTap: (){
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
                               if(tagDeleteState){
                                 deleteBits[index] = !deleteBits[index];
                                 bool prevState = false;
@@ -144,12 +149,15 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                                 userTags.remove(tag);
                                 setState(() {});
                               }
+                            });
                             },
                             onLongPress: () => {
-                              setState(() {
-                                tagDeleteState = true;
-                                deleteBits[index] = !deleteBits[index];
-                                print(deleteBits);
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  tagDeleteState = true;
+                                  deleteBits[index] = !deleteBits[index];
+                                  print(deleteBits);
+                                });
                               })
                             },
                             child: TagCard(tag: tag, themeData: widget.themeData, selected: false, deleteBit: deleteBits[index],)

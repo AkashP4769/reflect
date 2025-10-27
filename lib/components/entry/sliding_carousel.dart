@@ -8,7 +8,8 @@ class SlidingCarousel extends StatelessWidget {
   final void Function(ThemeData themeData) showTagDialog;
   final bool? shouldWrap;
   final int columnCount;
-  const SlidingCarousel({super.key, required this.tags, required this.themeData, required this.showTagDialog, this.shouldWrap = false, required this.columnCount});
+  final bool initialPadding;
+  const SlidingCarousel({super.key, required this.tags, required this.themeData, required this.showTagDialog, this.shouldWrap = false, required this.columnCount, this.initialPadding = true});
 
   @override
   Widget build(BuildContext context) {
@@ -32,21 +33,24 @@ class SlidingCarousel extends StatelessWidget {
     }
 
     return Container(
+      //color: Colors.amber,
       margin: EdgeInsets.only(bottom: columnCount == 2 ? 10 : 0),
       height: 45, // Adjust height to fit your items
       child: ListView.builder(
+        padding: EdgeInsets.only(left: initialPadding ? 0 : 0),
         scrollDirection: Axis.horizontal,
         itemCount: entryTags.length + 1,
+        
         itemBuilder: (context, index) {
           if(index == entryTags.length){
             return Padding(
-              padding: EdgeInsets.only(right: 2,),
+              padding: EdgeInsets.only(right: 5,),
               child: GestureDetector(child: TagCard(tag: Tag(name: index != 0 ? "+" : "Add Tag +", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);},),
             );
           }
           return Center(
             child: Padding(
-              padding: EdgeInsets.only(right: index == entryTags.length - 1 ? 0 : 2),
+              padding: EdgeInsets.only(right: 5),
               child: GestureDetector(child: TagCard(tag: entryTags[index], themeData: themeData, selected: true, deleteBit: false),  onTap: (){showTagDialog(themeData);}),
             ),
           );

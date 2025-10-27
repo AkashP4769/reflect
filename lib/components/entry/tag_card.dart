@@ -12,7 +12,7 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 5.0),
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       decoration: BoxDecoration(
         color: selected ? Color(tag.color) : deleteBit ? Color.fromARGB(255, 255, 119, 119) : themeData.colorScheme.secondary,

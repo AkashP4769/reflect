@@ -22,7 +22,7 @@ class EntryListSlidingCarousel extends StatelessWidget {
           itemBuilder: (context, index) {
             return Center(
               child: Padding(
-                padding: EdgeInsets.only(right: index == entryTags.length - 1 ? 0 : 2),
+                padding: EdgeInsets.only(right: 10),
                 child: GestureDetector(child: TagCard(tag: entryTags[index], themeData: themeData, selected: selectedTags[index], deleteBit: false),  onTap: (){toggleTagSelection(index);}),
               ),
             );
