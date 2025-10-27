@@ -479,6 +479,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     focusNodes.insert(newIndex, _focusNode);
     scrollControllers.insert(newIndex, _scrollController);
 
+    date = subsectionDates.first;
+    isDateEdited = true;
+
     if(mounted) setState(() {});
   }
   
@@ -662,71 +665,76 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                        
 
                       Container(
-                        child: ListView.builder(
-                          //onReorder: reorderSubsection,
+                        child: ReorderableListView.builder(
+                          onReorder: reorderSubsection,
+                          buildDefaultDragHandles: false,
                           padding: EdgeInsets.symmetric(vertical: 0),
                           itemCount: quillControllers.length,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) => Container(
-                            //color: Colors.green,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              //spacing: 10,
-                              children: [
-                                
-                                if(index != 0) Container(
-                                  padding: EdgeInsets.only(bottom: 10),
-                                  child: GestureDetector(
-                                      onTap: () => showDatePickerr(index),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                        child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                          itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
+                            index: index,
+                            key: ValueKey("subsection_$index"),
+                            child: Container(
+                              
+                              //color: Colors.green,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 10,
+                                children: [
+                                  if(index != 0) Container(
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    child: GestureDetector(
+                                        onTap: () => showDatePickerr(index),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 10, bottom: 0),
+                                          child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                                        ),
                                       ),
-                                    ),
-                                ),
-                          
-                          
-                                quill.QuillEditor(
-                                  focusNode: focusNodes[index],
-                                  controller: quillControllers[index],
-                                  scrollController: scrollControllers[index],
-                                  config: quill.QuillEditorConfig(
-                                    scrollable: true,
-                                    placeholder: "Start writing here...",
-                                    keyboardAppearance: themeData.brightness,
-                                    onPerformAction: (TextInputAction action) {
-                                      //print(action.toString());
-                                    },
-                                    
-                                    customStyles: quill.DefaultStyles(
-                                      paragraph: quill.DefaultTextBlockStyle(
-                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
-                                        const quill.HorizontalSpacing(0, 0),
-                                        const quill.VerticalSpacing(0, 0),
-                                        quill.VerticalSpacing.zero,
-                                        null
-                                      ),
-                                      placeHolder: quill.DefaultTextBlockStyle(
-                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                        const quill.HorizontalSpacing(0, 0),
-                                        const quill.VerticalSpacing(0, 0),
-                                        quill.VerticalSpacing.zero,
-                                        null
-                                      ),
-                                    )
                                   ),
-                                ),
-                          
-                                if(quillControllers.length != 1) Divider(
-                                  color: themeData.colorScheme.onPrimary.withOpacity(0.2),
-                                  thickness: 1,
-                                  height: 40,
-                                ),
-                              ],
+                            
+                            
+                                  quill.QuillEditor(
+                                    focusNode: focusNodes[index],
+                                    controller: quillControllers[index],
+                                    scrollController: scrollControllers[index],
+                                    config: quill.QuillEditorConfig(
+                                      scrollable: true,
+                                      placeholder: "Start writing here...",
+                                      keyboardAppearance: themeData.brightness,
+                                      onPerformAction: (TextInputAction action) {
+                                        //print(action.toString());
+                                      },
+                                      
+                                      customStyles: quill.DefaultStyles(
+                                        paragraph: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                        placeHolder: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                      )
+                                    ),
+                                  ),
+                            
+                                  if(quillControllers.length != 1) Divider(
+                                    color: themeData.colorScheme.onPrimary.withOpacity(0.2),
+                                    thickness: 1,
+                                    // height: 40,
+                                  ),
+                                ],
+                              ),
+                               
                             ),
-                             
                           ),
                         ),
                       ),     
