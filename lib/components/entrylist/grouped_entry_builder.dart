@@ -86,6 +86,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               itemCount: validEntries.length,
               children: validEntries.map((entry){
                 return OverlayMenu(
+                  themeData: widget.themeData,
                   onTap: () async {
                     print("Tapped on entry card");
                     await handleOnTapEntryCard(entry);

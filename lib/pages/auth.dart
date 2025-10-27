@@ -55,7 +55,12 @@ class _AuthPageState extends State<AuthPage> {
       if(await EncryptionService().getSymmetricKey() == null) flag = false;
     }
 
-    backendVerified = (FirebaseAuth.instance.currentUser == null ? false : true) && flag;
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      backendVerified = (user == null ? false : true) && flag;
+    });
+
+    print("backendVerified: $backendVerified");
+
     setState(() {});
   }
 

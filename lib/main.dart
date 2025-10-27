@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,9 +39,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  
+
   if (kIsWeb) {
     // Initialize Hive for web
     Hive.initFlutter();
+    await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+    
   } else {
     // Initialize Hive for mobile
     final dir = await getApplicationDocumentsDirectory();
@@ -64,8 +69,8 @@ void main() async {
   // final chapterbox = Hive.box('chapters');
   // chapterbox.clear();
 
-  final settingBox = Hive.box('settings');
-  settingBox.clear();
+  // final settingBox = Hive.box('settings');
+  // settingBox.clear();
 
   // await const FlutterSecureStorage().deleteAll();
 

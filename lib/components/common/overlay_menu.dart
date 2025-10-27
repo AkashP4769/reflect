@@ -4,8 +4,9 @@ class OverlayMenu extends StatefulWidget {
   final Widget child;
   final List<OverlayMenuItems> items;
   final VoidCallback onTap;
+  final ThemeData themeData;
 
-  OverlayMenu({super.key, required this.child, required this.items, required this.onTap});
+  const OverlayMenu({super.key, required this.child, required this.items, required this.onTap, required this.themeData});
   @override
   State<OverlayMenu> createState() => _OverlayMenuState();
 }
@@ -35,15 +36,50 @@ class _OverlayMenuState extends State<OverlayMenu> {
       },
 
       child: Container(
+        
         child: Stack(
           children: [
             widget.child,
 
             if(displayMenu) Positioned(
-              right: 0,
+              right: 40,
               top: 0,
-              child: Text("Menu here")
-            ),
+              
+              child: TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: 1),
+                duration: Duration(milliseconds: 200),
+                curve: Curves.easeInOutCirc,
+                builder: (BuildContext context, double value, Widget? child) {
+                  return Opacity(
+                    opacity: value,
+                    
+                    child: Container(
+                      width: 65 * value,
+                      height: 40 * value,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      
+                      decoration: BoxDecoration(
+                        color: widget.themeData.colorScheme.secondary.withValues(),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.4),
+                            blurRadius: 5,
+                            offset: const Offset(0, 5)
+                          )
+                        ]
+                      ),
+                      
+                      child: Row(
+                        children: [
+                          ...widget.items,
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ),
             
             // if(displayMenu) Container(
             //   padding: EdgeInsets.all(4),

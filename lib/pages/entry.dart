@@ -136,11 +136,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     titleController.addListener(() {
       if(!isTitleEdited && titleController.text != widget.entry.title) {
         isTitleEdited = true;
-        setState(() {});
+        if(mounted) setState(() {});
       }
       else if(isTitleEdited && titleController.text == widget.entry.title) {
         isTitleEdited = false;
-        setState(() {});
+        if(mounted) setState(() {});
       }
     });
 
@@ -164,11 +164,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         //String entryContent = widget.entry.subsections != null && widget.entry.subsections!.length > i && widget.entry.subsections![i].content!.isEmpty ? quill.Document.fromJson(widget.entry.subsections![i].content ?? []).toPlainText() : "";
         if(!isContentEdited && quillContent != entryContent) {
           isContentEdited = true;
-          setState(() {});
+          if(mounted) setState(() {});
         }
         else if(isContentEdited && quillContent == entryContent) {
           isContentEdited = false;
-          setState(() {});
+          if(mounted) setState(() {});
         }
       });
     }
@@ -319,7 +319,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     if(newEntryTags != null) {
       entryTags = newEntryTags;
       isTagsEdited = true;
-      setState(() {});
+      if(mounted) setState(() {});
     }
   }
 
@@ -335,7 +335,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       isFavouriteEdited = !isFavouriteEdited;
     }
 
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
   Future<bool> _onWillPop() async {
@@ -369,7 +369,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       newImageUrl = await ImageService().uploadImage(image!);
       if(newImageUrl == null) return [];
       imageUrl = [newImageUrl];
-      setState(() {});
+      if(mounted) setState(() {});
     }
     else if(imageType == 'url'){
       newImageUrl = imageUrl[0];
@@ -399,14 +399,14 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       } else {
         print('No image selected.');
       }
-      setState(() {});
+      if(mounted) setState(() {});
 
     } catch (e) {
       print('Error picking image: $e');
       SnackBar snackBar = const SnackBar(content: Text("Error picking image"));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       imageType = 'null';
-      setState(() {});
+      if(mounted) setState(() {});
     }
   }
 
@@ -415,7 +415,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     imageType = 'null';
     imageUrl = [];
     isImageEdited = true;
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
   void screenshotAndShare() async {
@@ -447,7 +447,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     focusNodes.add(FocusNode());
     quillControllers.add(quill.QuillController.basic());
     quillControllers.last.document.changes.listen((_) => _scrollToBottom());
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
   void removeSubsection(int index){
@@ -462,8 +462,24 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
       focusNodes[index].dispose();
       focusNodes.removeAt(index);
-      setState(() {});
+      if(mounted) setState(() {});
     }
+  }
+
+  void reorderSubsection(int oldIndex, int newIndex){
+    if(oldIndex < newIndex) newIndex--;
+
+    final _quillcontroller = quillControllers.removeAt(oldIndex);
+    final _subsectiondate = subsectionDates.removeAt(oldIndex);
+    final _focusNode = focusNodes.removeAt(oldIndex);
+    final _scrollController = scrollControllers.removeAt(oldIndex);
+
+    quillControllers.insert(newIndex, _quillcontroller);
+    subsectionDates.insert(newIndex, _subsectiondate);
+    focusNodes.insert(newIndex, _focusNode);
+    scrollControllers.insert(newIndex, _scrollController);
+
+    if(mounted) setState(() {});
   }
   
   @override
@@ -647,122 +663,70 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
                       Container(
                         child: ListView.builder(
+                          //onReorder: reorderSubsection,
                           padding: EdgeInsets.symmetric(vertical: 0),
                           itemCount: quillControllers.length,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) => Slidable(
-                            key: GlobalKey(),
-
-                            endActionPane: ActionPane(
-                              // A motion is a widget used to control how the pane animates.
-                              motion: const DrawerMotion(),
-
-                              // A pane can dismiss the Slidable.
-                              dismissible: DismissiblePane(
-                                confirmDismiss: () async {
-                                  bool confirm = false;
-                                  await showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('Delete Subsection'),
-                                      content: const Text('Are you sure you want to delete this subsection?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            confirm = false;
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            confirm = true;
-                                          },
-                                          child: const Text('Delete'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  return confirm;
-                                },
-                                onDismissed: () {removeSubsection(index); },
-
-                              ),
-
-                              // All actions are defined in the children parameter.
+                          itemBuilder: (context, index) => Container(
+                            //color: Colors.green,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              //spacing: 10,
                               children: [
-                                // A SlidableAction can have an icon and/or a label.
-                                SlidableAction(
-                                  onPressed: (BuildContext context){ removeSubsection(index); },
-                                  backgroundColor: Colors.redAccent,
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  //label: 'Delete',
+                                
+                                if(index != 0) Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: GestureDetector(
+                                      onTap: () => showDatePickerr(index),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 0, bottom: 0),
+                                        child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                                      ),
+                                    ),
+                                ),
+                          
+                          
+                                quill.QuillEditor(
+                                  focusNode: focusNodes[index],
+                                  controller: quillControllers[index],
+                                  scrollController: scrollControllers[index],
+                                  config: quill.QuillEditorConfig(
+                                    scrollable: true,
+                                    placeholder: "Start writing here...",
+                                    keyboardAppearance: themeData.brightness,
+                                    onPerformAction: (TextInputAction action) {
+                                      //print(action.toString());
+                                    },
+                                    
+                                    customStyles: quill.DefaultStyles(
+                                      paragraph: quill.DefaultTextBlockStyle(
+                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
+                                        const quill.HorizontalSpacing(0, 0),
+                                        const quill.VerticalSpacing(0, 0),
+                                        quill.VerticalSpacing.zero,
+                                        null
+                                      ),
+                                      placeHolder: quill.DefaultTextBlockStyle(
+                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                        const quill.HorizontalSpacing(0, 0),
+                                        const quill.VerticalSpacing(0, 0),
+                                        quill.VerticalSpacing.zero,
+                                        null
+                                      ),
+                                    )
+                                  ),
+                                ),
+                          
+                                if(quillControllers.length != 1) Divider(
+                                  color: themeData.colorScheme.onPrimary.withOpacity(0.2),
+                                  thickness: 1,
+                                  height: 40,
                                 ),
                               ],
                             ),
-                            child: Container(
-                              //color: Colors.green,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                //spacing: 10,
-                                children: [
-                                  
-                                  if(index != 0) Container(
-                                    padding: EdgeInsets.only(bottom: 10),
-                                    child: GestureDetector(
-                                        onTap: () => showDatePickerr(index),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 0, bottom: 0),
-                                          child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
-                                        ),
-                                      ),
-                                  ),
-                            
-                            
-                                  quill.QuillEditor(
-                                    focusNode: focusNodes[index],
-                                    controller: quillControllers[index],
-                                    scrollController: scrollControllers[index],
-                                    config: quill.QuillEditorConfig(
-                                      scrollable: true,
-                                      placeholder: "Start writing here...",
-                                      keyboardAppearance: themeData.brightness,
-                                      onPerformAction: (TextInputAction action) {
-                                        //print(action.toString());
-                                      },
-                                      
-                                      customStyles: quill.DefaultStyles(
-                                        paragraph: quill.DefaultTextBlockStyle(
-                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
-                                          const quill.HorizontalSpacing(0, 0),
-                                          const quill.VerticalSpacing(0, 0),
-                                          quill.VerticalSpacing.zero,
-                                          null
-                                        ),
-                                        placeHolder: quill.DefaultTextBlockStyle(
-                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                          const quill.HorizontalSpacing(0, 0),
-                                          const quill.VerticalSpacing(0, 0),
-                                          quill.VerticalSpacing.zero,
-                                          null
-                                        ),
-                                      )
-                                    ),
-                                  ),
-                            
-                                  if(quillControllers.length != 1) Divider(
-                                    color: themeData.colorScheme.onPrimary.withOpacity(0.2),
-                                    thickness: 1,
-                                    height: 40,
-                                  ),
-                                ],
-                              ),
-                               
-                            ),
+                             
                           ),
                         ),
                       ),     
