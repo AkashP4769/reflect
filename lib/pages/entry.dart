@@ -635,6 +635,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       ),
     ];
 
+    print("Is Android and multiple Quill controllers: ${TargetPlatform.android == defaultTargetPlatform && quillControllers.length > 1}");
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -735,7 +737,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             ),
                           );
                         },
-                        buildDefaultDragHandles: (TargetPlatform.windows == defaultTargetPlatform && quillControllers.length > 1) ? true : false,
+                        buildDefaultDragHandles: true,
                         padding: EdgeInsets.symmetric(vertical: 0),
                         itemCount: quillControllers.length + 1,
                         shrinkWrap: true,
@@ -745,12 +747,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         onReorderStart: (int index) {setState(() {isDragging = true;});},
                         onReorderEnd: (int index) {setState(() {isDragging = false;});},
                       
-                        itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
+                        itemBuilder: (context, index) => ReorderableDragStartListener(
                           index: index,
                           key: ValueKey("subsection_$index"),
                           child: (index < quillControllers.length) ? Container(
                             padding: EdgeInsets.symmetric(horizontal: 10),
-                            //color: Colors.green,
+                            color: Colors.transparent,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
