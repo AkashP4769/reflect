@@ -118,9 +118,28 @@ class CacheService{
 
     if(data[0]['encrypted']){
       final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(data);
+
+      for(var entry in data){
+        if(entry['subsections'] == null || (entry['subsections'] as List).isEmpty){
+          entry['subsections'] = [{
+            'date': entry['date'],
+            'content': entry['content'],
+          }];
+        }
+      }
+
       await entryBox.put(chapterId, decryptedEntries);
     }
     else{
+      for(var entry in data){
+        if(entry['subsections'] == null || (entry['subsections'] as List).isEmpty){
+          entry['subsections'] = [{
+            'date': entry['date'],
+            'content': entry['content'],
+          }];
+        }
+      }
+
       await entryBox.put(chapterId, data);
     }
 

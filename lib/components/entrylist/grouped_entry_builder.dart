@@ -85,7 +85,18 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
               columnCount: columnCount, 
               itemCount: validEntries.length,
               children: validEntries.map((entry){
-                return OverlayMenu(
+                return GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: entry,)));
+                    if(result == 'entry_updated') widget.fetchEntries(true);
+                    if(result == 'entry_deleted'){
+                      widget.updateHaveEdit(true);
+                      widget.fetchEntries(true);
+                    }
+                  },
+                  child: EntryCard(entry: entry, themeData: widget.themeData)
+                );
+                /*return OverlayMenu(
                   themeData: widget.themeData,
                   onTap: () async {
                     print("Tapped on entry card");
@@ -102,7 +113,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
                   ],
 
                   child: EntryCard(entry: entry, themeData: widget.themeData)
-                );
+                );*/
               }).toList(), 
             ),
             SizedBox(height: 20,)

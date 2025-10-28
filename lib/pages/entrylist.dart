@@ -208,7 +208,9 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     await loadFromCache();
     if(userSetting!.encryptionMode == 'local') return;
 
-    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, explicit);
+    final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, true);
+
+    print('fetched entries: $data');
 
     if(data == null){
       return;
