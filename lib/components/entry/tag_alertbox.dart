@@ -48,6 +48,8 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
 
   void loadTags(){
     userTags = tagService.getAllTags().toSet();
+    userTags = userTags.difference(entryTags);
+    deleteBits = List.generate(userTags.length, (index) => false);
     setState(() {});
   }
 
@@ -71,7 +73,6 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
     }
     tagService.updateTags(newTags.toList());
     tagDeleteState = false;
-    deleteBits = List.generate(100, (index) => false);
     loadTags();
   }
 
@@ -101,18 +102,18 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                     if(entryTags.isNotEmpty) const SizedBox(height: 10,),
                 
                     //entrytags
-                    Wrap(
+                    if(entryTags.isNotEmpty) Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 5,
                       children: <Widget>[
                         ...entryTags.mapIndexed((index, tag) => 
                           GestureDetector(
+                            key: ValueKey(tag.name),
                             onTap: (){
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                entryTags.remove(tag);
-                                userTags.add(tag);
-                                setState(() {});
-                              });
+                              entryTags.remove(tag);
+                              userTags.add(tag);
+                              deleteBits = List.generate(userTags.length, (index) => false);
+                              setState(() {});
                             },
                             child: TagCard(tag: tag, themeData: widget.themeData, selected: true, deleteBit: false,)
                           )
@@ -124,14 +125,14 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                     if(userTags.isNotEmpty) const SizedBox(height: 10,),
                 
                     //usertags
-                    Wrap(
+                    if(userTags.isNotEmpty) Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 5,
                       children: <Widget>[
                         ...userTags.mapIndexed((index, tag) => 
                           GestureDetector(
+                            key: ValueKey(tag.name),
                             onTap: (){
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
                               if(tagDeleteState){
                                 deleteBits[index] = !deleteBits[index];
                                 bool prevState = false;
@@ -147,17 +148,15 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
                               else {
                                 entryTags.add(tag);
                                 userTags.remove(tag);
+                                deleteBits = List.generate(userTags.length, (index) => false);
                                 setState(() {});
                               }
-                            });
                             },
                             onLongPress: () => {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  tagDeleteState = true;
-                                  deleteBits[index] = !deleteBits[index];
-                                  print(deleteBits);
-                                });
+                              setState(() {
+                                tagDeleteState = true;
+                                deleteBits[index] = !deleteBits[index];
+                                print(deleteBits);
                               })
                             },
                             child: TagCard(tag: tag, themeData: widget.themeData, selected: false, deleteBit: deleteBits[index],)

@@ -509,14 +509,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     if(mounted) setState(() {});
   }
-
-  quill.QuillController getFocusedQuillController(){
-    print("focusNodes length: ${focusNodes.length}");
-    for(int i=0; i<focusNodes.length; i++){
-      if(focusNodes[i].hasFocus) return quillControllers[i];
-    }
-    return quillControllers.last;
-  }
   
   @override
   void dispose() {
