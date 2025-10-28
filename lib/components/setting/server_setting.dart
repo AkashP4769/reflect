@@ -18,7 +18,7 @@ class _ServerSettingState extends State<ServerSetting> {
   final servers = {
     'Localhost (Kv)': /*'http://192.168.29.226:3000/api'*/ /*'http://192.168.18.239:3000/api'*/ "http://192.168.18.105:3000/api",
     'Localhost (Jio)':  "http://192.168.31.1:3000/api", /*'http://192.168.29.226:3000/api',*/
-    'Localhost (Mobile Hotspot)': 'http://172.24.123.80:3000/api',
+    'Localhost (Mobile Hotspot)': 'http://172.31.80.1:3000/api',
     'Vercel': 'https://reflect-server.vercel.app/api',
     'AWS': 'http://3.109.5.25:3000/api',
     'Railway': 'https://reflect-backend-production-646a.up.railway.app/api',
