@@ -40,6 +40,8 @@ class EntryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Stack(
           children: [
+            
+
             if(hasImage) Container(
               width: double.infinity,
               child: CachedNetworkImage(
@@ -82,6 +84,8 @@ class EntryCard extends StatelessWidget {
                 ],
               ),
             ),
+
+            //if(hasImage) Text(entry.imageUrl![0].toString()),
           ],
         ),
       ),

@@ -20,6 +20,7 @@ import 'package:reflect/main.dart';
 import 'package:reflect/models/entry.dart';
 import 'package:reflect/models/tag.dart';
 import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/pages/image.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/entryService.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
@@ -58,7 +59,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late TextEditingController titleController;
   //late SlidingUpPanelController panelController;
   List<ScrollController> scrollControllers = [];
-  late DateTime date;
+  //late DateTime date;
   late bool isFavourite;
 
   late FocusNode titleFocusNode;
@@ -98,9 +99,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       }
     }
 
-    if(widget.entry.id == null) date = DateTime.now().toLocal();
-    else date = widget.entry.date;
-
     // if(widget.entry.id == null) date = widget.entry.date;
     // else {
     //   int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
@@ -116,6 +114,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
 
     if(widget.entry.subsections == null || widget.entry.subsections!.isEmpty){
+      DateTime date = DateTime.now().toLocal();
       quillControllers.add(quill.QuillController.basic());
       subsectionDates.add(date);
       scrollControllers = [ScrollController()];
@@ -127,7 +126,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           document: subsection.getContentAsQuill(),
           selection: const TextSelection.collapsed(offset: 0),
         ));
-        subsectionDates.add(subsection.date);
+        subsectionDates.add(subsection.date.toLocal());
         scrollControllers.add(ScrollController());
         focusNodes.add(addFocusListener(FocusNode(), focusNodes.length));
       }
@@ -208,7 +207,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       subsections.add(Subsection.fromQuill(quillControllers[i].document, subsectionDates[i]));
     }
 
-    final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
+    final entry = Entry.fromSubsections(titleController.text, subsections, subsectionDates.first, entryTagList, widget.entry.chapterId!, null, false, isFavourite, newImageUrl);
     final bool result;
     
     if(userSetting.encryptionMode == 'local') result = await cacheService.addOneEntryToCache(entry.toMap(), entry.chapterId!);
@@ -232,7 +231,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       subsections.add(Subsection.fromQuill(quillControllers[i].document, subsectionDates[i]));
     }
 
-    final entry = Entry.fromSubsections(titleController.text, subsections, date, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
+    final entry = Entry.fromSubsections(titleController.text, subsections, subsectionDates.first, entryTagList, widget.entry.chapterId!, widget.entry.id, false, isFavourite, newImageUrl);
     bool result;
 
     //print("Updating entry: ${entry.toMap()}");
@@ -292,7 +291,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       if (selectedDate != null) {
         showTimePicker(
           context: context,
-          initialTime: TimeOfDay.fromDateTime(date),
+          initialTime: TimeOfDay.fromDateTime(subsectionDates[index]),
         ).then((selectedTime) {
           if (selectedTime != null) {
             DateTime selectedDateTime = DateTime(
@@ -504,7 +503,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       }
     }
 
-    date = subsectionDates.first;
     isDateEdited = true;
 
     if(mounted) setState(() {});
@@ -541,7 +539,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),),
+              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ImagePage(imageUrl: imageUrl[0], heroTag: "image-${imageUrl[0]}",)));
+                },
+                child: Hero(tag: "image-${imageUrl[0]}", child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),))),
+              ),
               if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
             
               if(isImageEditing && imageExists) Align(
@@ -583,7 +586,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               children: [
                 GestureDetector(
                   onTap: (){ showDatePickerr(0); },
-                  child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(date), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
+                  child: Text(DateFormat("dd MMM yyyy | hh:mm a").format(subsectionDates.first), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18)),
                 ),
                 if (!isHiddenForSS || isFavourite) Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
@@ -592,10 +595,25 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               ],
             ),
 
+            if(columnCount != 1) TextField(
+              controller: titleController,
+              focusNode: titleFocusNode,
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: "Title...",
+                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                isDense: true,
+              ),
+              maxLines: null,
+            ),
+
             if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection, shouldWrap: true && imageExists, columnCount: columnCount,),
             SizedBox(height: 5,),
 
-            TextField(
+            if(columnCount == 1) TextField(
               controller: titleController,
               focusNode: titleFocusNode,
               style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
@@ -696,7 +714,28 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                        
                       ReorderableListView.builder(
                         onReorder: reorderSubsection,
-                        buildDefaultDragHandles: false,
+                        proxyDecorator: (Widget child, int index, Animation<double> animation) {
+                          return Material(
+                            elevation: 6.0,
+                            color: Colors.transparent,
+                            shadowColor: Colors.black54,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: themeData.colorScheme.surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 8.0,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          );
+                        },
+                        buildDefaultDragHandles: (TargetPlatform.windows == defaultTargetPlatform && quillControllers.length > 1) ? true : false,
                         padding: EdgeInsets.symmetric(vertical: 0),
                         itemCount: quillControllers.length + 1,
                         shrinkWrap: true,
@@ -715,6 +754,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if(index != 0) SizedBox(height: 10,),
                                 if(index != 0) Container(
                                   padding: EdgeInsets.only(bottom: 10),
                                   child: GestureDetector(
@@ -758,12 +798,12 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                                   ),
                                 ),
                                 SizedBox(height: 5,),
-                          
-                                if(quillControllers.length != 1) Divider(
+                        
+                                /*if(!(quillControllers.length == 1 || index == quillControllers.length - 1 || !isDragging)) Divider(
                                   color: themeData.colorScheme.onPrimary.withOpacity(0.2),
                                   thickness: 1,
                                   // height: 40,
-                                ),
+                                ),*/
                                 SizedBox(height: 5,),
                               ],
                             ),
@@ -795,7 +835,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             height: 0,
                             width: 0,
                         ),
-                      ),
+                                              ),
                                             ),     
                       
                       Container(height: 80,),

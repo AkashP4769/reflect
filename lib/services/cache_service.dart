@@ -157,7 +157,6 @@ class CacheService{
     final cachedData = entryBox.get(chapterId);
     entry['_id'] = mongo.ObjectId().oid;
 
-
     if(cachedData == null) await entryBox.put(chapterId, [entry]);
     else{
       final List cachedEntries = cachedData as List;
@@ -259,9 +258,29 @@ class CacheService{
         chapter = await EncryptionService().decryptChapter(Map<String, dynamic>.from(chapter as Map));
         final decryptedEntries = await EncryptionService().decryptEntriesOfChapter(List<Map<String, dynamic>>.from(chapter['entries'] ?? []));
         print("decryptedEntries: $decryptedEntries");
-        if(decryptedEntries != null) await entryBox.put(chapter['_id'], decryptedEntries);
+        if(decryptedEntries != null){ 
+          for(var entry in decryptedEntries){
+            if(entry['subsections'] == null || (entry['subsections'] as List).isEmpty){
+              entry['subsections'] = [{
+                'date': entry['date'],
+                'content': entry['content'],
+              }];
+            }
+          }
+
+          await entryBox.put(chapter['_id'], decryptedEntries);
+        }
       }
       else{
+        for(var entry in chapter['entries']){
+          if(entry['subsections'] == null || (entry['subsections'] as List).isEmpty){
+            entry['subsections'] = [{
+              'date': entry['date'],
+              'content': entry['content'],
+            }];
+          }
+        }
+
         await entryBox.put(chapter['_id'], chapter['entries']);
       }
 

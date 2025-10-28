@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:reflect/components/common/error_network_image.dart';
 import 'package:reflect/models/chapter.dart';
+import 'package:reflect/pages/image.dart';
 import 'package:reflect/services/image_service.dart';
 
 class ChapterHeader extends StatelessWidget {
@@ -81,7 +82,13 @@ class ChapterHeader extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if(!isEditing && imageType == 'url' && chapter.imageUrl!.isNotEmpty) CachedNetworkImage(imageUrl: chapter.imageUrl![0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),
+                    if(!isEditing && imageType == 'url' && chapter.imageUrl!.isNotEmpty) GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ImagePage(imageUrl: chapter.imageUrl![0], heroTag: "image-${chapter.imageUrl![0]}")));
+                      },
+                      child: Hero(tag: "image-${chapter.imageUrl![0]}", child: CachedNetworkImage(imageUrl: chapter.imageUrl![0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),))
+                    ),
+
                     if(isEditing && imageType == 'url' && imageUrl.isNotEmpty) CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),),
                     if(isEditing && imageType =='file' && image != null) Image.file(image!, fit: BoxFit.cover, height: 200,),
                   
