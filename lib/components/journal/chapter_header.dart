@@ -40,7 +40,6 @@ class ChapterHeader extends StatelessWidget {
     final List<Widget> widgets = [
       Container(
         //height: 250,
-        
         width: columnCount == 1 ? double.infinity : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +126,7 @@ class ChapterHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if(!isEditing) Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432), fontSize: columnCount == 1 ? 32 : 42), textAlign: TextAlign.center,),
+            if(!isEditing) Text(chapter.title, style: themeData.textTheme.titleLarge?.copyWith(color: themeData.colorScheme.primaryFixed, fontSize: columnCount == 1 ? 32 : 42), textAlign: TextAlign.center,),
             if(isEditing) TextField(
               controller: titleController,
               maxLines:  null,

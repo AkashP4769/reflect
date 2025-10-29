@@ -15,7 +15,7 @@ class TagCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 5.0),
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       decoration: BoxDecoration(
-        color: selected ? Color(tag.color) : deleteBit ? Color.fromARGB(255, 255, 119, 119) : themeData.colorScheme.secondary,
+        color: selected ? Color(tag.color) : deleteBit ? Color.fromARGB(255, 255, 119, 119) : themeData.colorScheme.surfaceContainerHigh,
         border: Border.all(
           color: selected ? themeData.colorScheme.secondary : deleteBit ? Color.fromARGB(255, 255, 119, 119) : Color(tag.color),
           width: 1.0,
@@ -32,7 +32,7 @@ class TagCard extends StatelessWidget {
       child: Text(
         tag.name,
         style: TextStyle(
-          color: !selected ? themeData.colorScheme.onPrimary : Colors.white,
+          color: !selected ? Color(tag.color) : Colors.white,
           fontSize: 14.0,
           fontWeight: FontWeight.w600
         ),

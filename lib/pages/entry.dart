@@ -507,6 +507,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     if(mounted) setState(() {});
   }
+
+  void toggleDragging(){
+    isDragging = !isDragging;
+    setState(() {});
+  }
   
   @override
   void dispose() {
@@ -598,11 +603,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             if(columnCount != 1) TextField(
               controller: titleController,
               focusNode: titleFocusNode,
-              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primary, decoration: TextDecoration.none, decorationThickness: 0,),
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: "Title...",
-                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: themeData.colorScheme.primary.withOpacity(0.5)),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 isDense: true,
@@ -616,11 +621,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             if(columnCount == 1) TextField(
               controller: titleController,
               focusNode: titleFocusNode,
-              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: const Color(0xffFF9432), decoration: TextDecoration.none, decorationThickness: 0,),
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primary, decoration: TextDecoration.none, decorationThickness: 0,),
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: "Title...",
-                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: const Color(0xffFF9432).withOpacity(0.5)),
+                hintStyle: themeData.textTheme.titleLarge?.copyWith(color: themeData.colorScheme.primary.withOpacity(0.5)),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 isDense: true,
@@ -651,7 +656,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               gradient: LinearGradient(
                 begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
                 end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+                colors: [themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
               )
             ),
             
@@ -723,7 +728,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             shadowColor: Colors.black54,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: themeData.colorScheme.surfaceContainerHigh,
+                                color: themeData.colorScheme.surface,
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
@@ -737,7 +742,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             ),
                           );
                         },
-                        buildDefaultDragHandles: true,
+                        buildDefaultDragHandles: false,
                         padding: EdgeInsets.symmetric(vertical: 0),
                         itemCount: quillControllers.length + 1,
                         shrinkWrap: true,
@@ -747,7 +752,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                         onReorderStart: (int index) {setState(() {isDragging = true;});},
                         onReorderEnd: (int index) {setState(() {isDragging = false;});},
                       
-                        itemBuilder: (context, index) => ReorderableDragStartListener(
+                        itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
+                          enabled: quillControllers.length < 2 ? false : true,
                           index: index,
                           key: ValueKey("subsection_$index"),
                           child: (index < quillControllers.length) ? Container(
@@ -767,8 +773,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                                       ),
                                     ),
                                 ),
-                          
-                          
+  
                                 quill.QuillEditor(
                                   focusNode: focusNodes[index],
                                   controller: quillControllers[index],
@@ -799,14 +804,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                                     )
                                   ),
                                 ),
-                                SizedBox(height: 5,),
-                        
-                                /*if(!(quillControllers.length == 1 || index == quillControllers.length - 1 || !isDragging)) Divider(
-                                  color: themeData.colorScheme.onPrimary.withOpacity(0.2),
-                                  thickness: 1,
-                                  // height: 40,
-                                ),*/
-                                SizedBox(height: 5,),
+                                SizedBox(height: 10,),
                               ],
                             ),
                              
@@ -836,9 +834,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                           ) : SizedBox(
                             height: 0,
                             width: 0,
+                          ),
                         ),
-                                              ),
-                                            ),     
+                      ),     
                       
                       Container(height: 80,),
                     ],
@@ -914,6 +912,82 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           ),
         ) : null,
       ),
+    );
+  }
+}
+
+
+class MyListView extends StatelessWidget {
+  final List<quill.QuillController> quillControllers;
+  final Widget child;
+  const MyListView({super.key, required this.child, required this.quillControllers});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 0),
+      itemCount: quillControllers.length + 1,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      scrollDirection: Axis.vertical,
+    
+      itemBuilder: (context, index) => ReorderableDragStartListener(
+        index: index,
+        key: ValueKey("subsection_$index"),
+        child: child
+      )
+    );
+  }
+}
+
+class MyReordarableList extends StatelessWidget {
+  final List<quill.QuillController> quillControllers;
+  final void Function() toggleDragging;
+  final ReorderCallback reorderSubsection;
+  final Widget child;
+  final ThemeData themeData;
+  const MyReordarableList({super.key, required this.child, required this.quillControllers, required this.toggleDragging, required this.reorderSubsection, required this.themeData});
+
+  @override
+  Widget build(BuildContext context) {
+    return ReorderableListView.builder(
+      onReorder: reorderSubsection,
+      proxyDecorator: (Widget child, int index, Animation<double> animation) {
+        return Material(
+          elevation: 6.0,
+          color: Colors.transparent,
+          shadowColor: Colors.black54,
+          child: Container(
+            decoration: BoxDecoration(
+              color: themeData.colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8.0,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: child,
+          ),
+        );
+      },
+      buildDefaultDragHandles: true,
+      padding: EdgeInsets.symmetric(vertical: 0),
+      itemCount: quillControllers.length + 1,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      scrollDirection: Axis.vertical,
+    
+      onReorderStart: (int index) {toggleDragging();},
+      onReorderEnd: (int index) {toggleDragging();},
+    
+      itemBuilder: (context, index) => ReorderableDragStartListener(
+        index: index,
+        key: ValueKey("subsection_$index"),
+        child: child
+      )
     );
   }
 }

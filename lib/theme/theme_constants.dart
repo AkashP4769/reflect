@@ -1,6 +1,158 @@
 import 'package:flutter/material.dart';
 
-ThemeData lightTheme = ThemeData(
+
+
+class ThemeBuilder{
+  static ThemeData buildLightTheme(String theme, Color color){
+    //primary 0xffFFAC5F
+    return ThemeData(
+      brightness: Brightness.light,
+      fontFamily: "Poppins",
+      colorScheme: ColorScheme.light(
+        primary: color,
+        onPrimary: Color.fromARGB(255, 34, 34, 34),
+        primaryFixed: HSVColor.fromColor(color).withSaturation(0.8).toColor(), //Color(0xffFF9432),
+        secondary: HSVColor.fromColor(color).withSaturation(0.1).toColor(),      //Color.fromARGB(255, 255, 227, 195)
+        secondaryContainer: HSVColor.fromColor(color).withSaturation(0.2).toColor(), //Color.fromARGB(255, 255, 233, 207),
+        onSecondary: Colors.black,
+        surface: Colors.white,
+        surfaceContainerHigh: Colors.white,
+        surfaceContainerHighest: color,
+        tertiary: Colors.white,
+        onTertiary: HSVColor.fromColor(color).withSaturation(0.4).toColor() //Color(0xffFFDEB7),
+        
+
+      ),
+      textTheme: ThemeData.light().textTheme.copyWith(
+        titleLarge: const TextStyle(color: Colors.black, fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w700),
+        titleMedium: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
+        titleSmall: const TextStyle(color: Colors.black, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+        bodyMedium: const TextStyle(color: Colors.black, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+        bodySmall: const TextStyle(color: Colors.black, fontSize: 12, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          minimumSize: const Size(double.infinity, 50),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)
+          ),
+          textStyle: const TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontFamily: "Poppins",
+            fontWeight: FontWeight.w600
+          )
+        )
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent
+      ),
+
+      timePickerTheme: TimePickerThemeData(
+        hourMinuteColor: HSVColor.fromColor(color).withSaturation(0.3).toColor(), //const Color(0xffFFE3C3),
+        dialHandColor: color,
+        dialBackgroundColor: HSVColor.fromColor(color).withSaturation(0.3).toColor(),
+
+        hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return color;
+          }
+          return Colors.black;
+        }),
+        dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return color;
+          }
+          return Colors.black;
+        }),
+
+        dayPeriodTextStyle: TextStyle(
+          fontSize: 20, // Adjust font size
+          color: color, // Set selected AM/PM text color
+          fontWeight: FontWeight.w600, // You can also adjust other styles
+        ),
+      )
+    );
+  }
+
+  static ThemeData buildDarkTheme(String theme, Color color){
+    //primary 0xffFFAC5F
+    return ThemeData(
+      brightness: Brightness.dark,
+      fontFamily: "Poppins",
+      colorScheme: ColorScheme.dark(
+        primary: color,
+        primaryFixed: HSVColor.fromColor(color).withSaturation(0.7).toColor(), //Color(0xffFF9432),
+        onPrimary: Colors.white,
+        secondary: HSVColor.fromColor(color).withSaturation(0.2).withValue(0.2).toColor(), 
+        //secondary: Color(0xff303030),
+        secondaryContainer: Color(0xff262626),
+        onSecondary: Colors.white,
+        surface: Color(0xff303030),
+        surfaceContainerHigh: Colors.white, 
+        surfaceContainerHighest: Colors.white,
+        tertiary: Color(0xff303030),
+        onTertiary: Color(0xff141414),
+        
+        
+      ),
+      textTheme: ThemeData.dark().textTheme.copyWith(
+        titleLarge: const TextStyle(color: Colors.white, fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w700),
+        titleMedium: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: "Poppins", fontWeight: FontWeight.w600),
+        titleSmall: const TextStyle(color: Colors.white, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+        bodyMedium: const TextStyle(color: Colors.white, fontSize: 15, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+        bodySmall: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: "Poppins", fontWeight: FontWeight.w400),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          minimumSize: const Size(double.infinity, 50),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)
+          ),
+          textStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontFamily: "Poppins",
+            fontWeight: FontWeight.w600
+          )
+        )
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.transparent
+      ),
+
+      timePickerTheme: TimePickerThemeData(
+        dialHandColor: color,
+        dialBackgroundColor: const Color(0xff141414),
+        hourMinuteColor: const Color((0xff141414)),
+        hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return color;
+          }
+          return Colors.white;
+        }),
+        dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return color;
+          }
+          return Colors.white;
+        }),
+        dayPeriodTextStyle: TextStyle(
+          fontSize: 20, // Adjust font size
+          color: color, // Set selected AM/PM text color
+          fontWeight: FontWeight.w600, // You can also adjust other styles
+        ),
+      )
+    );
+  }
+}
+
+/*ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: "Poppins",
   colorScheme: const ColorScheme.light(
@@ -70,9 +222,9 @@ ThemeData lightTheme = ThemeData(
       fontWeight: FontWeight.w600, // You can also adjust other styles
     ),
   )
-);
+);*/
 
-ThemeData darkTheme = ThemeData(
+ThemeData darkThemeConst = ThemeData(
   brightness: Brightness.dark,
   fontFamily: "Poppins",
   colorScheme: const ColorScheme.dark(
@@ -139,6 +291,4 @@ ThemeData darkTheme = ThemeData(
       fontWeight: FontWeight.w600, // You can also adjust other styles
     ),
   )
-  
-  
 );

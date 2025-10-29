@@ -26,7 +26,15 @@ class EntryCard extends StatelessWidget {
       margin: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 10, vertical: 10),
       
       decoration: BoxDecoration(
-        color: hasImage ? Colors.transparent : themeData.colorScheme.secondary,
+        //color: hasImage ? Colors.transparent : themeData.colorScheme.secondary,
+        gradient: hasImage ? null : LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            themeData.colorScheme.surface,
+            themeData.colorScheme.secondary,
+          ],
+        ),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

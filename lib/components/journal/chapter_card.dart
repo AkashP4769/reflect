@@ -69,7 +69,7 @@ class ChapterCard extends StatelessWidget {
                 children: [
                   Opacity(
                     opacity: min(max(0, tween*3 - 0), 1),
-                    child: Text(chapter.title, style: themeData.textTheme.titleMedium?.copyWith(color: const Color(0xffFF9432,), fontWeight: FontWeight.w700, fontSize: 18), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, maxLines: 2,)),
+                    child: Text(chapter.title, style: themeData.textTheme.titleMedium?.copyWith(color: themeData.colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 18), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, maxLines: 2,)),
                   const SizedBox(height: 10),
                   Opacity(
                     opacity: min(max(0, tween*3 - 1), 1),

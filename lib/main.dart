@@ -23,11 +23,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager());
+final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeData>((ref) => ThemeManager(darkThemeConst));
 
 void main() async {
-  
-
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
@@ -77,32 +75,36 @@ void main() async {
   runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends ConsumerWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(themeManagerProvider.notifier).initializeTheme();
-    final themeData = ref.watch(themeManagerProvider);
+  ConsumerState<MainApp> createState() => _MainAppState();
+}
 
-    //return a normal page
-    // return MaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //   home: Scaffold(
-    //     body: Center(
-    //       child: Text(
-    //         'Welcome to Reflect',
-    //         style: TextStyle(fontSize: 24, color: Theme.of(context).primaryColor),
-    //       ),
-    //     ),
-    //   ) // Replace with your initial page
-    // );
+class _MainAppState extends ConsumerState<MainApp> {
+  late List<ThemeData> themes = [darkThemeConst, darkThemeConst];
+
+  @override
+  void initState() {
+    super.initState();
+    _initTheme();
+  }
+
+  Future<void> _initTheme() async {
+    themes = await ref.read(themeManagerProvider.notifier).initializeTheme();
+    if (mounted) setState(() {}); // Update once when theme data is ready
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeData = ref.watch(themeManagerProvider);
 
     return MaterialApp(
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: themes[0],
+      darkTheme: themes[1],
       themeMode: themeData.brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

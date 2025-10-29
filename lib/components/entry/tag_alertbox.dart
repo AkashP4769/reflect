@@ -79,6 +79,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+          backgroundColor: widget.themeData.colorScheme.surface,
           contentPadding: const EdgeInsets.only(left:20, right: 10, top: 20, bottom: 20),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,6 +93,7 @@ class _TagSelectionBoxState extends State<TagSelectionBox> {
           ),
           content: IntrinsicHeight(
             child: Container(
+              //color: Colors.green,
               width: MediaQuery.of(context).size.width, 
               child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
