@@ -237,7 +237,7 @@ class ChapterHeader extends StatelessWidget {
       child: Container(
         //color: Colors.green,
         width: double.infinity,
-        padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 60,),
+        padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 20 : 60,),
         child: columnCount == 2 ? GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columnCount,

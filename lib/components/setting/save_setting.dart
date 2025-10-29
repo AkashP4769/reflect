@@ -301,61 +301,69 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
     }
   }
 
-  void importAll() async {
+  void importAll(ThemeData themeData) async {
     showDialog(
       context: context, 
       builder: (BuildContext context){
-        return AlertDialog(
-          title: Row(
-            children: [
-              Text("Import All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
-              const SizedBox(width: 10,),
-              Icon(Icons.download_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+        return Theme(
+          data: themeData,
+          child: AlertDialog(
+            backgroundColor: themeData.colorScheme.surface,
+            title: Row(
+              children: [
+                Text("Import All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
+                const SizedBox(width: 10,),
+                Icon(Icons.download_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+              ],
+            ),
+            content: const Text("This will replace your local entries with cloud. Are you sure you want to proceed?"),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+              TextButton(onPressed: () async {
+                final status = await ChapterService().importAll();
+                if(status) {
+                  if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Imported successfully")));
+                } else {
+                  if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Import failed")));
+                }
+                Navigator.pop(context);
+              }, child: const Text("Proceed")),
             ],
           ),
-          content: const Text("This will replace your local entries with cloud. Are you sure you want to proceed?"),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-            TextButton(onPressed: () async {
-              final status = await ChapterService().importAll();
-              if(status) {
-                if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Imported successfully")));
-              } else {
-                if(mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Import failed")));
-              }
-              Navigator.pop(context);
-            }, child: const Text("Proceed")),
-          ],
         );
       }
     );
   }
 
-  void exportAll() async {
+  void exportAll(ThemeData themeData) async {
     showDialog(
       context: context, 
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              Text("Export All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
-              const SizedBox(width: 10,),
-              Icon(Icons.upload_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+        return Theme(
+          data: themeData,
+          child: AlertDialog(
+            backgroundColor: themeData.colorScheme.surface,
+            title: Row(
+              children: [
+                Text("Export All", style: widget.themeData.textTheme.titleMedium!.copyWith(color: widget.themeData.colorScheme.primary),),
+                const SizedBox(width: 10,),
+                Icon(Icons.upload_rounded, color: widget.themeData.colorScheme.primary, size: 20),
+              ],
+            ),
+            content: const Text("This will replace your local entries to the cloud. Are you sure you want to proceed?"),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+              TextButton(onPressed: () async {
+                final status = await ChapterService().exportAll();
+                if(status) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Exported successfully")));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Export failed")));
+                }
+                Navigator.pop(context);
+              }, child: const Text("Proceed")),
             ],
           ),
-          content: const Text("This will replace your local entries to the cloud. Are you sure you want to proceed?"),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-            TextButton(onPressed: () async {
-              final status = await ChapterService().exportAll();
-              if(status) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Exported successfully")));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Export failed")));
-              }
-              Navigator.pop(context);
-            }, child: const Text("Proceed")),
-          ],
         );
       }
     );
@@ -418,9 +426,9 @@ class _EncryptionSettingState extends State<EncryptionSetting> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: ElevatedButton(onPressed: importAll, child: Text("Import All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
+                  Expanded(child: ElevatedButton(onPressed: (){importAll(widget.themeData);}, child: Text("Import All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
                   const SizedBox(width: 20),
-                  Expanded(child: ElevatedButton(onPressed: exportAll, child: Text("Export All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
+                  Expanded(child: ElevatedButton(onPressed: (){exportAll(widget.themeData);}, child: Text("Export All", style: TextStyle(color: widget.themeData.colorScheme.onPrimary),))),
                 ],
               )
             ],

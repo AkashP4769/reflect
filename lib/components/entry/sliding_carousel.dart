@@ -45,7 +45,7 @@ class SlidingCarousel extends StatelessWidget {
           if(index == entryTags.length){
             return Padding(
               padding: EdgeInsets.only(right: 5,),
-              child: GestureDetector(child: TagCard(tag: Tag(name: index != 0 ? "+" : "Add Tag +", color: themeData.colorScheme.primary.value), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);},),
+              child: GestureDetector(child: TagCard(tag: Tag(name: index != 0 ? "+" : "Add Tag +", color: themeData.colorScheme.primary.toARGB32()), themeData: themeData, selected: false, deleteBit: false), onTap: (){showTagDialog(themeData);},),
             );
           }
           return Center(

@@ -412,7 +412,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
             child: Container(
               width: double.infinity,
               height: MediaQuery.of(context).size.height,
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 0),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
@@ -476,7 +476,10 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                     const SizedBox(height: 20),
                     if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
                     //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
-                    if(!isEditing) Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
+                    if(!isEditing) Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
+                    ),
                     
                     if(!isEditing && isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
         

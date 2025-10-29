@@ -11,8 +11,16 @@ class GridViewOrColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (columnCount == 1) {
-      return Column(
-        children: children,
+      return ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        clipBehavior: Clip.hardEdge,
+        padding: const EdgeInsets.symmetric(horizontal: 20,),
+        physics: const ScrollPhysics(),
+        itemCount: children.length,
+        itemBuilder: (context, index) {
+          return children[index];
+        },
       );
     } else {
       return GridView.builder(

@@ -67,7 +67,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal:columnCount == 1 ? 0 : 30),
+              padding: EdgeInsets.symmetric(horizontal:columnCount == 1 ? 20 : 30),
               child: GestureDetector(
                 onTap: (){
                   widget.visibleMap[index] = !widget.visibleMap[index];

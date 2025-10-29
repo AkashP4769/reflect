@@ -690,9 +690,9 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                  colors: [themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
+                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
+                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
+                  colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
                 )
               ),
               
