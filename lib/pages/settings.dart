@@ -89,8 +89,10 @@ class _HomePageState extends ConsumerState<SettingsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            const SizedBox(height: 10,),
             Text('Settings', style: themeData.textTheme.titleLarge),
-    
+            const SizedBox(height: 20,),
+            
             columnCount == 1 ? Wrap(
               spacing: 20,
               runSpacing: 20,
@@ -116,7 +118,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 )
               ]
             ),
-            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 2.0.2:34" , style: themeData.textTheme.titleSmall))
+            Padding(padding: EdgeInsets.all(20), child: Text("Current Version: 2.1.0:35" , style: themeData.textTheme.titleSmall))
           ],
         ),
       ),

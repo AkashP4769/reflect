@@ -52,9 +52,9 @@ class ThemeBuilder{
       ),
 
       timePickerTheme: TimePickerThemeData(
-        hourMinuteColor: HSVColor.fromColor(color).withSaturation(0.3).toColor(), //const Color(0xffFFE3C3),
+        hourMinuteColor: HSVColor.fromColor(color).withSaturation(0.1).withValue(1).toColor(), //const Color(0xffFFE3C3),
         dialHandColor: color,
-        dialBackgroundColor: HSVColor.fromColor(color).withSaturation(0.3).toColor(),
+        dialBackgroundColor: HSVColor.fromColor(color).withSaturation(0.1).withValue(1).toColor(),
 
         hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -126,7 +126,20 @@ class ThemeBuilder{
         backgroundColor: Colors.transparent
       ),
 
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: const Color(0xff161616),
+        headerBackgroundColor: const Color(0xff141414),
+        headerForegroundColor: Colors.white,
+        dayForegroundColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return Colors.white;
+        }),
+      ),
+
       timePickerTheme: TimePickerThemeData(
+        backgroundColor: const Color(0xff161616),
         dialHandColor: color,
         dialBackgroundColor: const Color(0xff141414),
         hourMinuteColor: const Color((0xff141414)),
@@ -147,6 +160,12 @@ class ThemeBuilder{
           color: color, // Set selected AM/PM text color
           fontWeight: FontWeight.w600, // You can also adjust other styles
         ),
+        timeSelectorSeparatorColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return color;
+          }
+          return Colors.white;
+        }),
       )
     );
   }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -59,6 +60,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late TextEditingController titleController;
   //late SlidingUpPanelController panelController;
   List<ScrollController> scrollControllers = [];
+  Timer? _scrollDebounce;
   //late DateTime date;
   late bool isFavourite;
 
@@ -117,7 +119,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       DateTime date = DateTime.now().toLocal();
       quillControllers.add(quill.QuillController.basic());
       subsectionDates.add(date);
-      scrollControllers = [ScrollController()];
+      scrollControllers = [addScrollListener(ScrollController(), 0)];
       focusNodes = [addFocusListener(FocusNode(), 0)];
     }
     else {
@@ -127,7 +129,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           selection: const TextSelection.collapsed(offset: 0),
         ));
         subsectionDates.add(subsection.date.toLocal());
-        scrollControllers.add(ScrollController());
+        scrollControllers.add(addScrollListener(ScrollController(), scrollControllers.length));
         focusNodes.add(addFocusListener(FocusNode(), focusNodes.length));
       }
     }
@@ -287,6 +289,10 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       initialDate: subsectionDates[index],
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      builder: (context, child) => Theme(
+        data: ref.read(themeManagerProvider),
+        child: child!,
+      ),
     ).then((selectedDate){
       if (selectedDate != null) {
         showTimePicker(
@@ -346,6 +352,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text('Unsaved Changes'),
           content: Text('You have unsaved changes. Do you really want to leave?'),
           actions: <Widget>[
@@ -444,7 +451,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   FocusNode addFocusListener(FocusNode node, int index){
-    print("Adding focus listener to node $index");
     node.addListener(() {
       if(node.hasFocus){
         setState(() {
@@ -455,13 +461,31 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     return node;
   }
 
+  ScrollController addScrollListener(ScrollController node, int index) {
+    node.addListener(() {
+      if (!node.hasClients) return;
+      _scrollDebounce?.cancel();
+      _scrollDebounce = Timer(const Duration(milliseconds: 100), () {
+        node.animateTo(
+          node.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      });
+    });
+    return node;
+  }
+
   void addSubsection(){
     subsectionDates.add(DateTime.now().toLocal());
-    scrollControllers.add(ScrollController());
+    scrollControllers.add(addScrollListener(ScrollController(), scrollControllers.length));
     focusNodes.add(addFocusListener(FocusNode(), focusNodes.length));
     quillControllers.add(quill.QuillController.basic());
     quillControllers.last.document.changes.listen((_) => _scrollToBottom());
     if(mounted) setState(() {});
+
+    //create a notification to inform user
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('New subsection added')));
   }
 
   void removeSubsection(int index){
@@ -481,6 +505,8 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   }
 
   void reorderSubsection(int oldIndex, int newIndex){
+    bool subsectionDeleted = true;
+
     if(quillControllers.length < 2) return;
     print("oldIndex: $oldIndex, newIndex: $newIndex");
     print("quillControllers length: ${quillControllers.length}");
@@ -500,12 +526,20 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       for(int i=0; i<focusNodes.length; i++){
         focusNodes[i].removeListener((){});
         focusNodes[i] = addFocusListener(focusNodes[i], i);
+
+        scrollControllers[i].removeListener((){});
+        scrollControllers[i] = addScrollListener(scrollControllers[i], i);
       }
+
+      subsectionDeleted = false;
     }
 
     isDateEdited = true;
 
     if(mounted) setState(() {});
+
+    //create a notification to inform user
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(subsectionDeleted ? 'Subsection deleted' : 'Subsection reordered')));
   }
 
   void toggleDragging(){
@@ -603,7 +637,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             if(columnCount != 1) TextField(
               controller: titleController,
               focusNode: titleFocusNode,
-              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primary, decoration: TextDecoration.none, decorationThickness: 0,),
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primaryFixed, decoration: TextDecoration.none, decorationThickness: 0,),
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: "Title...",
@@ -621,7 +655,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             if(columnCount == 1) TextField(
               controller: titleController,
               focusNode: titleFocusNode,
-              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primary, decoration: TextDecoration.none, decorationThickness: 0,),
+              style: themeData.textTheme.titleLarge?.copyWith(fontSize: columnCount == 1 ? 20 : 32, color: themeData.colorScheme.primaryFixed, decoration: TextDecoration.none, decorationThickness: 0,),
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: "Title...",
@@ -640,7 +674,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
       ),
     ];
 
-    print("Is Android and multiple Quill controllers: ${TargetPlatform.android == defaultTargetPlatform && quillControllers.length > 1}");
+    //print("Is Android and multiple Quill controllers: ${TargetPlatform.android == defaultTargetPlatform && quillControllers.length > 1}");
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -850,7 +884,21 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           ),
         ),
         bottomSheet: (!isHiddenForSS) ? Container(
-          color: themeData.colorScheme.tertiary,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: columnCount == 2 ? const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ) : null,
+            color: themeData.colorScheme.tertiary,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8.0,
+                offset: Offset(0, -4),
+              ),
+            ],
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
             mainAxisSize: columnCount == 1 ? MainAxisSize.max : MainAxisSize.min,
@@ -903,7 +951,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 
                   style: ElevatedButton.styleFrom(
                     disabledBackgroundColor: Colors.grey,
-                    backgroundColor: const Color(0xffFF9432),
+                    backgroundColor: themeData.colorScheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     )

@@ -175,8 +175,9 @@ class _HomePageState extends ConsumerState<AchievementPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const SizedBox(height: 10,),
               Text("Achievements", style: themeData.textTheme.titleLarge,),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 10,),
               /*GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
