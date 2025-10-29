@@ -9,6 +9,7 @@ import 'package:reflect/components/setting/save_setting.dart';
 import 'package:reflect/components/setting/keys_component.dart';
 import 'package:reflect/components/setting/server_setting.dart';
 import 'package:reflect/components/setting/setting_container.dart';
+import 'package:reflect/components/setting/theme_setting.dart';
 import 'package:reflect/main.dart';
 import 'package:reflect/models/device.dart';
 import 'package:reflect/models/user_setting.dart';
@@ -59,18 +60,23 @@ class _HomePageState extends ConsumerState<SettingsPage> {
             Text("Name: ${userSetting.name}", style: themeData.textTheme.bodyMedium),
             Text("Email: ${userSetting.email}", style: themeData.textTheme.bodyMedium),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                AuthService.signOut();
-              },
-              child: Text('Logout', style: themeData.textTheme.bodyMedium,),
+            Theme(
+              data: themeData,
+              child: ElevatedButton(
+                onPressed: () {
+                  AuthService.signOut();
+                },
+                child: Text('Logout', style: themeData.textTheme.bodyMedium,),
+              ),
             ),
           ],
         ), 
       ),
+
+      
       //SizedBox(width: 20, height: 20,),
       EncryptionSetting(themeData: themeData, encryptionMode: userSetting.encryptionMode, refreshPage: getUserSetting),
-      
+      ThemeSetting(themeData: themeData,),
       if(userSetting.encryptionMode != 'local') ServerSetting(ref: ref,),
       
       if(userSetting.encryptionMode != 'local') DeviceSetting(ref: ref, devices: [userSetting.primaryDevice, ...userSetting.devices], refreshPage: getUserSetting, encryptionMode: userSetting.encryptionMode),
@@ -84,7 +90,7 @@ class _HomePageState extends ConsumerState<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Settings', style: themeData.textTheme.titleLarge),
-
+    
             columnCount == 1 ? Wrap(
               spacing: 20,
               runSpacing: 20,
@@ -98,14 +104,14 @@ class _HomePageState extends ConsumerState<SettingsPage> {
                 Expanded(
                   child: Column(
                     spacing: 20,
-                    children: [settingWidgets[0], settingWidgets[2], if (settingWidgets.length > 3) settingWidgets[3]],
+                    children: [settingWidgets[0], settingWidgets[3], if (settingWidgets.length > 4) settingWidgets[4]],
                   ),
                 ),
                 const SizedBox(width: 20,),
                 Expanded(
                   child: Column(
                     spacing: 20,
-                    children: [settingWidgets[1],],
+                    children: [settingWidgets[2], settingWidgets[1],],
                   ),
                 )
               ]

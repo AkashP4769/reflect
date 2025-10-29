@@ -14,7 +14,7 @@ class ThemeManager extends StateNotifier<ThemeData> {
   Future<List<ThemeData>> initializeTheme() async {
     final settingsBox = Hive.box('settings');
     final themeValue = settingsBox.get('theme', defaultValue: 'system');
-    final colorValue = Color.fromARGB(255, 255, 112, 129); //Color(settingsBox.get('themeColor', defaultValue: 0xffFFB2AF));
+    final colorValue = Color(settingsBox.get('themeColor', defaultValue: 0xffFFAC5F));
 
     lightTheme = ThemeBuilder.buildLightTheme('light', colorValue);
     darkTheme = ThemeBuilder.buildDarkTheme('dark', colorValue);
@@ -30,6 +30,13 @@ class ThemeManager extends StateNotifier<ThemeData> {
   void toggleTheme(bool isDark) {
     state = isDark ? darkTheme : lightTheme;
     Hive.box('settings').put('theme', isDark ? 'dark' : 'light');
+  }
+
+  void setThemeColor(Color color) {
+    lightTheme = ThemeBuilder.buildLightTheme('light', color);
+    darkTheme = ThemeBuilder.buildDarkTheme('dark', color);
+    state = state.brightness == Brightness.dark ? darkTheme : lightTheme;
+    Hive.box('settings').put('themeColor', color.toARGB32());
   }
 
   

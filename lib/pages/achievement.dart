@@ -167,100 +167,103 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
     List<Achievement> finalAchievements = [...completedAchievements, ...lockedAchievements];
 
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 0, vertical: 0),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text("Achievements", style: themeData.textTheme.titleLarge,),
-            const SizedBox(height: 20,),
-            /*GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: achievements.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16),
-              itemBuilder: (BuildContext context, int index){
-                return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
-              }
-            )*/
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
-            ),
-            GridView.builder(
-              shrinkWrap: true,
-              clipBehavior: Clip.none,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: achievementsColumnCount, 
-                crossAxisSpacing: 10, 
-                mainAxisSpacing: 1, 
-                childAspectRatio: 6, 
-                mainAxisExtent: 120
+    return Theme(
+      data: themeData,
+      child: Container(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 0, vertical: 0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text("Achievements", style: themeData.textTheme.titleLarge,),
+              const SizedBox(height: 20,),
+              /*GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: achievements.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16),
+                itemBuilder: (BuildContext context, int index){
+                  return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
+                }
+              )*/
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
               ),
-              itemCount: showMoreAchievement ? finalAchievements.length : min(achievementsColumnCount * 3, finalAchievements.length),
-              itemBuilder: (BuildContext context, int index){
-                return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
-              }
-            ),
-
-            const SizedBox(height: 10,),
-            InkWell(
-              onTap: (){
-                setState(() {
-                  showMoreAchievement = !showMoreAchievement;
-                });
-              },
-              
-              child: Text(showMoreAchievement ? "Show Less" : "Show More", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.primary, fontSize: 16), textAlign: TextAlign.center,),
-            ),
-            const SizedBox(height: 20,),
-
-            Align(child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
-            ), alignment: Alignment.centerLeft,),
-            const SizedBox(height: 10,),
-            
-            //display stats in grid of 2 columns
-            GridView.builder(
-              shrinkWrap: true,
-              clipBehavior: Clip.none,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: statistics.length,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: statColumnCount, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0, mainAxisExtent: 120),
-              itemBuilder: (BuildContext context, int index){
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                  color: themeData.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5)
-                    )
-                  ]
+              GridView.builder(
+                shrinkWrap: true,
+                clipBehavior: Clip.none,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: achievementsColumnCount, 
+                  crossAxisSpacing: 10, 
+                  mainAxisSpacing: 1, 
+                  childAspectRatio: 6, 
+                  mainAxisExtent: 120
                 ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
-                      const SizedBox(height: 10,),
-                      Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
-                    ],
+                itemCount: showMoreAchievement ? finalAchievements.length : min(achievementsColumnCount * 3, finalAchievements.length),
+                itemBuilder: (BuildContext context, int index){
+                  return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
+                }
+              ),
+      
+              const SizedBox(height: 10,),
+              InkWell(
+                onTap: (){
+                  setState(() {
+                    showMoreAchievement = !showMoreAchievement;
+                  });
+                },
+                
+                child: Text(showMoreAchievement ? "Show Less" : "Show More", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.primary, fontSize: 16), textAlign: TextAlign.center,),
+              ),
+              const SizedBox(height: 20,),
+      
+              Align(child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
+              ), alignment: Alignment.centerLeft,),
+              const SizedBox(height: 10,),
+              
+              //display stats in grid of 2 columns
+              GridView.builder(
+                shrinkWrap: true,
+                clipBehavior: Clip.none,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: statistics.length,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: statColumnCount, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0, mainAxisExtent: 120),
+                itemBuilder: (BuildContext context, int index){
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                    color: themeData.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5)
+                      )
+                    ]
                   ),
-                );
-              }
-            ),
-            const SizedBox(height: 20,),
-          ],
-        )
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
+                        const SizedBox(height: 10,),
+                        Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
+                      ],
+                    ),
+                  );
+                }
+              ),
+              const SizedBox(height: 20,),
+            ],
+          )
+        ),
       ),
     );
   }}

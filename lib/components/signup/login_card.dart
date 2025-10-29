@@ -143,7 +143,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                         minimumSize: Size.zero,
                         padding: const EdgeInsets.symmetric(vertical: 0)
                       ),
-                      child: const Text("Sign up", style: TextStyle(color: Colors.orangeAccent, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
+                      child: Text("Sign up", style: TextStyle(color: themeData.colorScheme.primary, fontSize: 14, fontFamily: "Poppins", fontWeight: FontWeight.w600),)
                     )
                   ],
                 ),

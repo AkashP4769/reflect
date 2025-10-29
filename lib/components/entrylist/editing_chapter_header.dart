@@ -8,36 +8,39 @@ class EditingChapterHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: ElevatedButton(
-              onPressed: toggleEdit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: themeData.colorScheme.surface,
-                elevation: 10
+    return Theme(
+      data: themeData,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                onPressed: toggleEdit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeData.colorScheme.surface,
+                  elevation: 10
+                ),
+                child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
               ),
-              child: Icon(Icons.close, color: themeData.colorScheme.onPrimary,)
             ),
-          ),
-          const SizedBox(width: 20,),
-          Expanded(
-            flex: 4,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 10,
+            const SizedBox(width: 20,),
+            Expanded(
+              flex: 4,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 10,
+                ),
+                onPressed: (){
+                  toggleEdit();
+                  updateChapter();
+                },
+                child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
               ),
-              onPressed: (){
-                toggleEdit();
-                updateChapter();
-              },
-              child: Text("Save", style: themeData.textTheme.titleMedium?.copyWith(color: Colors.white),)
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

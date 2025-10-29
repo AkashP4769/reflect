@@ -401,118 +401,121 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
         popScreenWithUpdate();
         return false; // Prevent the default pop behavior
       },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: RefreshIndicator(
-          onRefresh: () async {
-            fetchEntries(true);
-          },
-          child: Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
-                end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
-                colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-              )
-            ),
-            child: isEditing ? Center(
-              child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
-            ) :
-            SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              /*slivers: [
-                SliverToBoxAdapter(child: const SizedBox(height: 40,),),
-                
-                if(!isEditing) SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  leading: SizedBox(),
-                  toolbarHeight: 10,
-                  //pinned: true,
-                  flexibleSpace: EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
-                ),
-
-                SliverToBoxAdapter(child: const SizedBox(height: 20,),),
-
-                if(!isTyping) SliverToBoxAdapter(
-                  child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto)
-                ),
-
-                if(!isEditing) SliverToBoxAdapter(child: Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30)),
+      child: Theme(
+        data: themeData,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: RefreshIndicator(
+            onRefresh: () async {
+              fetchEntries(true);
+            },
+            child: Container(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
+                  end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
+                  colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+                )
+              ),
+              child: isEditing ? Center(
+                child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
+              ) :
+              SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                /*slivers: [
+                  SliverToBoxAdapter(child: const SizedBox(height: 40,),),
                   
-                if(!isEditing && isSortSettingVisible) SliverToBoxAdapter(child: EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,)),
-
-                if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
-                SliverToBoxAdapter(child: GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,))
-                
-                else if(!isEditing && validEntries.isNotEmpty && !isGroupedEntries)
-                SliverToBoxAdapter(child: UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated))
-
-                else if(!isEditing && validEntries.isEmpty) SliverToBoxAdapter(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40,),
-                      Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
-                      
-                    ],
+                  if(!isEditing) SliverAppBar(
+                    backgroundColor: Colors.transparent,
+                    leading: SizedBox(),
+                    toolbarHeight: 10,
+                    //pinned: true,
+                    flexibleSpace: EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
                   ),
-                ),
-                SliverToBoxAdapter(child: const SizedBox(height: 70,))
-              ],*/
-              child: Column(
-                //mainAxisSize: isEditing ? MainAxisSize.max : MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: isEditing ? MainAxisAlignment.center : MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 40,),
-                  if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
-              
-                  const SizedBox(height: 20),
-                  if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
-                  //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
-                  if(!isEditing) Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
-                  
-                  if(!isEditing && isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
-
+        
+                  SliverToBoxAdapter(child: const SizedBox(height: 20,),),
+        
+                  if(!isTyping) SliverToBoxAdapter(
+                    child: ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto)
+                  ),
+        
+                  if(!isEditing) SliverToBoxAdapter(child: Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30)),
+                    
+                  if(!isEditing && isSortSettingVisible) SliverToBoxAdapter(child: EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,)),
+        
                   if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
-                  GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,)
+                  SliverToBoxAdapter(child: GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,))
                   
                   else if(!isEditing && validEntries.isNotEmpty && !isGroupedEntries)
-                  UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
-
-                  else if(!isEditing && validEntries.isEmpty) Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40,),
-                      Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
-                      
-                    ],
+                  SliverToBoxAdapter(child: UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated))
+        
+                  else if(!isEditing && validEntries.isEmpty) SliverToBoxAdapter(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40,),
+                        Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
+                        
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 70,)
-                ],
+                  SliverToBoxAdapter(child: const SizedBox(height: 70,))
+                ],*/
+                child: Column(
+                  //mainAxisSize: isEditing ? MainAxisSize.max : MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: isEditing ? MainAxisAlignment.center : MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 40,),
+                    if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
+                
+                    const SizedBox(height: 20),
+                    if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),
+                    //if(isEditing) EditingChapterHeader(toggleEdit: toggleEdit, updateChapter: updateChapter, themeData: themeData),
+                    if(!isEditing) Divider(color: themeData.colorScheme.onPrimary, thickness: 1, height: 30),
+                    
+                    if(!isEditing && isSortSettingVisible) EntrySortSetting(sortMethod: sortMethod, isAscending: isAscending, isGroupedEntries: isGroupedEntries, onSort: onSort, toggleGroupEntries: toggleGroupedEntries, themeData: themeData, tags: tags, selectedTags: selectedTags, toggleTagSelection: toggleTagSelection,),
+        
+                    if(!isEditing && validEntries.isNotEmpty && isGroupedEntries)
+                    GroupedEntryBuilder(entries: validEntries, visibleMap: visibleMap, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated, sortMethod: sortMethod, isAscending: isAscending,)
+                    
+                    else if(!isEditing && validEntries.isNotEmpty && !isGroupedEntries)
+                    UngroupedEntryBuilder(entries: validEntries, themeData: themeData, fetchEntries: fetchEntries, updateHaveEdit: updateHaveUpdated)
+        
+                    else if(!isEditing && validEntries.isEmpty) Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40,),
+                        Center(child: Text('No entries found', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w500, fontSize: 18),)),
+                        
+                      ],
+                    ),
+                    const SizedBox(height: 70,)
+                  ],
+                ),
               ),
             ),
           ),
+          bottomSheet: (!isEditing) ? Container(
+            color: Colors.transparent,
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",subsections: [], chapterId: chapter.id),)));
+                if(result == 'entry_added'){
+                  haveUpdated = true;
+                  fetchEntries(true); 
+                }
+              }, 
+              child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
+            ),
+          ) : null
         ),
-        bottomSheet: (!isEditing) ? Container(
-          color: Colors.transparent,
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage(entry: Entry(title: "",subsections: [], chapterId: chapter.id),)));
-              if(result == 'entry_added'){
-                haveUpdated = true;
-                fetchEntries(true); 
-              }
-            }, 
-            child: Text('Add Entry', style: themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600),),
-          ),
-        ) : null
       ),
     );
   }

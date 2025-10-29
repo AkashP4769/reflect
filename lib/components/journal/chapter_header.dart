@@ -232,31 +232,34 @@ class ChapterHeader extends StatelessWidget {
 
     
     print(width);
-    return Container(
-      //color: Colors.green,
-      width: double.infinity,
-      padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 60,),
-      child: columnCount == 2 ? GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columnCount,
-          childAspectRatio: 1.0,
-          mainAxisExtent: columnCount == 1 ? 200 : 360,
-          crossAxisSpacing: 40,
+    return Theme(
+      data: themeData,
+      child: Container(
+        //color: Colors.green,
+        width: double.infinity,
+        padding: EdgeInsetsDirectional.symmetric(horizontal: columnCount == 1 ? 0 : 60,),
+        child: columnCount == 2 ? GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columnCount,
+            childAspectRatio: 1.0,
+            mainAxisExtent: columnCount == 1 ? 200 : 360,
+            crossAxisSpacing: 40,
+          ),
+          
+          shrinkWrap: true,
+          clipBehavior: Clip.hardEdge,
+          itemCount: widgets.length,
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index) {
+            return widgets[index];
+          },
+        ) : 
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          spacing: 20,
+          children: widgets,
         ),
-        
-        shrinkWrap: true,
-        clipBehavior: Clip.hardEdge,
-        itemCount: widgets.length,
-        physics: const NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          return widgets[index];
-        },
-      ) : 
-      Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        spacing: 20,
-        children: widgets,
       ),
     );
   }

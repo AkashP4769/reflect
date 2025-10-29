@@ -443,12 +443,12 @@ class _NewChapterState extends ConsumerState<NewChapter> {
                                   controller: titleController,
                                   textAlign: TextAlign.center,
                                   textAlignVertical: TextAlignVertical.center,
-                                  style: const TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 24, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
-                                  decoration: const InputDecoration(
+                                  style: TextStyle(color: themeData.colorScheme.primary, fontFamily: "Poppins", fontSize: 24, fontWeight: FontWeight.w600, decoration: TextDecoration.none, decorationThickness: 0, height: 1.1),   
+                                  decoration: InputDecoration(
                                     isDense: true,
                                     contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                                     labelStyle: TextStyle(color: Colors.white),
-                                    label: Center(child: Text("Title", style: TextStyle(color: Color(0xffFF9432), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
+                                    label: Center(child: Text("Title", style: TextStyle(color: themeData.colorScheme.primary.withValues(alpha: 0.5), fontFamily: "Poppins", fontSize: 20, fontWeight: FontWeight.w600))),
                                     floatingLabelBehavior: FloatingLabelBehavior.never,
                                     enabledBorder: InputBorder.none,
                                     focusedBorder: InputBorder.none,

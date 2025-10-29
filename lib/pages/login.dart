@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                               onTap: toggleVisible,
                               child: Reflect(value: value,)
                             ),
-
+    
                             GestureDetector(
                               onVerticalDragEnd: (details){
                                 print(details.primaryVelocity);
