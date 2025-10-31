@@ -578,11 +578,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ImagePage(imageUrl: imageUrl[0], heroTag: "image-${imageUrl[0]}",)));
-                },
-                child: Hero(tag: "image-${imageUrl[0]}", child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),))),
+              if(imageType == 'url' && imageUrl.isNotEmpty) GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ImagePage(imageUrl: imageUrl[0], heroTag: "image-${imageUrl[0]}",))),
+                onLongPress: () => setState(() => isImageEditing = !isImageEditing), 
+                child: Hero(tag: "image-${imageUrl[0]}", child: CachedNetworkImage(imageUrl: imageUrl[0], width: double.infinity, height: 200, fit: BoxFit.cover, errorWidget: (context, url, error) => ErrorNetworkImage(error: error.toString()),)
+                ),
               ),
               if(imageType =='file' && image != null) GestureDetector(onTap: () => setState(() => isImageEditing = !isImageEditing), child: Image.file(image!, fit: BoxFit.cover, height: 200,)),
             
