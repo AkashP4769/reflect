@@ -679,204 +679,190 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        body: Theme(
-          data: themeData,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Container(
-              //height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
-                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
-                  colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
-                )
+        body: Screenshot(
+          controller: screenshotController,
+          child: Theme(
+            data: themeData,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
               ),
-              
-              child: SingleChildScrollView(
-                //controller: scrollController, 
-                clipBehavior: Clip.none,
-                scrollDirection: Axis.vertical,
-                physics: const ScrollPhysics(),
-                child: Screenshot(
-                  controller: screenshotController,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: (isHiddenForSS) ? BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.bottomCenter,
-                        end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.topCenter,
-                        colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
-                      )
-                    ) : null,
-                    
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                    
-                      children: [
-                        if(!isHiddenForSS) const SizedBox(height: 40),     
-                        if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS, addSubsection: addSubsection,),
-          
-                        if(columnCount > 1 || imageExists) const SizedBox(height: 20),
-                        (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: columnCount,
-                            childAspectRatio: 1.0,
-                            mainAxisExtent: columnCount == 1 ? 200 : 240,
-                            crossAxisSpacing: 40,
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          shrinkWrap: true,
-                          clipBehavior: Clip.hardEdge,
-                          itemCount: gridWidgets.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: gridWidgets[index],
-                            );
-                          },
-                        ) : ListView.builder(
-                          padding: EdgeInsets.symmetric(vertical: 0),
-                          shrinkWrap: true,
-                          itemCount: gridWidgets.length,
-                          itemBuilder: (context, index) => Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: gridWidgets[index],
-                            ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                        ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
+                    end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
+                    colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
+                  )
+                ),
+                child: SingleChildScrollView(
+                  clipBehavior: Clip.none,
+                  scrollDirection: Axis.vertical,
+                  physics: const ScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                  
+                    children: [
+                      if(!isHiddenForSS) const SizedBox(height: 40),     
+                      if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS, addSubsection: addSubsection,),
                             
-                        
-                         
-                        ReorderableListView.builder(
-                          onReorder: reorderSubsection,
-                          proxyDecorator: (Widget child, int index, Animation<double> animation) {
-                            return Material(
-                              elevation: 6.0,
-                              color: Colors.transparent,
-                              shadowColor: Colors.black54,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: themeData.colorScheme.surface,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      blurRadius: 8.0,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: child,
-                              ),
-                            );
-                          },
-                          buildDefaultDragHandles: false,
-                          padding: EdgeInsets.symmetric(vertical: 0),
-                          itemCount: quillControllers.length + 1,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                        
-                          onReorderStart: (int index) {setState(() {isDragging = true;});},
-                          onReorderEnd: (int index) {setState(() {isDragging = false;});},
-                        
-                          itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
-                            enabled: quillControllers.length < 2 ? false : true,
-                            index: index,
-                            key: ValueKey("subsection_$index"),
-                            child: (index < quillControllers.length) ? Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              color: Colors.transparent,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if(index != 0) SizedBox(height: 10,),
-                                  if(index != 0) Container(
-                                    padding: EdgeInsets.only(bottom: 10),
-                                    child: GestureDetector(
-                                        onTap: () => showDatePickerr(index),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 10, bottom: 0),
-                                          child: Text(DateFormat(subsectionDates[index-1].day == subsectionDates[index].day ? "hh:mm a" : "dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18, color: themeData.colorScheme.onPrimary.withValues(alpha: 0.5)),),
-                                        ),
-                                      ),
-                                  ),
-            
-                                  quill.QuillEditor(
-                                    focusNode: focusNodes[index],
-                                    controller: quillControllers[index],
-                                    scrollController: scrollControllers[index],
-                                    config: quill.QuillEditorConfig(
-                                      scrollable: true,
-                                      placeholder: "Start writing here...",
-                                      keyboardAppearance: themeData.brightness,
-                                      onPerformAction: (TextInputAction action) {
-                                        //print(action.toString());
-                                      },
-                                      
-                                      customStyles: quill.DefaultStyles(
-                                        paragraph: quill.DefaultTextBlockStyle(
-                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
-                                          const quill.HorizontalSpacing(0, 0),
-                                          const quill.VerticalSpacing(0, 0),
-                                          quill.VerticalSpacing.zero,
-                                          null
-                                        ),
-                                        placeHolder: quill.DefaultTextBlockStyle(
-                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                          const quill.HorizontalSpacing(0, 0),
-                                          const quill.VerticalSpacing(0, 0),
-                                          quill.VerticalSpacing.zero,
-                                          null
-                                        ),
-                                      )
-                                    ),
-                                  ),
-                                  SizedBox(height: 10,),
-                                ],
-                              ),
-                               
-                            ) : 
-                            (isDragging && quillControllers.length > 1) ? Container(
-                              height: 60,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.redAccent.withValues(alpha: 0.3),
-                                    Colors.redAccent.withValues(alpha: 0.1),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.redAccent, width: 1),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.delete, size: 20, color: Colors.redAccent,),
-                                  SizedBox(width: 5,),
-                                  Text("Drag below to delete subsection", textAlign: TextAlign.center, style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.redAccent.withValues(alpha: 0.5))),
-                                ],
-                              ),
-                            ) : SizedBox(
-                              height: 0,
-                              width: 0,
-                            ),
+                      if(columnCount > 1 || imageExists) const SizedBox(height: 20),
+                      (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columnCount,
+                          childAspectRatio: 1.0,
+                          mainAxisExtent: columnCount == 1 ? 200 : 240,
+                          crossAxisSpacing: 40,
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        shrinkWrap: true,
+                        clipBehavior: Clip.hardEdge,
+                        itemCount: gridWidgets.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: gridWidgets[index],
+                          );
+                        },
+                      ) : ListView.builder(
+                        padding: EdgeInsets.symmetric(vertical: 0),
+                        shrinkWrap: true,
+                        itemCount: gridWidgets.length,
+                        itemBuilder: (context, index) => Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: gridWidgets[index],
                           ),
-                        ),     
-                        
-                        Container(height: 80,),
-                      ],
-                    ),
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                      ),
+                          
+                      
+                       
+                      ReorderableListView.builder(
+                        onReorder: reorderSubsection,
+                        proxyDecorator: (Widget child, int index, Animation<double> animation) {
+                          return Material(
+                            elevation: 6.0,
+                            color: Colors.transparent,
+                            shadowColor: Colors.black54,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: themeData.colorScheme.surface,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 8.0,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          );
+                        },
+                        buildDefaultDragHandles: false,
+                        padding: EdgeInsets.symmetric(vertical: 0),
+                        itemCount: quillControllers.length + 1,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                      
+                        onReorderStart: (int index) {setState(() {isDragging = true;});},
+                        onReorderEnd: (int index) {setState(() {isDragging = false;});},
+                      
+                        itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
+                          enabled: quillControllers.length < 2 ? false : true,
+                          index: index,
+                          key: ValueKey("subsection_$index"),
+                          child: (index < quillControllers.length) ? Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            color: Colors.transparent,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if(index != 0) SizedBox(height: 10,),
+                                if(index != 0) Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: GestureDetector(
+                                      onTap: () => showDatePickerr(index),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 10, bottom: 0),
+                                        child: Text(DateFormat(subsectionDates[index-1].day == subsectionDates[index].day ? "hh:mm a" : "dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18, color: themeData.colorScheme.onPrimary.withValues(alpha: 0.5)),),
+                                      ),
+                                    ),
+                                ),
+                              
+                                quill.QuillEditor(
+                                  focusNode: focusNodes[index],
+                                  controller: quillControllers[index],
+                                  scrollController: scrollControllers[index],
+                                  config: quill.QuillEditorConfig(
+                                    scrollable: true,
+                                    placeholder: "Start writing here...",
+                                    keyboardAppearance: themeData.brightness,
+                                    onPerformAction: (TextInputAction action) {
+                                      //print(action.toString());
+                                    },
+                                    
+                                    customStyles: quill.DefaultStyles(
+                                      paragraph: quill.DefaultTextBlockStyle(
+                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
+                                        const quill.HorizontalSpacing(0, 0),
+                                        const quill.VerticalSpacing(0, 0),
+                                        quill.VerticalSpacing.zero,
+                                        null
+                                      ),
+                                      placeHolder: quill.DefaultTextBlockStyle(
+                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                        const quill.HorizontalSpacing(0, 0),
+                                        const quill.VerticalSpacing(0, 0),
+                                        quill.VerticalSpacing.zero,
+                                        null
+                                      ),
+                                    )
+                                  ),
+                                ),
+                                SizedBox(height: 10,),
+                              ],
+                            ),
+                             
+                          ) : 
+                          (isDragging && quillControllers.length > 1) ? Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.redAccent.withValues(alpha: 0.3),
+                                  Colors.redAccent.withValues(alpha: 0.1),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.redAccent, width: 1),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.delete, size: 20, color: Colors.redAccent,),
+                                SizedBox(width: 5,),
+                                Text("Drag below to delete subsection", textAlign: TextAlign.center, style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.redAccent.withValues(alpha: 0.5))),
+                              ],
+                            ),
+                          ) : SizedBox(
+                            height: 0,
+                            width: 0,
+                          ),
+                        ),
+                      ),     
+                      
+                      Container(height: 80,),
+                    ],
                   ),
                 ),
               ),

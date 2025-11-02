@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:reflect/components/achievement/ach_card.dart';
+import 'package:reflect/components/entrylist/grid_or_column.dart';
 import 'package:reflect/main.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:reflect/models/achievement.dart';
@@ -10,6 +11,8 @@ import 'package:reflect/models/user_setting.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/user_service.dart';
+import 'package:collection/collection.dart';
+
 
 class AchievementPage extends ConsumerStatefulWidget {
   const AchievementPage({super.key});
@@ -59,6 +62,12 @@ class _HomePageState extends ConsumerState<AchievementPage> {
   List<bool> achievementStatus = List.generate(13, (index) => false);
 
   bool showMoreAchievement = false;
+  bool frequencyCalculating = false;
+  int nGramValue = 3;
+  int kFrequency = 10;
+
+  Map<String, int> topKWords = {};
+  List<int> usageHours = List.filled(24, 0);
 
 
   @override
@@ -68,11 +77,61 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     calculateAcheivements();
   }
 
-  void calculateAcheivements() async {
+  /// Calculate word frequencies for m-word combinations (n-grams)
+  void calculateWordFrequencies(
+    quill.Document delta,
+    Map<String, int> frequencyMap,
+    int m,
+    int k,
+  ) {
+    final words = delta
+        .toPlainText()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s]'), '')
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+
+    if (words.length < m) return;
+
+    for (int i = 0; i <= words.length - m; i++) {
+      final combo = words.sublist(i, i + m).join(' ');
+      frequencyMap[combo] = (frequencyMap[combo] ?? 0) + 1;
+    }
+
+    topKWords = calculateTopKWords(frequencyMap, k);
+    setState(() {});
+  }
+
+  /// Returns the top K most frequent m-word combinations
+  Map<String, int> calculateTopKWords(
+      Map<String, int> frequencyMap, int k) {
+    final pq = PriorityQueue<MapEntry<String, int>>(
+      (a, b) => a.value.compareTo(b.value),
+    );
+
+    for (var entry in frequencyMap.entries) {
+      pq.add(entry);
+      if (pq.length > k) pq.removeFirst();
+    }
+
+    final topK = <String, int>{};
+    while (pq.isNotEmpty) {
+      final e = pq.removeFirst();
+      topK[e.key] = e.value;
+    }
+
+    // Reverse so highest frequencies come first
+    return Map.fromEntries(topK.entries.toList().reversed);
+  }
+
+
+  void calculateAcheivements({bool frequencyCalculating = false}) async {
     final cacheService = CacheService();
     final userSetting = UserService().getUserSettingFromCache();
     final chapterDetails = await cacheService.exportFromCache(userSetting.uid);
     final allTags = TagService().getAllTags();
+    final Map<String, int> wordFrequencyMap = {};
 
     bool firstEntry = false;
     bool firstChapter = false;
@@ -111,12 +170,33 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
           totalImages += List.from(entry['imageUrl'] ?? []).length;
 
-          if(entry['content'] != null){
-            int textLength;
-            if(entry['content'] == null || (entry['content'] as List).isEmpty) textLength = 0;
-            else {
+          if(entry['content'] != null && (entry['content'] as List).isNotEmpty || (entry['subsections'] != null && (entry['subsections'] as List).isNotEmpty)){
+            int textLength = 0;
+
+            if(entry['content'] != null && (entry['content'] as List).isNotEmpty){
               final delta = quill.Document.fromJson(entry['content']);
-              textLength = delta.toPlainText().split(" ").length;
+              textLength += delta.toPlainText().split(" ").length;
+
+              //calculate word frequency
+              if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency);
+
+              DateTime entryDate = DateTime.parse(entry['date']).toLocal();
+              usageHours[entryDate.hour] += 1;
+            }
+
+            else if(entry['subsections'] != null && (entry['subsections'] as List).isNotEmpty){
+              for(var subsection in List<Map<dynamic, dynamic>>.from(entry['subsections'] ?? [])){
+                if(subsection['content'] != null && subsection['content'] != ''){
+                  final delta = quill.Document.fromJson(subsection['content']);
+                  textLength += delta.toPlainText().split(" ").length;
+
+                  //calculate word frequency
+                  if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency);
+
+                  DateTime entryDate = DateTime.parse(entry['date']).toLocal();
+                  usageHours[entryDate.hour] += 1;
+                }
+              }
             }
 
             shortestLength = shortestLength == 0 ? textLength : min(shortestLength, textLength);
@@ -148,6 +228,15 @@ class _HomePageState extends ConsumerState<AchievementPage> {
 
     print("Achievement Status: $achievementStatus");
     print("Total Entries: $totalEntries, Total Chapters: $totalChapters, Total Tags: $totalTags, Total Favs: $totalFavs, Total Images: $totalImages, Shortest: $shortestLength, Longest: $longestLength, Total Words: $totalWords");
+
+    
+    if(frequencyCalculating) topKWords = calculateTopKWords(wordFrequencyMap, kFrequency);
+    print("Word Frequencies: $topKWords");
+
+    print("Usage Hours:");
+    for(int i = 0; i < usageHours.length; i++){
+      print("Hour $i: ${usageHours[i]} entries");
+    }
     setState(() {});
   }
 
@@ -221,10 +310,10 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               ),
               const SizedBox(height: 20,),
       
-              Align(child: Padding(
+              Align(alignment: Alignment.centerLeft,child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text("Statistics", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
-              ), alignment: Alignment.centerLeft,),
+              ),),
               const SizedBox(height: 10,),
               
               //display stats in grid of 2 columns
@@ -262,6 +351,121 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 }
               ),
               const SizedBox(height: 20,),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text("Word Frequencies", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
+                    const SizedBox(width: 10,),
+                    Checkbox(
+                      value: frequencyCalculating, 
+                      onChanged: (value){
+                        setState(() {
+                          frequencyCalculating = value ?? true;
+                        });
+                        calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                      }
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20,),
+
+              if(frequencyCalculating) Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("N-gram Value: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                      const SizedBox(width: 10,),
+                      DropdownButton<int>(
+                        value: nGramValue,
+                        items: [1, 2, 3, 4, 5].map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            nGramValue = newValue ?? 1;
+                          });
+                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                        },
+                      ),
+                    ],
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Top K Words: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                      const SizedBox(width: 10,),
+                      DropdownButton<int>(
+                        value: kFrequency,
+                        items: [5, 10, 15, 20, 25, 30].map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            kFrequency = newValue ?? 10;
+                          });
+                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20,),
+
+              if(frequencyCalculating) GridView.builder(
+                shrinkWrap: true,
+                clipBehavior: Clip.none,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: achievementsColumnCount, 
+                  crossAxisSpacing: 10, 
+                  mainAxisSpacing: 10, 
+                  childAspectRatio: 6, 
+                  mainAxisExtent: 60
+                ),
+                itemCount: topKWords.length,
+                itemBuilder: (BuildContext context, int index){
+                  return Container(
+
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    //margin: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                    color: themeData.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5)
+                      )
+                    ]
+                  ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(topKWords.keys.elementAt(index), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
+                        const SizedBox(height: 10,),
+                        Align(child: Text(topKWords.values.elementAt(index).toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
+                      ],
+                    ),
+                  );
+                }
+              ),
             ],
           )
         ),
