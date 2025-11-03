@@ -380,6 +380,7 @@ class _NewChapterState extends ConsumerState<NewChapter> {
     final width = MediaQuery.of(context).size.width;
     final bool isSmall = width < 720;
 
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: SingleChildScrollView(

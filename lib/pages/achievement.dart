@@ -65,9 +65,11 @@ class _HomePageState extends ConsumerState<AchievementPage> {
   bool frequencyCalculating = false;
   int nGramValue = 3;
   int kFrequency = 10;
+  int minWordLength = 1;
 
   Map<String, int> topKWords = {};
   List<int> usageHours = List.filled(24, 0);
+  int highestUsageHour = 0;
 
 
   @override
@@ -83,6 +85,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     Map<String, int> frequencyMap,
     int m,
     int k,
+    int minWordLength
   ) {
     final words = delta
         .toPlainText()
@@ -99,19 +102,20 @@ class _HomePageState extends ConsumerState<AchievementPage> {
       frequencyMap[combo] = (frequencyMap[combo] ?? 0) + 1;
     }
 
-    topKWords = calculateTopKWords(frequencyMap, k);
+    topKWords = calculateTopKWords(frequencyMap, k, minWordLength);
     setState(() {});
   }
 
   /// Returns the top K most frequent m-word combinations
-  Map<String, int> calculateTopKWords(
-      Map<String, int> frequencyMap, int k) {
+  Map<String, int> calculateTopKWords(Map<String, int> frequencyMap, int k, int minWordLength) {
     final pq = PriorityQueue<MapEntry<String, int>>(
       (a, b) => a.value.compareTo(b.value),
     );
 
     for (var entry in frequencyMap.entries) {
-      pq.add(entry);
+      if (entry.key.length >= minWordLength) {
+        pq.add(entry);
+      }
       if (pq.length > k) pq.removeFirst();
     }
 
@@ -178,7 +182,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               textLength += delta.toPlainText().split(" ").length;
 
               //calculate word frequency
-              if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency);
+              if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency, minWordLength);
 
               DateTime entryDate = DateTime.parse(entry['date']).toLocal();
               usageHours[entryDate.hour] += 1;
@@ -191,7 +195,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                   textLength += delta.toPlainText().split(" ").length;
 
                   //calculate word frequency
-                  if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency);
+                  if(frequencyCalculating) calculateWordFrequencies(delta, wordFrequencyMap, nGramValue, kFrequency, minWordLength);
 
                   DateTime entryDate = DateTime.parse(entry['date']).toLocal();
                   usageHours[entryDate.hour] += 1;
@@ -230,13 +234,15 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     print("Total Entries: $totalEntries, Total Chapters: $totalChapters, Total Tags: $totalTags, Total Favs: $totalFavs, Total Images: $totalImages, Shortest: $shortestLength, Longest: $longestLength, Total Words: $totalWords");
 
     
-    if(frequencyCalculating) topKWords = calculateTopKWords(wordFrequencyMap, kFrequency);
+    if(frequencyCalculating) topKWords = calculateTopKWords(wordFrequencyMap, kFrequency, minWordLength);
     print("Word Frequencies: $topKWords");
 
     print("Usage Hours:");
     for(int i = 0; i < usageHours.length; i++){
       print("Hour $i: ${usageHours[i]} entries");
     }
+    highestUsageHour = usageHours.reduce(max);
+    print("Highest Usage Hour: $highestUsageHour");
     setState(() {});
   }
 
@@ -351,6 +357,102 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 }
               ),
               const SizedBox(height: 20,),
+              Align(alignment: Alignment.centerLeft,child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text("Usage Time", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
+              ),),
+
+              SizedBox(
+                height: 300,
+                width: double.infinity,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth - 40; // padding
+                    final barCount = usageHours.length;
+                    final spacing = 8.0;
+                    final totalSpacing = spacing * (barCount - 1);
+                    final barWidth = (availableWidth - totalSpacing) / barCount;
+
+                    // Dynamically decide how many hour labels to show
+                    final screenWidth = constraints.maxWidth;
+                    int labelStep;
+
+                    if (screenWidth < 400) {
+                      labelStep = 6; // show 4–5 labels
+                    } else if (screenWidth < 600) {
+                      labelStep = 3; // show 8 labels
+                    } else if (screenWidth < 900) {
+                      labelStep = 2; // show 12 labels
+                    } else {
+                      labelStep = 1; // show all 24 labels
+                    }
+
+                    final hourLabels = List.generate(25, (i) => i)
+                        .where((i) => i % labelStep == 0)
+                        .toList();
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      child: Column(
+                        children: [
+                          // Histogram bars
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(barCount, (index) {
+                              final heightRatio = (highestUsageHour == 0)
+                                  ? 0
+                                  : (usageHours[index] / highestUsageHour).clamp(0.0, 1.0);
+
+                              return Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  Container(
+                                    width: barWidth,
+                                    height: 250,
+                                    decoration: BoxDecoration(
+                                      color: themeData.colorScheme.secondary.withOpacity(0.7),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: barWidth,
+                                    height: 250 * heightRatio.toDouble(),
+                                    decoration: BoxDecoration(
+                                      color: themeData.colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Dynamic hour labels
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: hourLabels.map((hour) {
+                              return Text(
+                                "$hour",
+                                style: themeData.textTheme.bodyMedium!.copyWith(
+                                  color: themeData.colorScheme.onPrimary,
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.center,
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+
+              const SizedBox(height: 0,),
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -391,6 +493,9 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                         onChanged: (newValue) {
                           setState(() {
                             nGramValue = newValue ?? 1;
+                            if (nGramValue == 1) {
+                              minWordLength = 1;
+                            }
                           });
                           calculateAcheivements(frequencyCalculating: frequencyCalculating);
                         },
@@ -414,6 +519,29 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                         onChanged: (newValue) {
                           setState(() {
                             kFrequency = newValue ?? 10;
+                          });
+                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                        },
+                      ),
+                    ],
+                  ),
+
+                  if(nGramValue == 1) Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Min Word Length: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                      const SizedBox(width: 10,),
+                      DropdownButton<int>(
+                        value: minWordLength,
+                        items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            minWordLength = newValue ?? 1;
                           });
                           calculateAcheivements(frequencyCalculating: frequencyCalculating);
                         },
@@ -466,6 +594,8 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                   );
                 }
               ),
+
+              const SizedBox(height: 20,),
             ],
           )
         ),

@@ -91,24 +91,11 @@ class _EntryPageState extends ConsumerState<EntryPage> {
 
     getUserSetting();
 
-    // print("widget.entry.title: ${widget.entry.title}");
-    // print("widget.entry.content: ${widget.entry.content}");
-    // print("widget.entry.subsections: ${widget.entry.subsections}");
-
     if(widget.entry.tags != null){
       for(var tag in widget.entry.tags!) {
         entryTags.add(Tag(name: tag['name'], color: tag['color']));
       }
     }
-
-    // if(widget.entry.id == null) date = widget.entry.date;
-    // else {
-    //   int timezone = widget.entry.date.toLocal().timeZoneOffset.inMinutes;
-    //   bool isPositive = timezone >= 0 ? true : false;
-
-    //   if(isPositive) date = widget.entry.date.toLocal().subtract(Duration(minutes: timezone));
-    //   else date = widget.entry.date.toLocal().add(Duration(minutes: -1 * timezone));
-    // }
 
     isFavourite = widget.entry.favourite ?? false;
     imageUrl = widget.entry!.imageUrl ?? [];
@@ -147,19 +134,6 @@ class _EntryPageState extends ConsumerState<EntryPage> {
         if(mounted) setState(() {});
       }
     });
-
-    // quillControllers.last.addListener((){
-    //   String quillContent = quillControllers.last.document.toPlainText();
-    //   String entryContent = widget.entry.getContentAsQuill().toPlainText();
-    //   if(!isContentEdited && quillContent != entryContent) {
-    //     isContentEdited = true;
-    //     setState(() {});
-    //   }
-    //   else if(isContentEdited && quillContent == entryContent) {
-    //     isContentEdited = false;
-    //     setState(() {});
-    //   }
-    // });
 
     for(int i=0; i<quillControllers.length; i++){
       quillControllers[i].addListener((){
@@ -567,7 +541,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     double fontsize = columnCount == 1 ? 16 : 20;
     bool imageExists = (imageUrl != null && imageUrl!.isNotEmpty) || (imageType =='file' && image != null);
 
-    print("columnCount: $columnCount");
+    //print("columnCount: $columnCount");
 
     final List<Widget> gridWidgets = [
       if(imageExists) Container(
@@ -688,7 +662,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                 minHeight: MediaQuery.of(context).size.height,
               ),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
+                padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 20 : 40),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
@@ -859,7 +833,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
                             width: 0,
                           ),
                         ),
-                      ),     
+                      ),   
                       
                       Container(height: 80,),
                     ],
@@ -869,7 +843,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
             ),
           ),
         ),
-        bottomSheet: (!isHiddenForSS) ? Container(
+        /*bottomSheet: (!isHiddenForSS) ? Container(
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: columnCount == 2 ? const BorderRadius.only(
@@ -947,7 +921,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               ),
             ],
           ),
-        ) : null,
+        ) : null, */
       ),
     );
   }

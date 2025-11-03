@@ -28,10 +28,16 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   final EntrylistService entrylistService = EntrylistService();
   final Map<String, int> monthValue = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12};
 
+  late Map<String, List<Entry>> _groupedEntries;
+  late Map<String, List<Entry>> groupedEntries;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+    groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
+    print("groupedEntryInitstate");
   }
 
   Future<void> handleOnTapEntryCard(Entry entry) async {
@@ -46,9 +52,9 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   @override
   Widget build(BuildContext context) {
     final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 415).floor()));
-    Map<String, List<Entry>> _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
-    print(_groupedEntries.keys.toString());
-    final groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
+
+    
+
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
