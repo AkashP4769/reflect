@@ -52,7 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final themeData = ref.watch(themeManagerProvider);
     return Container(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsetsDirectional.only(top: 20, start: 20, end: 20, bottom: 0),
       decoration: BoxDecoration(
         /*gradient: LinearGradient(
           begin: Alignment.topCenter,

@@ -137,6 +137,9 @@ class _HomePageState extends ConsumerState<AchievementPage> {
     final allTags = TagService().getAllTags();
     final Map<String, int> wordFrequencyMap = {};
 
+    usageHours = List.filled(24, 0);
+    highestUsageHour = 0;
+
     bool firstEntry = false;
     bool firstChapter = false;
     bool tenChapter = false;
@@ -273,36 +276,12 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               const SizedBox(height: 10,),
               Text("Achievements", style: themeData.textTheme.titleLarge,),
               const SizedBox(height: 10,),
-              /*GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: achievements.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 16),
-                itemBuilder: (BuildContext context, int index){
-                  return AchievementCard(achievement: achievements[index], achieved: true, themeData: themeData);
-                }
-              )*/
+   
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Align(child: Text("Your achievements", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
               ),
-              GridView.builder(
-                shrinkWrap: true,
-                clipBehavior: Clip.none,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: achievementsColumnCount, 
-                  crossAxisSpacing: 10, 
-                  mainAxisSpacing: 1, 
-                  childAspectRatio: 6, 
-                  mainAxisExtent: 120
-                ),
-                itemCount: showMoreAchievement ? finalAchievements.length : min(achievementsColumnCount * 3, finalAchievements.length),
-                itemBuilder: (BuildContext context, int index){
-                  return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
-                }
-              ),
+              _achievementBuilder(achievementsColumnCount, finalAchievements, completedAchievements, themeData),
       
               const SizedBox(height: 10,),
               InkWell(
@@ -323,133 +302,14 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               const SizedBox(height: 10,),
               
               //display stats in grid of 2 columns
-              GridView.builder(
-                shrinkWrap: true,
-                clipBehavior: Clip.none,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: statistics.length,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: statColumnCount, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0, mainAxisExtent: 120),
-                itemBuilder: (BuildContext context, int index){
-                  return Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                    color: themeData.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5)
-                      )
-                    ]
-                  ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
-                        const SizedBox(height: 10,),
-                        Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
-                      ],
-                    ),
-                  );
-                }
-              ),
+              _statisticsBuilder(statColumnCount, themeData),
               const SizedBox(height: 20,),
               Align(alignment: Alignment.centerLeft,child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text("Usage Time", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.left,),
               ),),
 
-              SizedBox(
-                height: 300,
-                width: double.infinity,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final availableWidth = constraints.maxWidth - 40; // padding
-                    final barCount = usageHours.length;
-                    final spacing = 8.0;
-                    final totalSpacing = spacing * (barCount - 1);
-                    final barWidth = (availableWidth - totalSpacing) / barCount;
-
-                    // Dynamically decide how many hour labels to show
-                    final screenWidth = constraints.maxWidth;
-                    int labelStep;
-
-                    if (screenWidth < 400) {
-                      labelStep = 6; // show 4–5 labels
-                    } else if (screenWidth < 600) {
-                      labelStep = 3; // show 8 labels
-                    } else if (screenWidth < 900) {
-                      labelStep = 2; // show 12 labels
-                    } else {
-                      labelStep = 1; // show all 24 labels
-                    }
-
-                    final hourLabels = List.generate(25, (i) => i)
-                        .where((i) => i % labelStep == 0)
-                        .toList();
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Column(
-                        children: [
-                          // Histogram bars
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(barCount, (index) {
-                              final heightRatio = (highestUsageHour == 0)
-                                  ? 0
-                                  : (usageHours[index] / highestUsageHour).clamp(0.0, 1.0);
-
-                              return Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  Container(
-                                    width: barWidth,
-                                    height: 250,
-                                    decoration: BoxDecoration(
-                                      color: themeData.colorScheme.secondary.withOpacity(0.7),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: barWidth,
-                                    height: 250 * heightRatio.toDouble(),
-                                    decoration: BoxDecoration(
-                                      color: themeData.colorScheme.primary,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          // Dynamic hour labels
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: hourLabels.map((hour) {
-                              return Text(
-                                "$hour",
-                                style: themeData.textTheme.bodyMedium!.copyWith(
-                                  color: themeData.colorScheme.onPrimary,
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.center,
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+              _usageTimeBuilder(themeData),
 
 
               const SizedBox(height: 0,),
@@ -474,126 +334,11 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               ),
               const SizedBox(height: 20,),
 
-              if(frequencyCalculating) Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("N-gram Value: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                      const SizedBox(width: 10,),
-                      DropdownButton<int>(
-                        value: nGramValue,
-                        items: [1, 2, 3, 4, 5].map((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            nGramValue = newValue ?? 1;
-                            if (nGramValue == 1) {
-                              minWordLength = 1;
-                            }
-                          });
-                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
-                        },
-                      ),
-                    ],
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Top K Words: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                      const SizedBox(width: 10,),
-                      DropdownButton<int>(
-                        value: kFrequency,
-                        items: [5, 10, 15, 20, 25, 30].map((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            kFrequency = newValue ?? 10;
-                          });
-                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
-                        },
-                      ),
-                    ],
-                  ),
-
-                  if(nGramValue == 1) Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Min Word Length: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                      const SizedBox(width: 10,),
-                      DropdownButton<int>(
-                        value: minWordLength,
-                        items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            minWordLength = newValue ?? 1;
-                          });
-                          calculateAcheivements(frequencyCalculating: frequencyCalculating);
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              if(frequencyCalculating) _wordFreqConfigBuilder(themeData),
 
               const SizedBox(height: 20,),
 
-              if(frequencyCalculating) GridView.builder(
-                shrinkWrap: true,
-                clipBehavior: Clip.none,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: achievementsColumnCount, 
-                  crossAxisSpacing: 10, 
-                  mainAxisSpacing: 10, 
-                  childAspectRatio: 6, 
-                  mainAxisExtent: 60
-                ),
-                itemCount: topKWords.length,
-                itemBuilder: (BuildContext context, int index){
-                  return Container(
-
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    //margin: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                    color: themeData.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5)
-                      )
-                    ]
-                  ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(topKWords.keys.elementAt(index), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
-                        const SizedBox(height: 10,),
-                        Align(child: Text(topKWords.values.elementAt(index).toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
-                      ],
-                    ),
-                  );
-                }
-              ),
+              if(frequencyCalculating) _wordFreqBuilder(achievementsColumnCount, themeData),
 
               const SizedBox(height: 20,),
             ],
@@ -601,4 +346,350 @@ class _HomePageState extends ConsumerState<AchievementPage> {
         ),
       ),
     );
+  }
+
+  GridView _wordFreqBuilder(int achievementsColumnCount, ThemeData themeData) {
+    return GridView.builder(
+              shrinkWrap: true,
+              clipBehavior: Clip.none,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: achievementsColumnCount, 
+                crossAxisSpacing: 10, 
+                mainAxisSpacing: 10, 
+                childAspectRatio: 6, 
+                mainAxisExtent: 60
+              ),
+              itemCount: topKWords.length,
+              itemBuilder: (BuildContext context, int index){
+                return Container(
+
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  //margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                  color: themeData.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5)
+                    )
+                  ]
+                ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(topKWords.keys.elementAt(index), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
+                      const SizedBox(height: 10,),
+                      Align(child: Text(topKWords.values.elementAt(index).toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
+                    ],
+                  ),
+                );
+              }
+            );
+  }
+
+  Row _wordFreqConfigBuilder(ThemeData themeData) {
+    return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("N-gram Value: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                    const SizedBox(width: 10,),
+                    DropdownButton<int>(
+                      value: nGramValue,
+                      items: [1, 2, 3, 4, 5].map((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          nGramValue = newValue ?? 1;
+                          if (nGramValue == 1) {
+                            minWordLength = 1;
+                          }
+                        });
+                        calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                      },
+                    ),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Top K Words: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                    const SizedBox(width: 10,),
+                    DropdownButton<int>(
+                      value: kFrequency,
+                      items: [5, 10, 15, 20, 25, 30].map((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          kFrequency = newValue ?? 10;
+                        });
+                        calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                      },
+                    ),
+                  ],
+                ),
+
+                if(nGramValue == 1) Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Min Word Length: ", style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                    const SizedBox(width: 10,),
+                    DropdownButton<int>(
+                      value: minWordLength,
+                      items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(value.toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontSize: 16),),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          minWordLength = newValue ?? 1;
+                        });
+                        calculateAcheivements(frequencyCalculating: frequencyCalculating);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            );
+  }
+
+  SizedBox _usageTimeBuilder(ThemeData themeData) {
+    return SizedBox(
+              width: double.infinity,
+              height: 320,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final availableWidth = constraints.maxWidth - 40; // padding
+                  final barCount = usageHours.length;
+                  final spacing = 8.0;
+                  final totalSpacing = spacing * (barCount - 1);
+                  final barWidth = (availableWidth - totalSpacing) / barCount;
+
+                  // Dynamically decide how many hour labels to show
+                  final screenWidth = constraints.maxWidth;
+                  int labelStep;
+
+                  if(screenWidth < 200) {
+                    labelStep = 12; // show 2–3 labels
+                  } else if (screenWidth < 300) {
+                    labelStep = 9; 
+                  } else if (screenWidth < 400) {
+                    labelStep = 6; // show 4–5 labels
+                  } else if (screenWidth < 600) {
+                    labelStep = 3; // show 8 labels
+                  } else if (screenWidth < 900) {
+                    labelStep = 2; // show 12 labels
+                  } else {
+                    labelStep = 1; // show all 24 labels
+                  }
+
+                  final hourLabels = List.generate(25, (i) => i)
+                      .where((i) => i % labelStep == 0)
+                      .toList();
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Y-axis labels
+                                Text(
+                                  highestUsageHour.toString(),
+                                  style: themeData.textTheme.bodyMedium!.copyWith(
+                                    color: themeData.colorScheme.onPrimary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Text(
+                                  (highestUsageHour / 3 * 2).floor().toString(),
+                                  style: themeData.textTheme.bodyMedium!.copyWith(
+                                    color: themeData.colorScheme.onPrimary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Text(
+                                  (highestUsageHour / 3 * 1).floor().toString(),
+                                  style: themeData.textTheme.bodyMedium!.copyWith(
+                                    color: themeData.colorScheme.onPrimary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 50),
+                                  child: Text(
+                                    "0",
+                                    style: themeData.textTheme.bodyMedium!.copyWith(
+                                      color: themeData.colorScheme.onPrimary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),// Extra space for alignment
+                              ],
+                            ),
+
+                            Transform.translate(
+                              offset: const Offset(0, -25),
+                              child: RotatedBox(
+                                quarterTurns: 3,
+                                child: Text(
+                                  "Entries",
+                                  style: themeData.textTheme.bodyMedium!.copyWith(
+                                    color: themeData.colorScheme.onPrimary,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(width: 5),
+
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // Histogram bars
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: List.generate(barCount, (index) {
+                                  final heightRatio = (highestUsageHour == 0)
+                                      ? 0
+                                      : (usageHours[index] / highestUsageHour).clamp(0.0, 1.0);
+                          
+                                  return Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Container(
+                                        width: barWidth,
+                                        height: 250,
+                                        decoration: BoxDecoration(
+                                          color: themeData.colorScheme.secondary.withOpacity(0.7),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: barWidth,
+                                        height: 250 * heightRatio.toDouble(),
+                                        decoration: BoxDecoration(
+                                          color: themeData.colorScheme.primary,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                              ),
+                          
+                              const SizedBox(height: 10),
+                          
+                              // Dynamic hour labels
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: hourLabels.map((hour) {
+                                  return Text(
+                                    "$hour:00",
+                                    style: themeData.textTheme.bodyMedium!.copyWith(
+                                      color: themeData.colorScheme.onPrimary,
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  );
+                                }).toList(),
+                              ),
+                          
+                              Text(
+                                "Usage hour", 
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+  }
+
+  GridView _statisticsBuilder(int statColumnCount, ThemeData themeData) {
+    return GridView.builder(
+              shrinkWrap: true,
+              clipBehavior: Clip.none,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: statistics.length,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: statColumnCount, crossAxisSpacing: 10, mainAxisSpacing: 16, childAspectRatio: 2.0, mainAxisExtent: 120),
+              itemBuilder: (BuildContext context, int index){
+                return Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                  color: themeData.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5)
+                    )
+                  ]
+                ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(statistics[index], style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16, overflow: TextOverflow.clip), textAlign: TextAlign.center,),
+                      const SizedBox(height: 10,),
+                      Align(child: Text(statisticsValue[index].toString(), style: themeData.textTheme.bodyMedium!.copyWith(color: themeData.colorScheme.onPrimary.withOpacity(0.8), fontWeight: FontWeight.w600, fontSize: 18), textAlign: TextAlign.center,)),
+                    ],
+                  ),
+                );
+              }
+            );
+  }
+
+  GridView _achievementBuilder(int achievementsColumnCount, List<Achievement> finalAchievements, List<Achievement> completedAchievements, ThemeData themeData) {
+    return GridView.builder(
+              shrinkWrap: true,
+              clipBehavior: Clip.none,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: achievementsColumnCount, 
+                crossAxisSpacing: 10, 
+                mainAxisSpacing: 1, 
+                childAspectRatio: 6, 
+                mainAxisExtent: 120
+              ),
+              itemCount: showMoreAchievement ? finalAchievements.length : min(achievementsColumnCount * 3, finalAchievements.length),
+              itemBuilder: (BuildContext context, int index){
+                return AchievementCard(achievement: finalAchievements[index], achieved: index >= completedAchievements.length ? false : true, themeData: themeData);
+              }
+            );
   }}
