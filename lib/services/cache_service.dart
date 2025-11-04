@@ -19,7 +19,7 @@ class CacheService{
   List<Chapter>? loadChaptersFromCache(){
     List<Chapter> chapters = [];
     final cachedData = chapterBox.get(userId);
-    print("cachedData $cachedData");
+    //print("cachedData $cachedData");
 
     if(cachedData == null) return null;
     final cachedChapters = cachedData["chapters"] ?? [];
@@ -50,7 +50,7 @@ class CacheService{
   }
 
   Future<void> addChaptersToCache(List<Map<String,dynamic>>? data) async {
-    print("adding data to  cache");
+    print("adding chapter data to cache");
     final userSetting = UserService().getUserSettingFromCache();
     List<Map<String, dynamic>> chapters = [];
     

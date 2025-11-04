@@ -198,7 +198,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     if(status == true) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chapter updated successfully')));
       haveUpdated = true;
-      if(userSetting!.encryptionMode != 'local') fetchChaptersAndUpdate(true);
+      if(userSetting!.encryptionMode != 'local') await fetchChaptersAndUpdate(true);
     }
     else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error updating chapter')));
   }
@@ -210,16 +210,22 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     final List<Map<String, dynamic>>? data = await entryService.getEntries(chapter.id, explicit);
 
-    print('fetched entries: $data');
+    //print('fetched entries: $data');
+    for(var entry in data ?? []){
+      //print title
+      print('entry title: ${entry["title"]}');
+    }
 
     if(data == null){
       return;
     }
 
     else if(data.isNotEmpty) {
-      cacheService.addEntryToCache(data, chapter.id);
-      loadFromCache();
-      fetchChaptersAndUpdate(explicit);
+      print('adding entry to cache');
+      await cacheService.addEntryToCache(data, chapter.id);
+      print('loading entry from cache after fetch');
+      await loadFromCache();
+      await fetchChaptersAndUpdate(explicit);
     }
 
     else {
@@ -238,9 +244,12 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
     });
     if(newEntries != null){
       entries = newEntries;
-      //print('load from cache ${newEntries.toString()}');
-      setState(() {});
+      print('load from cache');
+      for(var entry in entries){
+        print('entry from cache: ${entry.title}');
+      }
     }
+    setState(() {});
   }
 
 
@@ -249,7 +258,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
 
     if(data == null) print('load from cache');
     else if(data.isNotEmpty) {
-      cacheService.addChaptersToCache(data);
+      await cacheService.addChaptersToCache(data);
 
       data.forEach((chapter) async {
         if(chapter["_id"] == widget.chapter!.id) {
@@ -471,7 +480,7 @@ class _EntryListPageState extends ConsumerState<EntryListPage> {
                   mainAxisAlignment: isEditing ? MainAxisAlignment.center : MainAxisAlignment.start,
                   children: [
                     const SizedBox(height: 40,),
-                    if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting),
+                    if(!isEditing) EntryListAppbar(themeData: themeData, searchController: searchController, deleteChapter: deleteChapter, toggleEdit: toggleEdit, popScreenWithUpdate: popScreenWithUpdate, toggleSortSetting: toggleSortSetting, refreshEntries: fetchEntries),
                 
                     const SizedBox(height: 20),
                     if(!isTyping) ChapterHeader(chapter: chapter, themeData: themeData, isEditing: isEditing, titleController: titleController, descriptionController: descriptionController, date: chapterDate, showDatePickerr: showDatePickerr, toggleEdit: toggleEdit, updateChapter: updateChapter, imageType: imageType, imageUrl: imageUrl, image: _image,  getRandomImage: getRandomImage, onEditImage: onEditImage, removeSelectedPhoto: removeSelectedPhoto),

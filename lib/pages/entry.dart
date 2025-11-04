@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -78,6 +81,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
   late List<String> imageUrl;
 
   late ScreenshotController screenshotController;
+  final GlobalKey repaintKey = GlobalKey();
   
 
   @override
@@ -228,6 +232,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('Delete Entry'),
         content: const Text('Are you sure you want to delet this entry?'),
         actions: [
@@ -401,28 +406,61 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     if(mounted) setState(() {});
   }
 
-  void screenshotAndShare() async {
-    setState(() {isHiddenForSS = true;});
-    await screenshotController.capture(
-      pixelRatio: 3.0,
-      delay: const Duration(milliseconds: 100)).then((Uint8List? image) async {
-      {
-        final directory = await getApplicationDocumentsDirectory();
-        final imagePath = await File('${directory.path}/${titleController.text.trim().split(' ').join('-')}.png').create();
-        if(image != null) {
-          await imagePath.writeAsBytes(image);
-          final result = await Share.shareXFiles([XFile(imagePath.path)]);
+  Future<void> screenshotAndShare() async {
+  setState(() {
+    isHiddenForSS = true;
+  });
 
-          /*if(result.status == ShareResultStatus.success) {
-            ScaffoldMessengerState().showSnackBar(const SnackBar(content: Text('Shared successfully')));
-          }
-          else {
-            ScaffoldMessengerState().showSnackBar(const SnackBar(content: Text('Sharing failed')));
-        }*/
-      }
-    }});
-    setState(() {isHiddenForSS = false;});
+  try {
+
+    // Capture screenshot
+    await Future.delayed(const Duration(milliseconds: 100));
+
+
+    // Create a RenderRepaintBoundary to render the whole widget
+    final RenderRepaintBoundary boundary = repaintKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final ui.Image uiImage = await boundary.toImage(pixelRatio: 3.0);
+
+    final ByteData? byteData = await uiImage.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List image = byteData!.buffer.asUint8List();
+
+    // Save the image to a file
+    final directory = await getApplicationDocumentsDirectory();
+    final safeFileName = titleController.text.trim().replaceAll(RegExp(r'\s+'), '-');
+    final imageFile = File(path.join(directory.path, 'Reflect' ,'$safeFileName.png'));
+    await imageFile.create(recursive: true);
+
+    await imageFile.writeAsBytes(image);
+    await imageFile.writeAsBytes(image);
+
+    print("Screenshot saved to: ${imageFile.path}");
+
+    // Share file (works on Android, Windows, iOS, etc.)
+    // final shareResult = await Share.shareXFiles(
+    //   [XFile(imageFile.path, mimeType: 'image/png')],
+    //   text: 'Check this out!',
+    // );
+
+    final params = ShareParams(
+      files: [XFile(imageFile.path, mimeType: 'image/png')],
+    );
+
+    final result = await SharePlus.instance.share(params);
+
+    if (result.status == ShareResultStatus.success) {
+      debugPrint('✅ Shared successfully!');
+    } else {
+      debugPrint('❌ Sharing failed or cancelled.');
+    }
+
+  } catch (e) {
+    debugPrint('Error during screenshot/share: $e');
+  } finally {
+    setState(() {
+      isHiddenForSS = false;
+    });
   }
+}
 
   FocusNode addFocusListener(FocusNode node, int index){
     node.addListener(() {
@@ -546,7 +584,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     final List<Widget> gridWidgets = [
       if(imageExists) Container(
         height: columnCount == 1 ? 200 : 300,
-        width: columnCount == 1 ? MediaQuery.of(context).size.width - 40 : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
+        width: columnCount == 1 ? MediaQuery.of(context).size.width : (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width / 20),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Stack(
@@ -623,6 +661,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               maxLines: null,
             ),
 
+            SizedBox(height: 5,),
             if(entryTags.isNotEmpty || (entryTags.isEmpty && !isHiddenForSS)) SlidingCarousel(tags: entryTags, themeData: themeData, showTagDialog: showTagSelection, shouldWrap: true && imageExists, columnCount: columnCount,),
             SizedBox(height: 5,),
 
@@ -653,197 +692,207 @@ class _EntryPageState extends ConsumerState<EntryPage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        body: Screenshot(
-          controller: screenshotController,
-          child: Theme(
-            data: themeData,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
+        body: Theme(
+          data: themeData,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 0 : 40),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
+                  end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
+                  colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
+                )
               ),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: columnCount == 1 ? 20 : 40),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
-                    end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
-                    colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
-                  )
-                ),
-                child: SingleChildScrollView(
-                  clipBehavior: Clip.none,
-                  scrollDirection: Axis.vertical,
-                  physics: const ScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                  
-                    children: [
-                      if(!isHiddenForSS) const SizedBox(height: 40),     
-                      if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS, addSubsection: addSubsection,),
-                            
-                      if(columnCount > 1 || imageExists) const SizedBox(height: 20),
-                      (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: columnCount,
-                          childAspectRatio: 1.0,
-                          mainAxisExtent: columnCount == 1 ? 200 : 240,
-                          crossAxisSpacing: 40,
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        shrinkWrap: true,
-                        clipBehavior: Clip.hardEdge,
-                        itemCount: gridWidgets.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: gridWidgets[index],
-                          );
-                        },
-                      ) : ListView.builder(
-                        padding: EdgeInsets.symmetric(vertical: 0),
-                        shrinkWrap: true,
-                        itemCount: gridWidgets.length,
-                        itemBuilder: (context, index) => Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: gridWidgets[index],
-                          ),
-                        physics: const NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                      ),
-                          
-                      
-                       
-                      ReorderableListView.builder(
-                        onReorder: reorderSubsection,
-                        proxyDecorator: (Widget child, int index, Animation<double> animation) {
-                          return Material(
-                            elevation: 6.0,
-                            color: Colors.transparent,
-                            shadowColor: Colors.black54,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: themeData.colorScheme.surface,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 8.0,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: child,
-                            ),
-                          );
-                        },
-                        buildDefaultDragHandles: false,
-                        padding: EdgeInsets.symmetric(vertical: 0),
-                        itemCount: quillControllers.length + 1,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                      
-                        onReorderStart: (int index) {setState(() {isDragging = true;});},
-                        onReorderEnd: (int index) {setState(() {isDragging = false;});},
-                      
-                        itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
-                          enabled: quillControllers.length < 2 ? false : true,
-                          index: index,
-                          key: ValueKey("subsection_$index"),
-                          child: (index < quillControllers.length) ? Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            color: Colors.transparent,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if(index != 0) SizedBox(height: 10,),
-                                if(index != 0) Container(
-                                  padding: EdgeInsets.only(bottom: 10),
-                                  child: GestureDetector(
-                                      onTap: () => showDatePickerr(index),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 10, bottom: 0),
-                                        child: Text(DateFormat(subsectionDates[index-1].day == subsectionDates[index].day ? "hh:mm a" : "dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18, color: themeData.colorScheme.onPrimary.withValues(alpha: 0.5)),),
-                                      ),
-                                    ),
-                                ),
+              child: SingleChildScrollView(
+                clipBehavior: Clip.none,
+                scrollDirection: Axis.vertical,
+                physics: const ScrollPhysics(),
+                child: RepaintBoundary(
+                  key: repaintKey,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: (isHiddenForSS) ? LinearGradient(
+                        begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
+                        end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
+                        colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
+                      ) : null
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                    
+                      children: [
+                        if(!isHiddenForSS) const SizedBox(height: 40),     
+                        if(!isHiddenForSS) EntryAppbar(themeData: themeData, deleteEntry: deleteEntry, showDelete: widget.entry.id == null ? false : true, imageType: imageType, addImage: getRandomImage, screenshotAndShare: screenshotAndShare, isHiddenForSS: isHiddenForSS, addSubsection: addSubsection,),
                               
-                                quill.QuillEditor(
-                                  focusNode: focusNodes[index],
-                                  controller: quillControllers[index],
-                                  scrollController: scrollControllers[index],
-                                  config: quill.QuillEditorConfig(
-                                    scrollable: true,
-                                    placeholder: "Start writing here...",
-                                    keyboardAppearance: themeData.brightness,
-                                    onPerformAction: (TextInputAction action) {
-                                      //print(action.toString());
-                                    },
-                                    
-                                    customStyles: quill.DefaultStyles(
-                                      paragraph: quill.DefaultTextBlockStyle(
-                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
-                                        const quill.HorizontalSpacing(0, 0),
-                                        const quill.VerticalSpacing(0, 0),
-                                        quill.VerticalSpacing.zero,
-                                        null
-                                      ),
-                                      placeHolder: quill.DefaultTextBlockStyle(
-                                        themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
-                                        const quill.HorizontalSpacing(0, 0),
-                                        const quill.VerticalSpacing(0, 0),
-                                        quill.VerticalSpacing.zero,
-                                        null
-                                      ),
-                                    )
-                                  ),
-                                ),
-                                SizedBox(height: 10,),
-                              ],
+                        if(columnCount > 1 || imageExists) const SizedBox(height: 20),
+                        (gridWidgets.length == 2 && columnCount == 2) ? GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: columnCount,
+                            childAspectRatio: 1.0,
+                            mainAxisExtent: columnCount == 1 ? 200 : 240,
+                            crossAxisSpacing: 40,
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          shrinkWrap: true,
+                          clipBehavior: Clip.hardEdge,
+                          itemCount: gridWidgets.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: gridWidgets[index],
+                            );
+                          },
+                        ) : ListView.builder(
+                          padding: EdgeInsets.symmetric(vertical: 0),
+                          shrinkWrap: true,
+                          itemCount: gridWidgets.length,
+                          itemBuilder: (context, index) => Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: gridWidgets[index],
                             ),
-                             
-                          ) : 
-                          (isDragging && quillControllers.length > 1) ? Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.redAccent.withValues(alpha: 0.3),
-                                  Colors.redAccent.withValues(alpha: 0.1),
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                        ),
+                            
+                        
+                         
+                        ReorderableListView.builder(
+                          onReorder: reorderSubsection,
+                          proxyDecorator: (Widget child, int index, Animation<double> animation) {
+                            return Material(
+                              elevation: 6.0,
+                              color: Colors.transparent,
+                              shadowColor: Colors.black54,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  color: themeData.colorScheme.surface,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 8.0,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: child,
+                              ),
+                            );
+                          },
+                          buildDefaultDragHandles: false,
+                          padding: EdgeInsets.symmetric(vertical: 0),
+                          itemCount: quillControllers.length + 1,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                        
+                          onReorderStart: (int index) {setState(() {isDragging = true;});},
+                          onReorderEnd: (int index) {setState(() {isDragging = false;});},
+                        
+                          itemBuilder: (context, index) => ReorderableDelayedDragStartListener(
+                            enabled: quillControllers.length < 2 ? false : true,
+                            index: index,
+                            key: ValueKey("subsection_$index"),
+                            child: (index < quillControllers.length) ? Container(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              color: Colors.transparent,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if(index != 0) SizedBox(height: 10,),
+                                  if(index != 0) Container(
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    child: GestureDetector(
+                                        onTap: () => showDatePickerr(index),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 10, bottom: 0),
+                                          child: Text(DateFormat(subsectionDates[index-1].day == subsectionDates[index].day ? "hh:mm a" : "dd MMM yyyy | hh:mm a").format(subsectionDates[index]), style: themeData.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: columnCount == 1 ? 14 : 18, color: themeData.colorScheme.onPrimary.withValues(alpha: 0.5)),),
+                                        ),
+                                      ),
+                                  ),
+                                
+                                  quill.QuillEditor(
+                                    focusNode: focusNodes[index],
+                                    controller: quillControllers[index],
+                                    scrollController: scrollControllers[index],
+                                    config: quill.QuillEditorConfig(
+                                      scrollable: true,
+                                      placeholder: "Start writing here...",
+                                      keyboardAppearance: themeData.brightness,
+                                      onPerformAction: (TextInputAction action) {
+                                        //print(action.toString());
+                                      },
+                                      
+                                      customStyles: quill.DefaultStyles(
+                                        paragraph: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                        placeHolder: quill.DefaultTextBlockStyle(
+                                          themeData.textTheme.bodyMedium?.copyWith(fontSize: fontsize, color: themeData.colorScheme.onPrimary.withOpacity(0.5)) ?? const TextStyle(),
+                                          const quill.HorizontalSpacing(0, 0),
+                                          const quill.VerticalSpacing(0, 0),
+                                          quill.VerticalSpacing.zero,
+                                          null
+                                        ),
+                                      )
+                                    ),
+                                  ),
+                                  SizedBox(height: 10,),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.redAccent, width: 1),
+                               
+                            ) : 
+                            (isDragging && quillControllers.length > 1) ? Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.redAccent.withValues(alpha: 0.3),
+                                    Colors.redAccent.withValues(alpha: 0.1),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.redAccent, width: 1),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.delete, size: 20, color: Colors.redAccent,),
+                                  SizedBox(width: 5,),
+                                  Text("Drag below to delete subsection", textAlign: TextAlign.center, style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.redAccent.withValues(alpha: 0.5))),
+                                ],
+                              ),
+                            ) : SizedBox(
+                              height: 0,
+                              width: 0,
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.delete, size: 20, color: Colors.redAccent,),
-                                SizedBox(width: 5,),
-                                Text("Drag below to delete subsection", textAlign: TextAlign.center, style: themeData.textTheme.bodyMedium?.copyWith(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.redAccent.withValues(alpha: 0.5))),
-                              ],
-                            ),
-                          ) : SizedBox(
-                            height: 0,
-                            width: 0,
                           ),
-                        ),
-                      ),   
-                      
-                      Container(height: 80,),
-                    ],
+                        ),   
+                        
+                        Container(height: 80,),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-        /*bottomSheet: (!isHiddenForSS) ? Container(
+        bottomSheet: (!isHiddenForSS) ? Container(
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: columnCount == 2 ? const BorderRadius.only(
@@ -921,7 +970,7 @@ class _EntryPageState extends ConsumerState<EntryPage> {
               ),
             ],
           ),
-        ) : null, */
+        ) : null, 
       ),
     );
   }

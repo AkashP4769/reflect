@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class EntryListAppbar extends StatelessWidget {
@@ -8,7 +10,8 @@ class EntryListAppbar extends StatelessWidget {
     this.deleteChapter,
     this.toggleEdit,
     this.popScreenWithUpdate,
-    this.toggleSortSetting
+    this.toggleSortSetting,
+    required this.refreshEntries
   });
 
   final ThemeData themeData;
@@ -17,6 +20,7 @@ class EntryListAppbar extends StatelessWidget {
   final void Function()? toggleEdit;
   final void Function()? popScreenWithUpdate;
   final void Function()? toggleSortSetting;
+  final void Function(bool) refreshEntries;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +54,6 @@ class EntryListAppbar extends StatelessWidget {
                     icon: const Icon(Icons.search),
                     color: themeData.colorScheme.onPrimary,
                   ),
-                  
                 ],
               ),
             ),
@@ -84,7 +87,14 @@ class EntryListAppbar extends StatelessWidget {
                 ),
               ),
             ]
-          )
+          ),
+          if(Platform.isWindows) IconButton(
+            onPressed: (){
+              refreshEntries(true);
+            },
+            icon: const Icon(Icons.refresh),
+            color: themeData.colorScheme.onPrimary,
+          ),
         ],
       ),
     );

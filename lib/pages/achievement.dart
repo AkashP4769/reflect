@@ -8,6 +8,7 @@ import 'package:reflect/main.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:reflect/models/achievement.dart';
 import 'package:reflect/models/user_setting.dart';
+import 'package:reflect/pages/journal.dart';
 import 'package:reflect/services/cache_service.dart';
 import 'package:reflect/services/tag_service.dart';
 import 'package:reflect/services/user_service.dart';
@@ -334,7 +335,7 @@ class _HomePageState extends ConsumerState<AchievementPage> {
               ),
               const SizedBox(height: 20,),
 
-              if(frequencyCalculating) _wordFreqConfigBuilder(themeData),
+              if(frequencyCalculating) _wordFreqConfigBuilder(themeData, achievementsColumnCount),
 
               const SizedBox(height: 20,),
 
@@ -392,9 +393,10 @@ class _HomePageState extends ConsumerState<AchievementPage> {
             );
   }
 
-  Row _wordFreqConfigBuilder(ThemeData themeData) {
-    return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  Widget _wordFreqConfigBuilder(ThemeData themeData, int columnCount) {
+    return ColumnRow(
+              isSmall: columnCount == 1 ? true : false,
+              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

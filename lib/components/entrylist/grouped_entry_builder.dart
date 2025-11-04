@@ -35,9 +35,7 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
-    groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
-    print("groupedEntryInitstate");
+    
   }
 
   Future<void> handleOnTapEntryCard(Entry entry) async {
@@ -53,7 +51,8 @@ class _GroupedEntryBuilderState extends State<GroupedEntryBuilder> {
   Widget build(BuildContext context) {
     final columnCount = min(3, max(1, (MediaQuery.of(context).size.width / 415).floor()));
 
-    
+    _groupedEntries = entrylistService.groupEntriesByDate(widget.entries);
+    groupedEntries = Map.fromEntries(_groupedEntries.entries.toList()..sort((a, b) => (int.parse(a.key.split(' ')[1]) * 100 + monthValue[a.key.split(' ')[0]]!).compareTo(int.parse(b.key.split(' ')[1]) * 100 + monthValue[b.key.split(' ')[0]]!)));
 
     return ListView.builder(
       shrinkWrap: true,

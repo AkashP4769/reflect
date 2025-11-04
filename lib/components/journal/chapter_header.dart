@@ -28,7 +28,7 @@ class ChapterHeader extends StatelessWidget {
   final Function() getRandomImage;
   final Function() onEditImage;
   final Function() removeSelectedPhoto;
-  
+
   const ChapterHeader({super.key, required this.chapter, required this.themeData, required this.isEditing, required this.titleController, required this.descriptionController, required this.date, required this.showDatePickerr, required this.toggleEdit, required this.updateChapter, required this.imageType, required this.imageUrl, required this.image,  required this.getRandomImage, required this.onEditImage, required this.removeSelectedPhoto});
 
 

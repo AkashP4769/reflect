@@ -176,10 +176,15 @@ class _HomePageState extends ConsumerState<JournalPage> {
                       Stack(
                         alignment: Alignment.center,
                         children: [
-                          Align(child: Padding(
+                          Align(alignment: Alignment.centerLeft,child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: Icon(userSetting.encryptionMode == 'local' ? Icons.cloud_off : Icons.cloud_outlined, color: themeData.colorScheme.onPrimary.withOpacity(0.7),),
-                          ), alignment: Alignment.centerLeft,),
+                            child: IconButton(
+                              onPressed: () async {
+                                await fetchChapters(true);
+                              },
+                              icon: Icon(userSetting.encryptionMode == 'local' ? Icons.cloud_off : Icons.cloud_outlined, color: themeData.colorScheme.onPrimary.withOpacity(0.7),)
+                            ),
+                          ),),
                           Align(child: Text("Chapters", style: themeData.textTheme.titleLarge,), alignment: Alignment.center,),
                           Align(
                             alignment: Alignment.centerRight,
