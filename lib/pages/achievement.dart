@@ -589,7 +589,15 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                                         width: barWidth,
                                         height: 250,
                                         decoration: BoxDecoration(
-                                          color: themeData.colorScheme.secondary.withOpacity(0.7),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              themeData.colorScheme.secondary.withOpacity(0.7),
+                                              if(themeData.brightness == Brightness.dark) HSVColor.fromColor(themeData.colorScheme.secondary).withValue(0.3).toColor(),
+                                              if(themeData.brightness == Brightness.light) HSVColor.fromColor(themeData.colorScheme.secondary).withValue(0.9).toColor(),
+                                            ],
+                                          ),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
@@ -597,7 +605,16 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                                         width: barWidth,
                                         height: 250 * heightRatio.toDouble(),
                                         decoration: BoxDecoration(
-                                          color: themeData.colorScheme.primary,
+                                          //color: themeData.colorScheme.primary,
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              themeData.colorScheme.primary,
+                                              if(themeData.brightness == Brightness.dark) HSVColor.fromColor(themeData.colorScheme.primary).withValue(0.6).toColor(),
+                                              if(themeData.brightness == Brightness.light) HSVColor.fromColor(themeData.colorScheme.primary).withValue(0.8).toColor(),
+                                            ],
+                                          ),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
@@ -650,7 +667,16 @@ class _HomePageState extends ConsumerState<AchievementPage> {
                 return Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                  color: themeData.colorScheme.surface,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      if(themeData.brightness == Brightness.dark) themeData.colorScheme.primary.withValues(alpha: 0.5),
+                      if(themeData.brightness == Brightness.light) HSVColor.fromColor(themeData.colorScheme.primary).withSaturation(0.3).withValue(1).toColor(),
+                      themeData.colorScheme.surface,
+                    ],
+                    
+                  ),
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(

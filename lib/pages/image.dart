@@ -31,9 +31,9 @@ class ImagePage extends ConsumerWidget {
               ),
             ],
             gradient: LinearGradient(
-              begin: themeData.brightness == Brightness.light ? Alignment.bottomCenter : Alignment.topCenter,
-              end: themeData.brightness == Brightness.light ? Alignment.topCenter : Alignment.bottomCenter,
-              colors: [themeData.colorScheme.tertiary, themeData.colorScheme.onTertiary]
+              begin: themeData.brightness == Brightness.dark ? Alignment.topCenter : Alignment.topCenter,
+              end: themeData.brightness == Brightness.dark ? Alignment.bottomCenter : Alignment.bottomCenter,
+              colors: [themeData.colorScheme.secondary, themeData.colorScheme.secondary, themeData.colorScheme.onTertiary]
             )
           ),
           child: GestureDetector(
